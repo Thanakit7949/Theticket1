@@ -7,26 +7,28 @@ export interface ILoginPagePageProps {}
 
 const LoginPage: React.FunctionComponent<ILoginPagePageProps> = (props) => {
   const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [dataDe, setDataDE] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const navigate = useNavigate();  // ใช้ navigate เพื่อเปลี่ยนเส้นทาง
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();  // ป้องกันการรีเฟรชหน้า
-
+  
     try {
       const response = await axios.post('http://localhost:5000/login', {
-        username,
+        email,
         password,
       });
-
+  
       const data = response.data;
-console.log(data)
-      if (data.role === 1) {
-        // ถ้า role เป็น 1 ให้ไปหน้า admin
+      console.log(data)
+      setDataDE(data)
+      if (data.role === 'admin') {
         navigate('/home-admin');
-      } else if (data.role === 0) {
-        // ถ้า role เป็น 0 ให้ไปหน้า user
+
+      } else if (data.role === 'user') {
         navigate('/home-user');
       } else {
         setMessage('Unknown role');
@@ -36,15 +38,16 @@ console.log(data)
       setMessage('Login failed');
     }
   };
+  
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '50px' }}>
       <Typography variant="h4">Login</Typography>
       <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', width: '300px' }}>
         <TextField
-          label="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          label="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           margin="normal"
           fullWidth
         />
