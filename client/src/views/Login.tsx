@@ -6,7 +6,7 @@ import { TextField, Button, Typography, Box } from '@mui/material';
 export interface ILoginPagePageProps {}
 
 const LoginPage: React.FunctionComponent<ILoginPagePageProps> = (props) => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const navigate = useNavigate();  // ใช้ navigate เพื่อเปลี่ยนเส้นทาง
@@ -16,16 +16,16 @@ const LoginPage: React.FunctionComponent<ILoginPagePageProps> = (props) => {
 
     try {
       const response = await axios.post('http://localhost:5000/login', {
-        username,
+        email,
         password,
       });
 
       const data = response.data;
 console.log(data)
-      if (data.role === 1) {
+      if (data.role === 'admin') {
         // ถ้า role เป็น 1 ให้ไปหน้า admin
         navigate('/home-admin');
-      } else if (data.role === 0) {
+      } else if (data.role === 'user') {
         // ถ้า role เป็น 0 ให้ไปหน้า user
         navigate('/home-user');
       } else {
@@ -42,9 +42,9 @@ console.log(data)
       <Typography variant="h4">Login</Typography>
       <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', width: '300px' }}>
         <TextField
-          label="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          label="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           margin="normal"
           fullWidth
         />

@@ -8,10 +8,10 @@ app.use(cors());
 app.use(express.json());
 
 const db = mysql.createConnection({
-  host: '192.168.1.35',
+  host: 'localhost',
   user: 'root',
   password: '',
-  database: 'concert',
+  database: 'testtwo',
 });
 
 db.connect((err) => {
@@ -20,15 +20,15 @@ db.connect((err) => {
 });
 
 app.post('/login', (req, res) => {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
   
-    if (!username || !password) {
-      return res.status(400).json({ message: 'Username and password are required' });
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email and password are required' });
     }
   
-    const query = 'SELECT emp_id, username, password, full_name, role FROM admin WHERE username = ? AND password = ?';
+    const query = 'SELECT * FROM users WHERE email = ? AND password = ?';
     
-    db.query(query, [username, password], (err, result) => {
+    db.query(query, [email, password], (err, result) => {
       if (err) {
         return res.status(500).json({ message: 'Database error', error: err.message });
       }
@@ -37,7 +37,7 @@ app.post('/login', (req, res) => {
         const { password, ...userData } = result[0]; // ลบ password ออกจากข้อมูลผู้ใช้
         return res.json(userData);
       } else {
-        return res.status(401).json({ message: 'Invalid username or password' });
+        return res.status(401).json({ message: 'Invalid email or password' });
       }
     });
   });
