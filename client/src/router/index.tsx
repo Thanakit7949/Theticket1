@@ -1,18 +1,16 @@
-import React, { useEffect, useState } from "react"
-import { BrowserRouter, Route, Routes } from "react-router-dom"
-import LoginPage from "../views/Login"
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import LoginPage from "../views/Login";
+import HomeAdmin from "../views/Admin/HomeAdmin";
+import HomeUser from "../views/User/HomeUser";
 
-const Router: React.FC = () => {
-   
-
-    return (
-        <BrowserRouter>
-            <Routes>
-                <Route path="/login" element={<LoginPage />}>
-                </Route>
-            </Routes>
-        </BrowserRouter>
-    )
+function AppRouter() {
+  return (
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/้home-admin" element={<HomeAdmin />} />
+      <Route path="/home-user" element={<HomeUser />} />
+    </Routes>
+  );
 }
 
-export default Router
+export default AppRouter;
