@@ -6,7 +6,7 @@ const HomeAdmin: React.FunctionComponent<IHomeAdminProps> = props => {
     return(
         <>
         <Sidebar/>
-        <Typography>{"admin"}</Typography>
+        <Typography>{"admin Test"}</Typography>
         </>
     );
 };
