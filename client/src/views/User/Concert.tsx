@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from 'react-router-dom'; 
+import { Link } from "react-router-dom";
 import { Box, Typography, Button } from "@mui/material";
 import ConcertImage1 from "/src/assets/concert/con3.jpg";
 import ConcertImage2 from "/src/assets/concert/con4.webp";
@@ -79,14 +79,16 @@ const Concert: React.FC = () => {
           }}
         />
 
-        {/* ปุ่ม2 */}
+        {/* ปุ่ม */}
         <Box
           display="flex"
           justifyContent="space-between"
           width="100%"
           position="absolute"
           top="47%"
-          transform="translateY(-50%)"
+          sx={{
+            transform:"translateY(-50%)",
+          }}
         >
           <Button
             variant="contained"
@@ -104,6 +106,7 @@ const Concert: React.FC = () => {
           >
             &#9664;
           </Button>
+
           <Button
             variant="contained"
             color="secondary"
@@ -134,101 +137,117 @@ const Concert: React.FC = () => {
         ᴇɴᴊᴏʏ ᴛʜɪꜱ ᴀᴍᴀᴢɪɴɢ ᴄᴏɴᴄᴇʀᴛ ᴘᴇʀꜰᴏʀᴍᴀɴᴄᴇ!
       </Typography>
       {/* รูปภาพเรียงกันแนวนอน */}
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} mt={5}>
-  <Link to="/concert1"> {/* ลิงค์ไปที่หน้า Concert 1 */}
-    <Box
-      component="img"
-      src={Bus}
-      alt="Concert 1"
-      sx={{
-        width: "110%",
-        maxHeight: "170px",
-        objectFit: "cover",
-        borderRadius: 2,
-        mr: 1, // ระยะห่างระหว่างรูปภาพ
-        transition: "transform 0.3s ease",
-        "&:hover": {
-          transform: "scale(1.1)",
-        },
-      }}
-    />
-  </Link>
-  
-  <Link to="/concert2"> {/* ลิงค์ไปที่หน้า Concert 2 */}
-    <Box
-      component="img"
-      src={Got7}
-      alt="Concert 2"
-      sx={{
-        width: "110%",
-        maxHeight: "170px",
-        objectFit: "cover",
-        borderRadius: 2,
-        mr: 1,
-        transition: "transform 0.3s ease",
-        "&:hover": {
-          transform: "scale(1.1)",
-        },
-      }}
-    />
-  </Link>
-  
-  <Link to="/concert3"> {/* ลิงค์ไปที่หน้า Concert 3 */}
-    <Box
-      component="img"
-      src={Enhypen}
-      alt="Concert 3"
-      sx={{
-        width: "110%",
-        maxHeight: "170px",
-        objectFit: "cover",
-        borderRadius: 2,
-        mr: 1,
-        transition: "transform 0.3s ease",
-        "&:hover": {
-          transform: "scale(1.1)",
-        },
-      }}
-    />
-  </Link>
-  
-  <Link to="/concert4"> {/* ลิงค์ไปที่หน้า Concert 4 */}
-    <Box
-      component="img"
-      src={Pixxie}
-      alt="Concert 4"
-      sx={{
-        width: "110%",
-        maxHeight: "170px",
-        objectFit: "cover",
-        borderRadius: 2,
-        mr: 1,
-        transition: "transform 0.3s ease",
-        "&:hover": {
-          transform: "scale(1.1)",
-        },
-      }}
-    />
-  </Link>
-  
-  <Link to="/concert5"> {/* ลิงค์ไปที่หน้า Concert 5 */}
-    <Box
-      component="img"
-      src={Lykn}
-      alt="Concert 5"
-      sx={{
-        width: "110%",
-        maxHeight: "170px",
-        objectFit: "cover",
-        borderRadius: 2,
-        transition: "transform 0.3s ease",
-        "&:hover": {
-          transform: "scale(1.1)",
-        },
-      }}
-    />
-  </Link>
-</Box>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={2}
+        mt={5}
+      >
+        <Link to="/concert1">
+          {" "}
+          {/* ลิงค์ไปที่หน้า Concert 1 */}
+          <Box
+            component="img"
+            src={Bus}
+            alt="Concert 1"
+            sx={{
+              width: "110%",
+              maxHeight: "170px",
+              objectFit: "cover",
+              borderRadius: 2,
+              mr: 1, // ระยะห่างระหว่างรูปภาพ
+              transition: "transform 0.3s ease",
+              "&:hover": {
+                transform: "scale(1.1)",
+              },
+            }}
+          />
+        </Link>
+
+        <Link to="/concert2">
+          {" "}
+          {/* ลิงค์ไปที่หน้า Concert 2 */}
+          <Box
+            component="img"
+            src={Got7}
+            alt="Concert 2"
+            sx={{
+              width: "110%",
+              maxHeight: "170px",
+              objectFit: "cover",
+              borderRadius: 2,
+              mr: 1,
+              transition: "transform 0.3s ease",
+              "&:hover": {
+                transform: "scale(1.1)",
+              },
+            }}
+          />
+        </Link>
+
+        <Link to="/concert3">
+          {" "}
+          {/* ลิงค์ไปที่หน้า Concert 3 */}
+          <Box
+            component="img"
+            src={Enhypen}
+            alt="Concert 3"
+            sx={{
+              width: "110%",
+              maxHeight: "170px",
+              objectFit: "cover",
+              borderRadius: 2,
+              mr: 1,
+              transition: "transform 0.3s ease",
+              "&:hover": {
+                transform: "scale(1.1)",
+              },
+            }}
+          />
+        </Link>
+
+        <Link to="/concert4">
+          {" "}
+          {/* ลิงค์ไปที่หน้า Concert 4 */}
+          <Box
+            component="img"
+            src={Pixxie}
+            alt="Concert 4"
+            sx={{
+              width: "110%",
+              maxHeight: "170px",
+              objectFit: "cover",
+              borderRadius: 2,
+              mr: 1,
+              transition: "transform 0.3s ease",
+              "&:hover": {
+                transform: "scale(1.1)",
+              },
+            }}
+          />
+        </Link>
+
+        <Link to="/concert5">
+          {" "}
+          {/* ลิงค์ไปที่หน้า Concert 5 */}
+          <Box
+            component="img"
+            src={Lykn}
+            alt="Concert 5"
+            sx={{
+              width: "110%",
+              maxHeight: "170px",
+              objectFit: "cover",
+              borderRadius: 2,
+              transition: "transform 0.3s ease",
+              "&:hover": {
+                transform: "scale(1.1)",
+              },
+            }}
+          />
+        </Link>
+      </Box>
     </Box>
   );
 };
