@@ -8,26 +8,27 @@ export interface ILoginPagePageProps {}
 const LoginPage: React.FunctionComponent<ILoginPagePageProps> = (props) => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
+  const [dataDe, setDataDE] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const navigate = useNavigate();  // ใช้ navigate เพื่อเปลี่ยนเส้นทาง
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();  // ป้องกันการรีเฟรชหน้า
-
+  
     try {
       const response = await axios.post('http://localhost:5000/login', {
         email,
         password,
       });
-
+  
       const data = response.data;
-console.log(data)
+      console.log(data)
+      setDataDE(data)
       if (data.role === 'admin') {
-        // ถ้า role เป็น 1 ให้ไปหน้า admin
         navigate('/home-admin');
+
       } else if (data.role === 'user') {
-        // ถ้า role เป็น 0 ให้ไปหน้า user
         navigate('/home-user');
       } else {
         setMessage('Unknown role');
@@ -37,6 +38,7 @@ console.log(data)
       setMessage('Login failed');
     }
   };
+  
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '50px' }}>

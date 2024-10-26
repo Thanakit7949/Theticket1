@@ -20,28 +20,40 @@ db.connect((err) => {
 });
 
 app.post('/login', (req, res) => {
-    const { email, password } = req.body;
-  
-    if (!email || !password) {
-      return res.status(400).json({ message: 'email and password are required' });
+  const { email, password } = req.body;
+
+  // console.log("Received Email:", email);
+  // console.log("Received Password:", password);
+
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Email and password are required' });
+  }
+
+  const query = 'SELECT * FROM users WHERE email = ? AND password = ?';
+
+  db.query(query, [email, password], (err, result) => {
+    if (err) {
+      return res.status(500).json({ message: 'Database error', error: err.message });
     }
-  
-    const query = 'SELECT * FROM users WHERE email = ? AND password = ?';
-    
-    db.query(query, [email, password], (err, result) => {
-      if (err) {
-        return res.status(500).json({ message: 'Database error', error: err.message });
-      }
-  
-      if (result.length > 0) {
-        const { password, ...userData } = result[0]; // ลบ password ออกจากข้อมูลผู้ใช้
-        return res.json(userData);
-      } else {
-        return res.status(401).json({ message: 'Invalid username or password' });
-      }
-    });
+    // console.log(result)
+    if (result.length > 0) {
+      const { password, ...userData } = result[0]; // ลบ password ออกจากข้อมูลผู้ใช้
+      return res.json({ ...userData, role: userData.role });
+    } else {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
   });
-  
+});
+
+app.get('/getAllConcerts', (req, res) => {
+  const query = 'SELECT * FROM concerts'; // ดึงข้อมูลทั้งหมดจาก concerts
+  db.query(query, (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: 'Database error', error: err.message });
+    }
+    return res.json(results); // ส่งผลลัพธ์เป็น JSON
+  });
+});
   
 
 app.listen(port, () => {
