@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   AppBar,
   Avatar,
@@ -15,15 +15,21 @@ import {
 import MovieIcon from "@mui/icons-material/Movie";
 import MenuIcon from "@mui/icons-material/Menu";
 import Photo from "../assets/react.svg";
+import HomeTest from "../views/User/HomeTest";
+import Concert from "../views/User/Concert";
+import Sport from "../views/User/Sport";
+import Promotion from "../views/User/Promotion";
+import Product from "../views/User/Product";
+import Information from "../views/User/Information";
 
-// Sample scrolling text functionality
-export interface IAppBarTProps {};
+const pages = ["Concert", "Sport", "Promotion", "Product", "Information"];
+const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
-const AppBarT: React.FunctionComponent<IAppBarTProps> = (props) => {
-  const pages = ["Products", "Pricing", "Blog"];
-  const settings = ["Profile", "Account", "Dashboard", "Logout"];
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+
+const AppBarT: React.FunctionComponent = () => {
+  const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
+  const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+  const [activePage, setActivePage] = useState<string>("Concert");
   const [isPaused, setIsPaused] = React.useState(false);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -32,9 +38,11 @@ const AppBarT: React.FunctionComponent<IAppBarTProps> = (props) => {
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };
+
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
   };
+
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
@@ -44,8 +52,8 @@ const AppBarT: React.FunctionComponent<IAppBarTProps> = (props) => {
 
   return (
     <>
-      {/* Scrolling Text with MUI components */}
-      <Box 
+    {/* Scrolling Text with MUI components */}
+    <Box 
       component="div" 
       sx={{ 
         position: "relative",
@@ -92,7 +100,7 @@ const AppBarT: React.FunctionComponent<IAppBarTProps> = (props) => {
 
 
       <AppBar position="fixed">
-        <Container maxWidth="xl" >
+        <Container maxWidth="xl">
           <Toolbar disableGutters>
             <MovieIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
             <Typography
@@ -100,6 +108,7 @@ const AppBarT: React.FunctionComponent<IAppBarTProps> = (props) => {
               noWrap
               component="a"
               href="#"
+              onClick={() => setActivePage("Home")}
               sx={{
                 mr: 2,
                 display: { xs: "none", md: "flex" },
@@ -141,7 +150,13 @@ const AppBarT: React.FunctionComponent<IAppBarTProps> = (props) => {
                 sx={{ display: { xs: "block", md: "none" } }}
               >
                 {pages.map((page) => (
-                  <MenuItem key={page} onClick={handleCloseNavMenu}>
+                  <MenuItem
+                    key={page}
+                    onClick={() => {
+                      setActivePage(page);
+                      handleCloseNavMenu();
+                    }}
+                  >
                     <Typography textAlign="center">{page}</Typography>
                   </MenuItem>
                 ))}
@@ -152,7 +167,7 @@ const AppBarT: React.FunctionComponent<IAppBarTProps> = (props) => {
               {pages.map((page) => (
                 <Button
                   key={page}
-                  onClick={handleCloseNavMenu}
+                  onClick={() => setActivePage(page)}
                   sx={{ my: 2, color: "white", display: "block" }}
                 >
                   {page}
@@ -192,6 +207,15 @@ const AppBarT: React.FunctionComponent<IAppBarTProps> = (props) => {
           </Toolbar>
         </Container>
       </AppBar>
+
+      <Box sx={{ mt: 10, p: 3 }}>
+  {activePage === "Home" && <HomeTest />}
+  {activePage === "Concert" && <Concert />}
+  {activePage === "Sport" && <Sport />}
+  {activePage === "Promotion" && <Promotion />}
+  {activePage === "Product" && <Product />}
+  {activePage === "Information" && <Information />}
+</Box>
     </>
   );
 };
