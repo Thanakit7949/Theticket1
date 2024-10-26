@@ -11,7 +11,7 @@ const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: '',
-  database: 'data_final',
+  database: 'testtwo',
 });
 
 db.connect((err) => {
@@ -22,8 +22,8 @@ db.connect((err) => {
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
 
-  // console.log("Received Email:", email);
-  // console.log("Received Password:", password);
+  console.log("Received Email:", email);
+  console.log("Received Password:", password);
 
   if (!email || !password) {
     return res.status(400).json({ message: 'Email and password are required' });

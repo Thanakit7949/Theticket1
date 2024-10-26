@@ -7,7 +7,7 @@ function AppRouter() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/้home-admin" element={<HomeAdmin />} />
+      <Route path="/home-admin" element={<HomeAdmin />} />
       <Route path="/home-user" element={<HomeUser />} />
     </Routes>
   );
