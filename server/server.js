@@ -11,7 +11,7 @@ const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: '',
-  database: 'data_final',
+  database: 'ticket_db',
 });
 
 db.connect((err) => {

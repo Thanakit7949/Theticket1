@@ -11,6 +11,7 @@ import HomeTest from "../views/User/HomeTest"
 import HomeUser from "../views/User/HomeUser"
 import Information from "../views/User/Information"
 import Page1Page from "../views/User/Page1"
+import Product from "../views/User/Product"
 
 export const routesConfig: {
     publicRoute: MainRouter[]
@@ -36,7 +37,7 @@ export const routesConfig: {
             path: "/home-user",
             name: "home",
             header: "home",
-            component: HomeUser,
+            component: HomeTest,
             icon: null,
             children: [],
         },
@@ -105,14 +106,14 @@ export const routesConfig: {
         },
         {
             path: "/home-test",
-            name: "test2",
+            name: "llll",
             header: "tset2",
             component: HomeTest,
             icon: null,
             children: [],
         },
         {
-            path: "/Information",
+            path: "/information",
             name: "Information",
             header: "Information",
             component: Information,
@@ -128,6 +129,14 @@ export const routesConfig: {
                     children: [],
                 },
             ],
+        },
+        {
+            path: "/product",
+            name: "product",
+            header: "product",
+            component: Product,
+            icon: null,
+            children: [],
         },
        
     ],
