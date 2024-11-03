@@ -68,7 +68,7 @@ const AppBarT: React.FunctionComponent = () => {
         alignItems: "center", 
         borderRadius: "12px", 
         boxShadow: "0 4px 15px rgba(255, 182, 193, 0.5)", 
-        marginBottom: "20px",
+        marginBottom: "-50px",
         marginTop: "60px",
        
       }}
