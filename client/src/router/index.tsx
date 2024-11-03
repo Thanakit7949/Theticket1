@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import * as R from "ramda"
-import NotFoundPage from "../views/NotFoundPage"
 import Dashboard from "../views/dashboard/DashBoard"
-import dashboardIcon from "../assets/icon/abstract_5855009.png"
-import BranchForm from "../views/owner-manag/branch/BranchForm"
 import LoginPage from "../views/Login";
 import HomeAdmin from "../views/Admin/HomeAdmin";
 import HomeUser from "../views/User/HomeUser";
@@ -18,7 +15,6 @@ import { routesConfig } from "./RounterConfig";
 import { MainRouter } from "../interface/Router.interface";
 import Home from "../views/Home"
 import PrivateRoute from "./PrivateRoute"
-// <Route path="/login" element={<LoginPage />} />
 const Router: React.FC = () => {
   const [publicRouteElements, setPublicRouteElements] = useState<any[]>([])
   const [privateRouteElements, setPrivateRouteElements] = useState<any[]>([])
@@ -32,7 +28,7 @@ const Router: React.FC = () => {
       const path = window.location.pathname
 
       if (path === "/") {
-          window.location.href = "/dashboard"
+          window.location.href = "/home-user"
       }
   }, [])
 
@@ -143,32 +139,29 @@ const Router: React.FC = () => {
   }
 
   return (
-      <BrowserRouter>
-          <Routes>
-              <Route path="/login" element={<LoginPage />}>
-                  <Route index element={<LoginPage />} />
-              </Route>
+    <BrowserRouter>
+    <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        
+        <Route path="/" element={
+            <Home routerHeader={{
+                path: "/home-user",
+                name: "test",
+                header: "tset",
+                component: HomeUser,
+                icon: null,
+                children: [],
+            }}>
+                <HomeUser />
+            </Home>
+        } />
 
-              {publicRouteElements}
+        {publicRouteElements}
 
-              <Route path="/" element={<PrivateRoute />}>
-                  <Route index element={
-                      <Home routerHeader={{
-                          path: "/dashboard",
-                          name: "แดชบอร์ด",
-                          header: "แดชบอร์ด",
-                          component: Dashboard,
-                          icon: <img src={dashboardIcon} />,
-                          children: [],
-                      }} >
-                          <Dashboard />
-                      </Home>} />
+        {privateRouteElements}
+    </Routes>
+</BrowserRouter>
 
-                  {privateRouteElements}
-              </Route>
-
-          </Routes>
-      </BrowserRouter>
   )
 }
 

@@ -6,12 +6,15 @@ import { Container, Typography } from '@mui/material';
 function App() {
   console.log("App component rendered");
   return (
-    <Container>
-      {/* <Typography variant="h4" gutterBottom>
-        Welcome to My App
-      </Typography> */}
+    // <Container>
+    //   {/* <Typography variant="h4" gutterBottom>
+    //     Welcome to My App
+    //   </Typography> */}
+    //   <Router /> 
+    // </Container>
+    <div>
       <Router /> 
-    </Container>
+    </div>
   );
 }
 

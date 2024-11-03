@@ -568,7 +568,7 @@ const Information = () => {
     <Button
       variant="outlined"
       sx={{ margin: 1, fontSize: "1rem", padding: "10px 20px" }}
-      onClick={() => window.location.href = "/page1in"}
+      onClick={() => window.location.href = "/Information/page1in"}
     >
       Page 1
     </Button>
