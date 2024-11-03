@@ -13,7 +13,7 @@ import image6 from "/src/assets/concert/pixxie_con/pixxi10.jpg";
 
 const images = [image1, image2, image3, image4, image5, image6];
 
-function ConcertHypen() {
+function ConcertPixxie() {
   return (
     <Box
       sx={{
@@ -242,4 +242,4 @@ function ConcertHypen() {
   );
 }
 
-export default ConcertHypen;
+export default ConcertPixxie;

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Box, Typography, Button } from "@mui/material";
 import ConcertImage1 from "/src/assets/concert/con3.jpg";
@@ -26,16 +26,30 @@ import c8Image from "/src/assets/concert/all/c8.png";
 import c9Image from "/src/assets/concert/all/c9.png";
 import c10Image from "/src/assets/concert/all/c10.png";
 import c11Image from "/src/assets/concert/all/c11.png";
+import ConcertDetailPage from "./ConcDetail";
 
+export interface IDataConcert {
+  image: string;
+  title: string;
+  date: string;
+  time: string;
+  location: string;
+  price:number
+}
 const Concert: React.FC = () => {
-
   const navigate = useNavigate();
-
-  const handleBuyTicket = (concert: { image: string; title: string; date: string; time: string; location: string; }) => {
-    navigate('/concert-detail', { state: concert });
+  const [dataconcert, setDataconcert] = useState<IDataConcert>();
+  const handleBuyTicket = (item: {
+    image: string;
+    title: string;
+    date: string;
+    time: string;
+    location: string;
+    price:number
+  }) => {
+    // setDataconcert(item)
+    navigate("concert-detail", { state: item });
   };
-
-
 
   const images = [ConcertImage1, ConcertImage2, ConcertImage3, ConcertImage4]; // รายการรูปภาพ
   const [currentIndex, setCurrentIndex] = useState(0); // ใช้ index เพื่อติดตามรูปภาพปัจจุบัน
@@ -67,7 +81,7 @@ const Concert: React.FC = () => {
       time: "⏰: 10:00 น. - 22:00 น.",
       location: "📌: อิมแพ็ค เอ็กซิบิชั่น เมืองทองธานี",
       category: "THAI MASS",
-      price: 4500
+      price: 4500,
     },
     {
       image: c1Image,
@@ -76,7 +90,7 @@ const Concert: React.FC = () => {
       time: "⏰: 10:00 น. - 22:00 น.",
       location: "📌: อิมแพ็ค อารีน่า เมืองทองธานี",
       category: "K-POP",
-      price: 3500
+      price: 3500,
     },
     {
       image: c2Image,
@@ -85,7 +99,7 @@ const Concert: React.FC = () => {
       time: "⏰: 12:00 น. - 23:00 น.",
       location: "📌: ธันเดอร์โดม เมืองทองธานี",
       category: "INTERNATIONAL",
-      price: 5500
+      price: 5500,
     },
     {
       image: c3Image,
@@ -93,7 +107,7 @@ const Concert: React.FC = () => {
       date: "🗓️: 14 ตุลาคม 2567",
       time: "⏰: 17:00 - 18:30 น.",
       location: "📌: Siam-Pic Ganesha Hall",
-      price: 4500
+      price: 4500,
     },
     {
       image: c4Image,
@@ -101,7 +115,7 @@ const Concert: React.FC = () => {
       date: "🗓️: 20 ตุลาคม 2567",
       time: "⏰: 14:00 - 20:00 น.",
       location: "📌: LIDO CONNECT HALL 2",
-      price: 2500
+      price: 2500,
     },
     {
       image: c5Image,
@@ -109,7 +123,7 @@ const Concert: React.FC = () => {
       date: "🗓️: 26 ตุลาคม 2567",
       time: "⏰: 15:30 - 22:00 น.",
       location: "📌: โรงเรียนสวนกุหลาบวิทยาลัย นนทบุรี",
-      price: 6500
+      price: 6500,
     },
     {
       image: c6Image,
@@ -117,7 +131,7 @@ const Concert: React.FC = () => {
       date: "🗓️: 7-8 ธันวาคม 2567",
       time: "⏰: 14:00 - 23:59 น.",
       location: "📌: Diamond Beach (Longlay Beach)",
-      price: 5500
+      price: 5500,
     },
     {
       image: c7Image,
@@ -125,7 +139,7 @@ const Concert: React.FC = () => {
       date: "🗓️: 6 ตุลาคม 2567",
       time: "⏰: 13.00 น.",
       location: "📌: เทอร์มินอล ฮอลล์",
-      price: 7500
+      price: 7500,
     },
     {
       image: c8Image,
@@ -133,7 +147,7 @@ const Concert: React.FC = () => {
       date: "🗓️:  17 พฤศจิกายน 2567",
       time: "⏰: 18.00 น.",
       location: "📌: TRUE ICON HALL",
-      price: 3500
+      price: 3500,
     },
     {
       image: c9Image,
@@ -141,7 +155,7 @@ const Concert: React.FC = () => {
       date: "🗓️:  5 ตุลาคม 2567",
       time: "⏰: 17:00 - 18:30 น.",
       location: "📌: Siam-Pic Ganesha Hall",
-      price: 5500
+      price: 5500,
     },
     {
       image: c10Image,
@@ -149,7 +163,7 @@ const Concert: React.FC = () => {
       date: "🗓️:  19 ตุลาคม 2567",
       time: "⏰: 18:00 น.",
       location: "📌: อิมแพ็ค อารีน่า เมืองทองธานี",
-      price: 4500
+      price: 4500,
     },
     {
       image: c11Image,
@@ -157,7 +171,7 @@ const Concert: React.FC = () => {
       date: "🗓️:  2 พฤศจิกายน 2567",
       time: "⏰: 19:00 น.",
       location: "📌: ยูโอบี ไลฟ์, เอ็มสเฟียร์",
-      price: 2500
+      price: 2500,
     },
   ];
   const thaiMassConcerts = [
@@ -168,7 +182,7 @@ const Concert: React.FC = () => {
       time: "⏰: 12:00 น. - 23:00 น.",
       location: "📌: ธันเดอร์โดม เมืองทองธานี",
       category: "INTERNATIONAL",
-      price: 5500
+      price: 5500,
     },
     {
       image: c5Image,
@@ -176,15 +190,15 @@ const Concert: React.FC = () => {
       date: "🗓️: 26 ตุลาคม 2567",
       time: "⏰: 15:30 - 22:00 น.",
       location: "📌: โรงเรียนสวนกุหลาบวิทยาลัย นนทบุรี",
-      price: 6500
-    }, 
+      price: 6500,
+    },
     {
       image: c7Image,
       title: "❤️‍🔥: Knock Knock Knock: BUS 1st THAILAND FANCON",
       date: "🗓️:  6 ตุลาคม 2567",
       time: "⏰: 13.00 น.",
       location: "📌: เทอร์มินอล ฮอลล์",
-      price: 7500
+      price: 7500,
     },
     {
       image: c8Image,
@@ -192,7 +206,7 @@ const Concert: React.FC = () => {
       date: "🗓️:  17 พฤศจิกายน 2567",
       time: "⏰: 18.00 น.",
       location: "📌: TRUE ICON HALL",
-      price: 3500
+      price: 3500,
     },
     {
       image: c9Image,
@@ -200,7 +214,7 @@ const Concert: React.FC = () => {
       date: "🗓️:  5 ตุลาคม 2567",
       time: "⏰: 17:00 - 18:30 น.",
       location: "📌: Siam-Pic Ganesha Hall",
-      price: 5500
+      price: 5500,
     },
   ];
   const tpopConcerts = [
@@ -210,7 +224,7 @@ const Concert: React.FC = () => {
       date: "🗓️:  6 ตุลาคม 2567",
       time: "⏰: 13.00 น.",
       location: "📌: เทอร์มินอล ฮอลล์",
-      price: 7500
+      price: 7500,
     },
   ];
   const kpopConcerts = [
@@ -221,7 +235,7 @@ const Concert: React.FC = () => {
       time: "⏰: 10:00 น. - 22:00 น.",
       location: "📌: อิมแพ็ค เอ็กซิบิชั่น เมืองทองธานี",
       category: "THAI MASS",
-      price: 4500
+      price: 4500,
     },
     {
       image: c1Image,
@@ -230,7 +244,7 @@ const Concert: React.FC = () => {
       time: "⏰: 10:00 น. - 22:00 น.",
       location: "📌: อิมแพ็ค อารีน่า เมืองทองธานี",
       category: "K-POP",
-      price: 3500
+      price: 3500,
     },
     {
       image: c3Image,
@@ -238,7 +252,7 @@ const Concert: React.FC = () => {
       date: "🗓️: 14 ตุลาคม 2567",
       time: "⏰: 17:00 - 18:30 น.",
       location: "📌: Siam-Pic Ganesha Hall",
-      price: 4500
+      price: 4500,
     },
     {
       image: c4Image,
@@ -246,7 +260,7 @@ const Concert: React.FC = () => {
       date: "🗓️: 20 ตุลาคม 2567",
       time: "⏰: 14:00 - 20:00 น.",
       location: "📌: LIDO CONNECT HALL 2",
-      price: 2500
+      price: 2500,
     },
     {
       image: c10Image,
@@ -254,7 +268,7 @@ const Concert: React.FC = () => {
       date: "🗓️: วันเสาร์ที่ 19 ตุลาคม 2567",
       time: "⏰: 18:00 น.",
       location: "📌: อิมแพ็ค อารีน่า เมืองทองธานี",
-      price: 4500
+      price: 4500,
     },
   ];
   const interConcerts = [
@@ -264,7 +278,7 @@ const Concert: React.FC = () => {
       date: "🗓️: 7-8 ธันวาคม 2567",
       time: "⏰: 14:00 - 23:59 น.",
       location: "📌: Diamond Beach (Longlay Beach)",
-      price: 5500
+      price: 5500,
     },
     {
       image: c11Image,
@@ -272,7 +286,7 @@ const Concert: React.FC = () => {
       date: "🗓️:  2 พฤศจิกายน 2567",
       time: "⏰: 19:00 น.",
       location: "📌: ยูโอบี ไลฟ์, เอ็มสเฟียร์",
-      price: 2500
+      price: 2500,
     },
   ];
 
@@ -289,7 +303,12 @@ const Concert: React.FC = () => {
       ? interConcerts
       : [];
 
+useEffect(() =>{
+
+},[dataconcert])
   return (
+    <>
+    {/* <ConcertDetailPage data={dataconcert}/> */}
     <Box
       p={2}
       mb={8}
@@ -409,7 +428,7 @@ const Concert: React.FC = () => {
         mb={2}
         mt={5}
       >
-        <Link to="/concert-bus">
+        <Link to="/concert/bus">
           {/* Link to Concert 1 */}
           <Box textAlign="center">
             <Box
@@ -435,7 +454,7 @@ const Concert: React.FC = () => {
           </Box>
         </Link>
 
-        <Link to="/concert-got7">
+        <Link to="/concert/got7">
           {/* Link to Concert 2 */}
           <Box textAlign="center">
             <Box
@@ -461,7 +480,7 @@ const Concert: React.FC = () => {
           </Box>
         </Link>
 
-        <Link to="/concert-hypen">
+        <Link to="/concert/hypen">
           {/* Link to Concert 3 */}
           <Box textAlign="center">
             <Box
@@ -487,7 +506,7 @@ const Concert: React.FC = () => {
           </Box>
         </Link>
 
-        <Link to="/concert-pixxie">
+        <Link to="/concert/pixxie">
           {/* Link to Concert 4 */}
           <Box textAlign="center">
             <Box
@@ -513,7 +532,7 @@ const Concert: React.FC = () => {
           </Box>
         </Link>
 
-        <Link to="/concert-lykn">
+        <Link to="/concert/lykn">
           {/* Link to Concert 5 */}
           <Box textAlign="center">
             <Box
@@ -641,7 +660,7 @@ const Concert: React.FC = () => {
         display="flex"
         flexWrap="wrap"
         marginTop={-5}
-        justifyContent="flex-start" 
+        justifyContent="flex-start"
         gap={2}
         p={5}
       >
@@ -683,7 +702,7 @@ const Concert: React.FC = () => {
                 {event.location}
               </Typography>
               <Button
-               onClick={() => handleBuyTicket(event)}
+                onClick={() => handleBuyTicket(event)}
                 variant="contained"
                 sx={{
                   marginTop: 2,
@@ -706,6 +725,7 @@ const Concert: React.FC = () => {
         ))}
       </Box>
     </Box>
+    </>
   );
 };
 

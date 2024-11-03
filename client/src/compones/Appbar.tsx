@@ -6,6 +6,7 @@ import {
   Button,
   Container,
   IconButton,
+  Link,
   Menu,
   MenuItem,
   Toolbar,
@@ -21,6 +22,8 @@ import Sport from "../views/User/Sport";
 import Promotion from "../views/User/Promotion";
 import Product from "../views/User/Product";
 import Information from "../views/User/Information";
+import logo from '../assets/logo/pillars.png'; 
+import { red } from "@mui/material/colors";
 
 const pages = ["Concert", "Sport", "Promotion", "Product", "Information"];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
@@ -52,6 +55,7 @@ const AppBarT: React.FunctionComponent = () => {
 
   return (
     <>
+ 
     {/* Scrolling Text with MUI components */}
     <Box 
       component="div" 
@@ -98,11 +102,22 @@ const AppBarT: React.FunctionComponent = () => {
       </Typography>
     </Box>
 
+    
 
-      <AppBar position="fixed">
+      <AppBar position="fixed"  sx={{ background: 'linear-gradient(to right, #D8BFD8, #FFEBCD) '}}>
         <Container maxWidth="xl">
           <Toolbar disableGutters>
-            <MovieIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
+          <Box
+                component="img"
+                src= {logo}
+                alt="Logo"
+                sx={{
+                    display: { xs: "none", md: "flex" },
+                    mr: 1,
+                    width: 30,  // Adjust the width to match the size of your icon
+                    height: 30,  // Adjust the height to match the size of your icon
+                }}
+            />
             <Typography
               variant="h6"
               noWrap
@@ -115,14 +130,14 @@ const AppBarT: React.FunctionComponent = () => {
                 fontFamily: "monospace",
                 fontWeight: 700,
                 letterSpacing: ".3rem",
-                color: "inherit",
+                color: "black",
                 textDecoration: "none",
               }}
             >
-              LOGO
+              INTERGETHER
             </Typography>
 
-            <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
+            <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" }}}>
               <IconButton
                 size="large"
                 aria-label="open menu"
@@ -147,7 +162,7 @@ const AppBarT: React.FunctionComponent = () => {
                 }}
                 open={Boolean(anchorElNav)}
                 onClose={handleCloseNavMenu}
-                sx={{ display: { xs: "block", md: "none" } }}
+                sx={{ display: { xs: "block", md: "none" }  }}
               >
                 {pages.map((page) => (
                   <MenuItem
@@ -168,7 +183,7 @@ const AppBarT: React.FunctionComponent = () => {
                 <Button
                   key={page}
                   onClick={() => setActivePage(page)}
-                  sx={{ my: 2, color: "white", display: "block" }}
+                  sx={{ my: 2, color: "#8B0000", display: "block",fontSize: "16px", fontWeight:"bold"}}
                 >
                   {page}
                 </Button>
@@ -216,8 +231,12 @@ const AppBarT: React.FunctionComponent = () => {
   {activePage === "Product" && <Product />}
   {activePage === "Information" && <Information />}
 </Box>
+
+
     </>
+    
   );
+  
 };
 
 export default AppBarT;

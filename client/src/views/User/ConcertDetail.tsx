@@ -1,10 +1,11 @@
-import React from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useLocation, useParams } from 'react-router-dom';
 import { Box, Typography, Button } from '@mui/material';
 
 const ConcertDetail: React.FC = () => {
   const location = useLocation();
   const concert = location.state; // รับข้อมูลจากหน้าเดิมที่ถูกส่งมา
+  const {id} = useParams<{id:string}>()
 
   return (
     <Box

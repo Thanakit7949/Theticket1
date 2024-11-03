@@ -1,0 +1,76 @@
+ <div
+              style={
+                resolution.width > 1025
+                  ? {
+                      padding: "10px 30px",
+                      height: "calc(100% - 20px)",
+                      overflowY: "auto",
+                    }
+                  : {
+                      padding: "20px 10px",
+                      height: "calc(100% - 20px)",
+                      overflowY: "auto",
+                    }
+              }
+            >
+              <div style={{ height: "100%" }}>{children}</div>
+            </div>
+
+               <div
+            style={
+              resolution.width < 769
+                ? { height: "calc(100vh - 100px)", background: "#F5F8FA" }
+                : { height: "calc(100vh - 70px)", background: "#F5F8FA" }
+            }
+          >
+            <div
+              style={
+                resolution.width > 1025
+                  ? {
+                      padding: "10px 30px",
+                      height: "calc(100% - 20px)",
+                      overflowY: "auto",
+                    }
+                  : {
+                      padding: "20px 10px",
+                      height: "calc(100% - 20px)",
+                      overflowY: "auto",
+                    }
+              }
+            >
+            
+            </div>
+          </div>
+
+            <div
+            style={
+              resolution.width < 769
+                ? { height: "calc(100vh - 100px)", background: "#F5F8FA" }
+                : { height: "calc(100vh - 70px)", background: "#F5F8FA" }
+            }
+          >
+            <div
+              style={
+                resolution.width > 1025
+                  ? {
+                      padding: "10px 30px",
+                      height: "calc(100% - 20px)",
+                      overflowY: "auto",
+                    }
+                  : {
+                      padding: "20px 10px",
+                      height: "calc(100% - 20px)",
+                      overflowY: "auto",
+                    }
+              }
+            >
+              <div style={{ height: "100%" }}>{children}</div>
+            </div>
+          </div>
+
+
+           <TopBar
+          DrawerHeader={DrawerHeader}
+          open={open}
+          handleDrawerClose={handleDrawerClose}
+        />

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';  // ใช้ useNavigate แทน useHistory
+import { Navigate, useNavigate } from 'react-router-dom';  // ใช้ useNavigate แทน useHistory
 import { TextField, Button, Typography, Box } from '@mui/material';
 
 export interface ILoginPagePageProps {}
@@ -26,10 +26,13 @@ const LoginPage: React.FunctionComponent<ILoginPagePageProps> = (props) => {
       console.log(data)
       setDataDE(data)
       if (data.role === 'admin') {
+      
         navigate('/home-admin');
 
       } else if (data.role === 'user') {
         navigate('/home-user');
+        <Navigate to='/home-user' />
+        console.log("/home-user");
       } else {
         setMessage('Unknown role');
       }
