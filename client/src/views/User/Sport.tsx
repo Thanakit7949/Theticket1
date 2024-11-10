@@ -20,17 +20,18 @@ import s6Image from "/src/assets/sport/all/s6.png";
 import s7Image from "/src/assets/sport/all/s7.png";
 import { useNavigate } from "react-router-dom";
 
+
 const Sport: React.FC = () => {
   const navigate = useNavigate();
-
-  const handleBuyTicket = (sport: {
+  const handleBuyTicket = (item: {
     img: string;
     title: string;
     date: string;
     time: string;
     location: string;
+    price:number
   }) => {
-    navigate("/sport-detail", { state: sport });
+    navigate("sport-detail", { state: item });
   };
 
   const [isHovered, setIsHovered] = useState(false);
@@ -39,10 +40,10 @@ const Sport: React.FC = () => {
   const images = [Sport6, Sport7, Sport8, Sport9];
 
   const categories = [
-    { label: "ทั้งหมด", color: "#4fc3f7" }, // Highlighted button color
-    { label: "BOXING", color: "#4fc3f7" },
-    { label: "FOOTBALL", color: "#4fc3f7" },
-    { label: "OTHER", color: "#4fc3f7" },
+    { label: "ทั้งหมด", color: "#FF4081" }, // Highlighted button color
+    { label: "BOXING", color: "#FF4081" },
+    { label: "FOOTBALL", color: "#FF4081" },
+    { label: "OTHER", color: "#FF4081" },
   ];
 
   // ข้อมูลกีฬา
@@ -89,7 +90,7 @@ const Sport: React.FC = () => {
     },
     {
       img: s6Image,
-      title: "❤️‍🔥: ฟุตบอลชิงถ้วยพระราชทาน คิงส์คัพ ",
+      title: "❤️‍🔥: ฟุตบอลชิงถ้วยพระราชทาน คิงส์คัพ Champions ",
       date: "🗓️: วันศุกร์ที่ 11 ตุลาคม 2567",
       time: "⏰: 16.30 น.",
       location: "📌: สนามกีฬาติณสูลานนท์",
@@ -151,7 +152,7 @@ const Sport: React.FC = () => {
   const otherSports = [
     {
       img: s6Image,
-      title: "❤️‍🔥: ฟุตบอลชิงถ้วยพระราชทาน คิงส์คัพ",
+      title: "❤️‍🔥: ฟุตบอลชิงถ้วยพระราชทาน คิงส์คัพ Champions",
       date: "🗓️: 11 ตุลาคม 2567",
       time: "⏰: 16.30 น.",
       location: "📌: สนามกีฬาติณสูลานนท์",
@@ -190,13 +191,13 @@ const Sport: React.FC = () => {
       borderColor="gray.700"
       width={1140}
       sx={{
-        background: "linear-gradient(135deg,#e0f7fa 30%, #80deea 100%)",
+        background: "linear-gradient(135deg, #EECDA3 0%, #EF629F 100%);",
       }}
     >
       {/* ส่วนที่ 1 */}
       <Typography
         variant="h2"
-        color="#00bcd4"
+        color="#FF4081"
         fontWeight="bold"
         gutterBottom
         sx={{ position: "relative" }}
@@ -225,7 +226,7 @@ const Sport: React.FC = () => {
       {/* ส่วนที่ 2 */}
       <Typography
         variant="h4"
-        color="#00bcd4"
+        color="#FF4081"
         fontWeight="bold"
         marginTop={5}
         gutterBottom
@@ -416,7 +417,7 @@ const Sport: React.FC = () => {
       {/* ส่วนที่ 3 */}
       <Typography
         variant="h4"
-        color="#00bcd4"
+       color="#FF4081"
         fontWeight="bold"
         marginTop={5}
         gutterBottom
@@ -523,7 +524,8 @@ const Sport: React.FC = () => {
               },
               border:
                 selected === category.label
-                  ? "1px solid #4fc3f7"
+                 
+                  ? "1px solid #FF4081"
                   : "1px solid #e0e0e0",
               paddingX: 2,
             }}
@@ -549,12 +551,12 @@ const Sport: React.FC = () => {
               border: "2px solid white",
               borderRadius: 2,
               padding: 2,
-              flexBasis: "calc(33.33% - 50px)", // ใช้ 33.33% ของความกว้างลดด้วยระยะห่าง
+              flexBasis: "calc(36.33% - 50px)", // ใช้ 33.33% ของความกว้างลดด้วยระยะห่าง
               margin: "10px 0", // เพิ่ม margin เพื่อเว้นระยะห่างระหว่างกรอบ
               transition: "transform 0.3s",
               "&:hover": {
                 transform: "scale(1.05)",
-                backgroundColor: "#4fc3f7",
+                backgroundColor: "#fce4ec",
                 boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)",
               },
             }}
@@ -571,7 +573,7 @@ const Sport: React.FC = () => {
               <Typography fontSize="14px" color="#00bc20" fontWeight="bold">
                 {event.date}
               </Typography>
-              <Typography fontSize="14px" color="#ec407a" fontWeight="bold">
+              <Typography fontSize="14px" color="#4fc3f7" fontWeight="bold">
                 {event.time}
               </Typography>
               <Typography fontSize="14px" color="#1e4db1" fontWeight="bold">

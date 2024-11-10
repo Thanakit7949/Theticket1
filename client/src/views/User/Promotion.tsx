@@ -393,9 +393,18 @@ const Promotion: React.FC = () => {
       borderColor="gray.700"
       width={1140}
       sx={{
-        background: "linear-gradient(135deg,#fce4ec 30%, #f8bbd0 100%)",
+        background: "linear-gradient(135deg, #EECDA3 0%, #EF629F 100%);",
       }}
     >
+            <Typography
+        variant="h4"
+        color="#ad054b"
+        fontWeight="bold"
+        gutterBottom
+        sx={{ position: "relative" }}
+      >
+         PROMOTION 
+      </Typography>
       <Typography
         variant="h5"
         color="red"
@@ -632,7 +641,7 @@ const Promotion: React.FC = () => {
               fontSize: "18px",
               marginTop: "52px",
               alignSelf: "flex-start",
-              marginLeft: "150px",
+              marginLeft: "140px",
               "&:hover": {
                 backgroundColor: isUsed ? "#4aabc3" : "#ad054b",
               },
@@ -682,7 +691,7 @@ const Promotion: React.FC = () => {
           marginTop: "5px",
           display: "flex",
           alignItems: "center",
-          width: "95%",
+          width: "98%",
           maxWidth: "120%",
           marginLeft: "17px",
           backgroundColor: "white",
@@ -722,7 +731,7 @@ const Promotion: React.FC = () => {
         cursor: "pointer",
         fontSize: "18px",
         alignSelf: "flex-start",
-        marginLeft: "440px",
+        marginLeft: "420px",
       }}
     >
       เงื่อนไขคูปอง
@@ -842,7 +851,7 @@ const Promotion: React.FC = () => {
                       ? "#4aabc3"
                       : "#fc0e71",
                     color: "white",
-                    padding: "5px 40px",
+                    padding: "5px 30px",
                     borderRadius: "35px",
                     cursor: "pointer",
                     fontSize: "18px",
