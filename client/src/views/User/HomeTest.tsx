@@ -16,7 +16,19 @@ import 'swiper/swiper-bundle.css';
 import HTMLFlipBook from 'react-pageflip';
 
 
- 
+ // // Sample Data for Sports Events
+// const sportsMock = [
+//     { id: 1, name: 'Football Match', date: '2024-11-10T17:00:00.000Z', location: 'Stadium A', image: 'https://via.placeholder.com/350x150' },
+//     { id: 2, name: 'Basketball Game', date: '2024-11-20T17:00:00.000Z', location: 'Arena B', image: 'https://via.placeholder.com/350x150' },
+//     { id: 3, name: 'Tennis Tournament', date: '2024-12-05T17:00:00.000Z', location: 'Court C', image: 'https://via.placeholder.com/350x150' }
+// ];
+
+// const upcomingSportsEvents = [
+//     { id: 1, name: 'Football Match', image: 'https://via.placeholder.com/800x300?text=Football+Match' },
+//     { id: 2, name: 'Basketball Game', image: 'https://via.placeholder.com/800x300?text=Basketball+Game' },
+//     { id: 3, name: 'Tennis Tournament', image: 'https://via.placeholder.com/800x300?text=Tennis+Tournament' },
+// ];
+
 
 
 export interface IHomeTestProps {}
@@ -32,32 +44,22 @@ export interface IConcert {
     created_at: string;
     concert_id: number;
 }
-export interface ISportEvent {
+export interface ISports {
     id: number;
     name: string;
     date: string;
+    price: string;
+    available_seats: number;
     location: string;
     image: string;
+    sport_id: number;
 }
-
-// Sample Data for Sports Events
-const sportsMock = [
-    { id: 1, name: 'Football Match', date: '2024-11-10T17:00:00.000Z', location: 'Stadium A', image: 'https://via.placeholder.com/350x150' },
-    { id: 2, name: 'Basketball Game', date: '2024-11-20T17:00:00.000Z', location: 'Arena B', image: 'https://via.placeholder.com/350x150' },
-    { id: 3, name: 'Tennis Tournament', date: '2024-12-05T17:00:00.000Z', location: 'Court C', image: 'https://via.placeholder.com/350x150' }
-];
-
-const upcomingSportsEvents = [
-    { id: 1, name: 'Football Match', image: 'https://via.placeholder.com/800x300?text=Football+Match' },
-    { id: 2, name: 'Basketball Game', image: 'https://via.placeholder.com/800x300?text=Basketball+Game' },
-    { id: 3, name: 'Tennis Tournament', image: 'https://via.placeholder.com/800x300?text=Tennis+Tournament' },
-];
 
 
 
 const HomeTest: React.FunctionComponent<IHomeTestProps> = props => {
     const [dataconcerts, setDataconcerts] = useState<IConcert[]>([]);
-    const [datasportEvents, setDatasportEvents] = useState<ISportEvent[]>(sportsMock); // Mock data for sports events
+    const [dataSports, setDataSports] = useState<ISports[]>([]); // Mock data for sports events
 
     const fetchConcerts = async () => {
         try {
@@ -77,6 +79,23 @@ const HomeTest: React.FunctionComponent<IHomeTestProps> = props => {
     const openModal = (event: any) => {
         console.log(event);
     };
+
+    const fetchSports = async () => {
+      try {
+          const response = await fetch('http://localhost:5000/getAllSports');
+          const data: ISports[] = await response.json();
+          setDataSports(data);
+          console.log(data);
+      } catch (error) {
+          console.error('Error fetching events:', error);
+      }
+  };
+  
+  useEffect(() => {
+      fetchSports();
+  }, []);
+
+  
 
     return (
         <>
@@ -242,34 +261,58 @@ sx={{
     <Box sx={{ position: 'absolute', right: 0, top: -40, fontSize: '4rem', color: 'pink' }}>⚽</Box>
 </Typography>
 
-    <Box display="flex" overflow="auto" gap={2} p={2}>
-        {datasportEvents.map((event) => (
-            <Card
-                key={event.id}
-                sx={{
-                    bgcolor: "white",
-                    color: "black",
-                    p: 2,
-                    borderRadius: 1,
-                    boxShadow: 3,
-                    transition: "transform 0.3s ease-in-out",
-                    '&:hover': { transform: "scale(1.05)", boxShadow: 6 },
-                    cursor: "pointer",
-                    minWidth: 350,
-                    height: 400,
-                }}
-                onClick={() => openModal(event)}
+<Box display="flex" overflow="auto" gap={2} p={2}>
+    {dataSports.map((sport) => (
+        <Card
+            key={sport.id}
+            sx={{
+                bgcolor: "white",
+                color: "black",
+                p: 2,
+                borderRadius: 2,
+                boxShadow: 3,
+                transition: "transform 0.3s ease-in-out",
+                '&:hover': { transform: "scale(1.05)", boxShadow: 6 },
+                cursor: "pointer",
+                minWidth: 350,
+                height: 400,
+            }}
+            onClick={() => openModal(sport)}
+        >
+            <CardMedia
+                component="img"
+                height="150"
+                image={sport.image}
+                alt={sport.name}
+                sx={{ borderRadius: 2, mb: 2 }}
+            />
+            <Typography variant="h5" fontWeight="bold" color="blue.700" gutterBottom>
+                {sport.name}
+            </Typography>
+            <Typography variant="body1" color="text.secondary" gutterBottom>
+                {dayjs(sport.date).format('DD/MM/YY')}
+            </Typography>
+            <Box display="flex" justifyContent="space-between" mb={2}>
+                <Typography variant="body2" color="gray">
+                    {sport.price ? `${sport.price} THB` : "Free"}
+                </Typography>
+                <Typography variant="body2" color="gray">
+                    {sport.location}
+                </Typography>
+            </Box>
+
+            <Button
+                component={Link}
+                to={`/booking/${sport.id}`}
+                variant="contained"
+                color="primary"
+                sx={{ mt: 'auto', bgcolor: '#1976d2', '&:hover': { bgcolor: '#1565c0' } }}
             >
-                <CardMedia
-                    component="img"
-                    height="100%" // Make it responsive within the card
-                    image={event.image}
-                    alt={event.name}
-                    sx={{ borderRadius: 2 }}
-                />
-            </Card>
-        ))}
-    </Box>
+                Book Now
+            </Button>
+        </Card>
+    ))}
+</Box>
     <Box textAlign="center" mt={3}>
     <Button
         component={Link}
@@ -308,10 +351,10 @@ sx={{
                     pagination={{ clickable: true }}
                     navigation
                 >
-                    {upcomingSportsEvents.map((event) => (
-                        <SwiperSlide key={event.id}>
+                    {dataSports.map((sport) => (
+                        <SwiperSlide key={sport.id}>
                             <Card sx={{ borderRadius: 1, overflow: 'hidden' }}>
-                                <CardMedia component="img" height="300" image={bas} alt={event.name} />
+                                <CardMedia component="img" height="300" image={bas} alt={sport.name} />
                             </Card>
                            
                            
@@ -1200,5 +1243,6 @@ sx={{
         </>
     );
 };
+
 
 export default HomeTest;
