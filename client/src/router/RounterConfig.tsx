@@ -19,6 +19,7 @@ import StdPage from "../views/User/StdPage"
 import Product from "../views/User/Product"
 import ProductDetail from "../views/User/ProductDetail"
 import Payment from "../views/User/Payment"
+import PaymentPage from "../views/User/PaymentPage"
 
 export const routesConfig: {
     publicRoute: MainRouter[]
@@ -221,14 +222,14 @@ export const routesConfig: {
             children: [],
         },
 
-        // {
-        //     path: "/payment",
-        //     name: "",
-        //     header: "",
-        //     component: PaymentPage ,
-        //     icon: null,
-        //     children: [],
-        // },
+        {
+            path: "/payment",
+            name: "",
+            header: "",
+            component: PaymentPage,
+            icon: null,
+            children: [],
+        },
 
         
     ],
