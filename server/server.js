@@ -46,13 +46,14 @@ app.post('/login', (req, res) => {
 });
 
 app.post('/register', (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, phone, firstName, lastName, birthdate, gender } = req.body;
 
-  if (!email || !password) {
+  // ตรวจสอบว่าฟิลด์ทั้งหมดไม่เป็นค่าว่าง
+  if (!email || !password || !phone || !firstName || !lastName || !birthdate || !gender) {
     return res.status(400).json({ message: 'All fields are required' });
   }
 
-  // ตรวจสอบว่ามี email ซ้ำหรือไม่
+  // ตรวจสอบอีเมลซ้ำและบันทึกข้อมูล
   const checkUserQuery = 'SELECT * FROM users WHERE email = ?';
   db.query(checkUserQuery, [email], (err, result) => {
     if (err) {
@@ -62,9 +63,8 @@ app.post('/register', (req, res) => {
       return res.status(409).json({ message: 'Email already exists' });
     }
 
-    // เพิ่มผู้ใช้ใหม่หากไม่มี email ซ้ำ
-    const query = 'INSERT INTO users (email, password) VALUES (?, ?)';
-    db.query(query, [email, password], (err, result) => {
+    const query = 'INSERT INTO users (email, password, phone, first_name, last_name, birth_date, gender) VALUES (?, ?, ?, ?, ?, ?, ?)';
+    db.query(query, [email, password, phone, firstName, lastName, birthdate, gender], (err, result) => {
       if (err) {
         return res.status(500).json({ message: 'Database error', error: err.message });
       }

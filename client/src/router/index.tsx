@@ -24,6 +24,7 @@ import ConcertPixxie from  "../views/User/detailconcert/ConcertPixxie";
 import ConcertLykn from  "../views/User/detailconcert/ConcertLykn";
 import ConcertDetail from "../views/User/ConcertDetail";
 import SportDetail from "../views/User/SportDetail";
+import RegisterPage from "../views/Register";
 
 const Router: React.FC = () => {
   const [publicRouteElements, setPublicRouteElements] = useState<any[]>([])
@@ -38,7 +39,7 @@ const Router: React.FC = () => {
       const path = window.location.pathname
 
       if (path === "/") {
-          window.location.href = "/home-user"
+          window.location.href = "/login"
       }
   }, [])
 
@@ -152,6 +153,7 @@ const Router: React.FC = () => {
     <BrowserRouter>
     <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
         
         <Route path="/" element={
             <Home routerHeader={{
