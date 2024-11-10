@@ -1,230 +1,185 @@
-import React from "react";
-import {
-  Box,
-  Checkbox,
-  FormControlLabel,
-  FormGroup,
-  TextField,
-  Typography,
-} from "@mui/material";
-import { Link, useLocation } from "react-router-dom";
+import React, { useState } from 'react';
+import { Box, Typography, TextField, Button, MenuItem, FormControl, Select, InputLabel, Snackbar } from '@mui/material';
+import { useLocation } from 'react-router-dom';
+import MuiAlert from '@mui/material/Alert';
 
-const Payment: React.FC = () => {
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
+const PaymentPage = () => {
   const location = useLocation();
-  const { price, label, selectedSeats } = location.state || {}; // ค่าที่ส่งมาจากหน้า Concert
+  const { product, quantity } = location.state || {};
 
-  // แปลงราคาเป็นตัวเลข (เอาเฉพาะตัวเลขออกจากข้อความ)
-  const numericPrice = price ? parseFloat(price.replace(/[^\d.-]/g, "")) : 0;
+  const [name, setName] = useState('');
+  const [surname, setSurname] = useState('');
+  const [address, setAddress] = useState('');
+  const [phone, setPhone] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('Credit Card');
+  const [slip, setSlip] = useState(null);
+  const [cardNumber, setCardNumber] = useState('');
+  const [cardHolder, setCardHolder] = useState('');
+  const [bankName, setBankName] = useState('');
+  const [transactionReference, setTransactionReference] = useState('');
+  const [open, setOpen] = useState(false);
+  const [orderNumber, setOrderNumber] = useState('');
+
+  const handleSubmit = () => {
+    // Validate all fields
+    if (!name || !surname || !address || !phone || !paymentMethod) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+
+    // Generate a random order number
+    const generatedOrderNumber = Math.floor(Math.random() * 1000000).toString();
+    setOrderNumber(generatedOrderNumber);
+    setOpen(true);
+
+    // Handle the form submission (log the details)
+    console.log({
+      name,
+      surname,
+      address,
+      phone,
+      paymentMethod,
+      slip,
+      cardNumber,
+      cardHolder,
+      bankName,
+      transactionReference,
+      orderNumber: generatedOrderNumber,
+    });
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  if (!product) return <Typography>Loading...</Typography>;
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "row",
-        alignItems: "flex-start",
-        background: "linear-gradient(135deg, #EECDA3 0%, #EF629F 100%);",
-        minHeight: "100vh",
-        padding: "20px",
-        width: "1150px",
-        maxWidth: "none",
-      }}
-    >
-      {/* Sidebar ซ้าย */}
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-start",
-          width: "740px",
-          mr: 2,
-        }}
-      >
-        <Typography
-          variant="h5"
-          sx={{ fontWeight: "bold", mb: 2, textAlign: "left" }}
+    <Box sx={{ padding: 4, maxWidth: '500px', margin: 'auto', borderRadius: 2, boxShadow: 3, bgcolor: 'background.paper' }}>
+      <Typography variant="h4" sx={{ marginBottom: 2 }}>Payment Details</Typography>
+
+      <Typography variant="h6">{product.name} x {quantity}</Typography>
+      <Typography variant="h6">Total Price: {(product.price * quantity).toLocaleString()} ฿</Typography>
+
+      <TextField
+        fullWidth
+        label="Name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        sx={{ marginY: 2 }}
+        required
+      />
+      <TextField
+        fullWidth
+        label="Surname"
+        value={surname}
+        onChange={(e) => setSurname(e.target.value)}
+        sx={{ marginY: 2 }}
+        required
+      />
+      <TextField
+        fullWidth
+        label="Address"
+        value={address}
+        onChange={(e) => setAddress(e.target.value)}
+        sx={{ marginY: 2 }}
+        required
+      />
+      <TextField
+        fullWidth
+        label="Phone Number"
+        value={phone}
+        onChange={(e) => setPhone(e.target.value)}
+        sx={{ marginY: 2 }}
+        required
+      />
+
+      <FormControl fullWidth sx={{ marginY: 2 }}>
+        <InputLabel>Payment Method</InputLabel>
+        <Select
+          value={paymentMethod}
+          onChange={(e) => setPaymentMethod(e.target.value)}
         >
-          ● ข้อมูลผู้ซื้อบัตร
-        </Typography>
-        <Box
-          sx={{
-            padding: "20px",
-            backgroundColor: "#f5f5f5",
-            borderRadius: "8px",
-            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
-            display: "flex",
-            flexWrap: "wrap",
-            gap: "16px",
-          }}
-        >
-          <Box sx={{ flex: "1 1 45%" }}>
-            <TextField
-              fullWidth
-              variant="outlined"
-              label="ชื่อ"
-              defaultValue="สวย"
-              InputProps={{
-                style: { borderRadius: "20px", color: "black" }, // ขอบมนและสีข้อความสีขาว
-              }}
-              InputLabelProps={{
-                style: { color: "#a0a0a0" }, // สีของป้ายข้อความ
-              }}
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": {
-                    borderRadius: "20px",
-                  },
-                },
-              }}
-            />
-          </Box>
-          <Box sx={{ flex: "1 1 45%" }}>
-            <TextField
-              fullWidth
-              variant="outlined"
-              label="นามสกุล"
-              defaultValue="งาน"
-              InputProps={{
-                style: { borderRadius: "20px", color: "black" },
-              }}
-              InputLabelProps={{
-                style: { color: "#a0a0a0" },
-              }}
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": {
-                    borderRadius: "20px",
-                  },
-                },
-              }}
-            />
-          </Box>
-          <Box sx={{ flex: "1 1 45%" }}>
-            <TextField
-              fullWidth
-              variant="outlined"
-              label="เบอร์โทรศัพท์"
-              defaultValue="0926239547"
-              InputProps={{
-                style: { borderRadius: "20px", color: "black" },
-              }}
-              InputLabelProps={{
-                style: { color: "#a0a0a0" },
-              }}
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": {
-                    borderRadius: "20px",
-                  },
-                },
-              }}
-            />
-          </Box>
-          <Box sx={{ flex: "1 1 45%" }}>
-            <TextField
-              fullWidth
-              variant="outlined"
-              label="อีเมล"
-              defaultValue="onanongmaenthim@gmail.com"
-              InputProps={{
-                style: { borderRadius: "20px", color: "black" },
-              }}
-              InputLabelProps={{
-                style: { color: "#a0a0a0" },
-              }}
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": {
-                    borderRadius: "20px",
-                  },
-                },
-              }}
-            />
-          </Box>
-        </Box>
-        <Typography
-          variant="h5"
-          sx={{ fontWeight: "bold", textAlign: "left", mt: 2 }}
-        >
-          ● บริการคุ้มครองตั๋วการแสดง
-        </Typography>
-        <FormGroup>
-          <FormControlLabel
-            control={<Checkbox defaultChecked />}
-            label={
-              <Typography>
-                ต้องการรับ{" "}
-                <Link
-                  to="/concert"
-                  style={{ textDecoration: "underline", color: "blue" }}
-                >
-                  บริการคุ้มครองตั๋วการแสดง
-                </Link>
-              </Typography>
-            }
+          <MenuItem value="Credit Card">Credit Card</MenuItem>
+          <MenuItem value="Bank Transfer">Bank Transfer</MenuItem>
+        </Select>
+      </FormControl>
+
+      {paymentMethod === 'Credit Card' && (
+        <Box>
+          <TextField
+            fullWidth
+            label="Card Number"
+            value={cardNumber}
+            onChange={(e) => setCardNumber(e.target.value)}
+            sx={{ marginY: 2 }}
+            required
           />
-        </FormGroup>
-        <Typography sx={{ mt: -1, ml: 3.8 }}>
-          (ชำระค่าเบี้ยคุ้มครองฯ 7% ของราคาบัตร)
-        </Typography>
-      </Box>
+          <TextField
+            fullWidth
+            label="Card Holder Name"
+            value={cardHolder}
+            onChange={(e) => setCardHolder(e.target.value)}
+            sx={{ marginY: 2 }}
+            required
+          />
+        </Box>
+      )}
 
-      {/* ข้อมูลการชำระเงิน Sidebar ขวา*/}
-      <Box
-        sx={{
-          width: "505px",
-          maxWidth: "none",
-          padding: "20px",
-          borderRadius: "20px",
-          backgroundColor: "#FFF",
-          boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "left",
-        }}
+      {paymentMethod === 'Bank Transfer' && (
+        <Box>
+          <FormControl fullWidth sx={{ marginY: 2 }}>
+            <InputLabel>Bank Name</InputLabel>
+            <Select
+              value={bankName}
+              onChange={(e) => setBankName(e.target.value)}
+              required
+            >
+              <MenuItem value="Bank of America">Bank of America</MenuItem>
+              <MenuItem value="Chase Bank">Chase Bank</MenuItem>
+              <MenuItem value="Wells Fargo">Wells Fargo</MenuItem>
+            </Select>
+          </FormControl>
+
+          <TextField
+            fullWidth
+            label="Transaction Reference Number"
+            value={transactionReference}
+            onChange={(e) => setTransactionReference(e.target.value)}
+            sx={{ marginY: 2 }}
+            required
+          />
+
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => setSlip(e.target.files[0])}
+            style={{ marginY: 2 }}
+          />
+          <Typography variant="body2" color="text.secondary">Upload your transfer slip</Typography>
+        </Box>
+      )}
+
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleSubmit}
+        sx={{ marginTop: 2 }}
       >
-        <Typography
-          variant="h5"
-          sx={{ fontWeight: "bold", mb: 2, textAlign: "left" }}
-        >
-          สรุปรายการสั่งซื้อ
-        </Typography>
+        Confirm Payment
+      </Button>
 
-        {/* แสดงราคารวม */}
-        <Typography variant="h6" sx={{ mb: 1, textAlign: "left" }}>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              width: "100%",
-            }}
-          >
-            <span>ราคารวม:</span>
-            <span>
-              {selectedSeats.length > 0
-                ? `฿${numericPrice * selectedSeats.length}` // คูณจำนวนที่นั่งกับราคา
-                : "กรุณาเลือกที่นั่ง"}
-            </span>
-          </Box>
-        </Typography>
-
-        <Typography variant="h6" sx={{ mb: 1, textAlign: "left" }}>
-          โซนที่นั่ง: {label}
-        </Typography>
-
-        <Typography variant="h6" sx={{ mb: 2, textAlign: "left" }}>
-          ที่นั่งที่เลือก:{" "}
-          {selectedSeats.length > 0
-            ? selectedSeats
-                .map(
-                  (seat: { row: number; col: number }) =>
-                    `${label}${seat.row}-${seat.col}`
-                )
-                .join(" / ") // Joining the seats with a separator (e.g., " / ")
-            : "ยังไม่ได้เลือกที่นั่ง"}
-        </Typography>
-      </Box>
+      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="success">
+          คุณทำการสั่งซื้อเรียบร้อยแล้ว! หมายเลขสั่งซื้อของคุณคือ: {orderNumber}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
 
-export default Payment;
+export default PaymentPage;

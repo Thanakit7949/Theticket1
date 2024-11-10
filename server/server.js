@@ -11,11 +11,11 @@ const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: '',
-<<<<<<< HEAD
-  database: 'testtwo',
-=======
+<<<<<<<<< Temporary merge branch 1
   database: 'ticket_db',
->>>>>>> 2b09544c784214ce2b1d9f2ed87cc9058d89bd10
+=========
+  database: 'testtwo',
+>>>>>>>>> Temporary merge branch 2
 });
 
 db.connect((err) => {
