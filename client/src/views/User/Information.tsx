@@ -230,7 +230,7 @@ const Information = () => {
                                 className="card"
                                 sx={{
                                     padding: 4,
-                                    height: '250px',
+                                    height: '300px',
                                     border: '2px solid #81d4fa',
                                     borderRadius: 10,
                                     textAlign: 'center',
@@ -302,7 +302,7 @@ const Information = () => {
             component="div" 
             sx={{ 
                 position: "relative",
-                width: "93%", 
+                width: "100%", 
                 height: "90px",
                 overflow: "hidden", 
                 backgroundColor: "#B3E5FC", // ฟ้าพาสเทลอ่อน

@@ -16,7 +16,9 @@ import Promotion from "../views/User/Promotion"
 import SportDetail from "../views/User/SportDetail"
 import Stage from "../views/User/Stage"
 import StdPage from "../views/User/StdPage"
-import PaymentPage from "../views/User/PaymentPage"
+import Product from "../views/User/Product"
+import ProductDetail from "../views/User/ProductDetail"
+import Payment from "../views/User/Payment"
 
 export const routesConfig: {
     publicRoute: MainRouter[]
@@ -39,10 +41,10 @@ export const routesConfig: {
     ],
     privateRoute: [
         {
-            path: "/home-user",
+            path: "/home-test",
             name: "home",
             header: "home",
-            component: HomeUser,
+            component: HomeTest,
             icon: null,
             children: [],
         },
@@ -110,7 +112,7 @@ export const routesConfig: {
                             path: "payment",
                             name: "payment",
                             header: "payment",
-                            component: PaymentPage,
+                            component: Payment,
                             icon:null,
                             subpath: false,
                             children: [
@@ -176,8 +178,16 @@ export const routesConfig: {
             icon: null,
             children: [],
         },
+        // {
+        //     path: "/home-test",
+        //     name: "llll",
+        //     header: "tset2",
+        //     component: HomeTest,
+        //     icon: null,
+        //     children: [],
+        // },
         {
-            path: "/Information",
+            path: "/information",
             name: "Information",
             header: "Information",
             component: Information,
@@ -194,7 +204,33 @@ export const routesConfig: {
                 },
             ],
         },
-       
+        {
+            path: "/product",
+            name: "product",
+            header: "product",
+            component: Product,
+            icon: null,
+            children: [],
+        },
+        {
+            path: "/product/:id",
+            name: "",
+            header: "",
+            component: ProductDetail ,
+            icon: null,
+            children: [],
+        },
+
+        // {
+        //     path: "/payment",
+        //     name: "",
+        //     header: "",
+        //     component: PaymentPage ,
+        //     icon: null,
+        //     children: [],
+        // },
+
+        
     ],
 
 }
