@@ -213,9 +213,8 @@ function ConcertLykn() {
       </Typography>
 
       {/* เพิ่มกรอบที่มีข้อความ "กลับไป concert" */}
-      <Link to="/home-user" style={{ textDecoration: "none" }}>
+      <Link to="/concert" style={{ textDecoration: "none" }}>
         {" "}
-        {/* ลิงค์ไปที่ home-user */}
         <Box
           sx={{
             marginTop: 4,

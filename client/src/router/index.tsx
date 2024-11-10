@@ -1,16 +1,10 @@
 import React, { useEffect, useState } from "react"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import * as R from "ramda"
-import Dashboard from "../views/dashboard/DashBoard"
 import LoginPage from "../views/Login";
-import HomeAdmin from "../views/Admin/HomeAdmin";
+
 import HomeUser from "../views/User/HomeUser";
-import Concert from "../views/User/Concert";
-import Sport from "../views/User/Sport";
-import Promotion from "../views/User/Promotion";
-import Product from "../views/User/Product";
-import Information from "../views/User/Information";
-import Page1Page from "../views/User/Page1";
+
 import { routesConfig } from "./RounterConfig";
 import { MainRouter } from "../interface/Router.interface";
 import Home from "../views/Home"
@@ -24,6 +18,7 @@ import ConcertPixxie from  "../views/User/detailconcert/ConcertPixxie";
 import ConcertLykn from  "../views/User/detailconcert/ConcertLykn";
 import ConcertDetail from "../views/User/ConcertDetail";
 import SportDetail from "../views/User/SportDetail";
+import RegisterPage from "../views/Register";
 
 const Router: React.FC = () => {
   const [publicRouteElements, setPublicRouteElements] = useState<any[]>([])
@@ -38,7 +33,7 @@ const Router: React.FC = () => {
       const path = window.location.pathname
 
       if (path === "/") {
-          window.location.href = "/home-user"
+          window.location.href = "/login"
       }
   }, [])
 
@@ -152,6 +147,7 @@ const Router: React.FC = () => {
     <BrowserRouter>
     <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
         
         
         <Route path="/" element={

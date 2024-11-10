@@ -1,5 +1,5 @@
 import { MainRouter } from "../interface/Router.interface"
-import Dashboard from "../views/dashboard/DashBoard"
+//import Dashboard from "../views/dashboard/DashBoard"
 import Concert from "../views/User/Concert"
 import ConcertDetail from "../views/User/ConcertDetail"
 import ConcertBus from "../views/User/detailconcert/ConcertBus"
@@ -11,9 +11,15 @@ import HomeTest from "../views/User/HomeTest"
 import HomeUser from "../views/User/HomeUser"
 import Information from "../views/User/Information"
 import Page1Page from "../views/User/Page1"
-import PaymentPage from "../views/User/PaymentPage"
+import Sport from "../views/User/Sport"
+import Promotion from "../views/User/Promotion"
+import SportDetail from "../views/User/SportDetail"
+import Stage from "../views/User/Stage"
+import StdPage from "../views/User/StdPage"
 import Product from "../views/User/Product"
 import ProductDetail from "../views/User/ProductDetail"
+import Payment from "../views/User/Payment"
+import PaymentPage from "../views/User/PaymentPage"
 
 export const routesConfig: {
     publicRoute: MainRouter[]
@@ -96,15 +102,82 @@ export const routesConfig: {
                     children: [],
                 },
                 {
+                    path: "std-page",
+                    name: "std-page",
+                    header: "std-page",
+                    component: StdPage,
+                    icon:null,
+                    subpath: false,
+                    children: [
+                        {
+                            path: "payment",
+                            name: "payment",
+                            header: "payment",
+                            component: Payment,
+                            icon:null,
+                            subpath: false,
+                            children: [
+                              
+                            ],
+                        },
+                    ],
+                   },
+                {
                     path: "concert-detail",
                     name: "concert-detail",
                     header: "concert-detail",
                     component: ConcertDetail,
                     icon:null,
                     subpath: false,
+                    children: [
+                        {
+                            path: "stage",
+                            name: "stage",
+                            header: "stage",
+                            component: Stage,
+                            icon:null,
+                            subpath: false,
+                            children: [
+                              
+                            ],
+                        },
+                    ],
+                },
+            ],
+        },
+        {
+            path: "/sport",
+            name: "sport",
+            header: "sport",
+            component: Sport,
+            icon: null,
+            children: [
+                {
+                    path: "sport-detail",
+                    name: "sport-detail",
+                    header: "sport-detail",
+                    component: SportDetail,
+                    icon:null,
+                    subpath: false,
                     children: [],
                 },
             ],
+        },
+        {
+            path: "/promotion",
+            name: "promotion",
+            header: "promotion",
+            component: Promotion,
+            icon: null,
+            children: [],
+        },
+        {
+            path: "/home-test",
+            name: "test2",
+            header: "tset2",
+            component: HomeTest,
+            icon: null,
+            children: [],
         },
         // {
         //     path: "/home-test",
@@ -153,7 +226,7 @@ export const routesConfig: {
             path: "/payment",
             name: "",
             header: "",
-            component: PaymentPage ,
+            component: PaymentPage,
             icon: null,
             children: [],
         },

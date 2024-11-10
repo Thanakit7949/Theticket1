@@ -1,11 +1,16 @@
-import React, { useState } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom'; // นำเข้า useNavigate
 import { Box, Typography, Button } from '@mui/material';
 
 const ConcertDetail: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate(); // สร้างฟังก์ชัน navigate
   const concert = location.state; // รับข้อมูลจากหน้าเดิมที่ถูกส่งมา
-  const {id} = useParams<{id:string}>()
+
+  // ฟังก์ชันสำหรับกดปุ่ม "ซื้อบัตร"
+  const handleBuyTicket = () => {
+    navigate('stage'); // ไปที่หน้า 'stage'
+  };
 
   return (
     <Box
@@ -21,7 +26,7 @@ const ConcertDetail: React.FC = () => {
         margin: 'auto',
       }}
     >
-      {/* Image Section */}
+      {/* ส่วนของรูปภาพ */}
       <Box sx={{ flex: '1 1 auto', mr: 3 }}>
         <img
           src={concert.image}
@@ -30,7 +35,7 @@ const ConcertDetail: React.FC = () => {
         />
       </Box>
 
-      {/* Details Section */}
+      {/* ส่วนของรายละเอียด */}
       <Box sx={{ flex: '2 1 auto' }}>
         <Typography variant="h5" fontWeight="bold" gutterBottom align="left">
           {concert.title}
@@ -45,7 +50,7 @@ const ConcertDetail: React.FC = () => {
           สถานที่: {concert.location}
         </Typography>
 
-        {/* Price and Buy Button Box */}
+        {/* ส่วนของราคาและปุ่มซื้อ */}
         <Box
           sx={{
             display: 'flex',
@@ -74,6 +79,7 @@ const ConcertDetail: React.FC = () => {
                 backgroundColor: 'darkred',
               },
             }}
+            onClick={handleBuyTicket} // เมื่อคลิกปุ่มจะเรียกใช้ฟังก์ชัน handleBuyTicket
           >
             ซื้อบัตร
           </Button>

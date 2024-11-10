@@ -1,20 +1,18 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { Navigate, useNavigate } from 'react-router-dom';  // ใช้ useNavigate แทน useHistory
+import { useNavigate } from 'react-router-dom';
 import { TextField, Button, Typography, Box } from '@mui/material';
 
 export interface ILoginPagePageProps {}
 
 const LoginPage: React.FunctionComponent<ILoginPagePageProps> = (props) => {
-  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
-  const [dataDe, setDataDE] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
-  const navigate = useNavigate();  // ใช้ navigate เพื่อเปลี่ยนเส้นทาง
+  const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();  // ป้องกันการรีเฟรชหน้า
+    e.preventDefault();
   
     try {
       const response = await axios.post('http://localhost:5000/login', {
@@ -23,16 +21,10 @@ const LoginPage: React.FunctionComponent<ILoginPagePageProps> = (props) => {
       });
   
       const data = response.data;
-      console.log(data)
-      setDataDE(data)
       if (data.role === 'admin') {
-      
         navigate('/home-admin');
-
       } else if (data.role === 'user') {
         navigate('/home-user');
-        <Navigate to='/home-user' />
-        console.log("/home-user");
       } else {
         setMessage('Unknown role');
       }
@@ -41,7 +33,6 @@ const LoginPage: React.FunctionComponent<ILoginPagePageProps> = (props) => {
       setMessage('Login failed');
     }
   };
-  
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '50px' }}>
@@ -64,6 +55,14 @@ const LoginPage: React.FunctionComponent<ILoginPagePageProps> = (props) => {
         />
         <Button type="submit" variant="contained" color="primary" style={{ marginTop: '20px' }}>
           Login
+        </Button>
+        <Button
+          variant="outlined"
+          color="secondary"
+          style={{ marginTop: '10px' }}
+          onClick={() => navigate('/register')}
+        >
+          Register
         </Button>
       </form>
       {message && <Typography variant="body1" color="error">{message}</Typography>}
