@@ -1,16 +1,10 @@
 import React, { useEffect, useState } from "react"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import * as R from "ramda"
-import Dashboard from "../views/dashboard/DashBoard"
 import LoginPage from "../views/Login";
-import HomeAdmin from "../views/Admin/HomeAdmin";
+
 import HomeUser from "../views/User/HomeUser";
-import Concert from "../views/User/Concert";
-import Sport from "../views/User/Sport";
-import Promotion from "../views/User/Promotion";
-import Product from "../views/User/Product";
-import Information from "../views/User/Information";
-import Page1Page from "../views/User/Page1";
+
 import { routesConfig } from "./RounterConfig";
 import { MainRouter } from "../interface/Router.interface";
 import Home from "../views/Home"
@@ -154,6 +148,7 @@ const Router: React.FC = () => {
     <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        
         
         <Route path="/" element={
             <Home routerHeader={{

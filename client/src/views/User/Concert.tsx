@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Box, Typography, Button } from "@mui/material";
 import ConcertImage1 from "/src/assets/concert/con3.jpg";
@@ -26,19 +26,9 @@ import c8Image from "/src/assets/concert/all/c8.png";
 import c9Image from "/src/assets/concert/all/c9.png";
 import c10Image from "/src/assets/concert/all/c10.png";
 import c11Image from "/src/assets/concert/all/c11.png";
-import ConcertDetailPage from "./ConcDetail";
 
-export interface IDataConcert {
-  image: string;
-  title: string;
-  date: string;
-  time: string;
-  location: string;
-  price:number
-}
 const Concert: React.FC = () => {
   const navigate = useNavigate();
-  const [dataconcert, setDataconcert] = useState<IDataConcert>();
   const handleBuyTicket = (item: {
     image: string;
     title: string;
@@ -66,11 +56,11 @@ const Concert: React.FC = () => {
   const [selected, setSelected] = useState("ทั้งหมด");
 
   const categories = [
-    { label: "ทั้งหมด", color: "#D74F72" }, // Highlighted button color
-    { label: "THAI MASS", color: "#D74F72" },
-    { label: "T-POP", color: "#D74F72" },
-    { label: "K-POP", color: "#D74F72" },
-    { label: "INTERNATIONAL", color: "#D74F72" },
+    { label: "ทั้งหมด", color: "#FF4081" }, // Highlighted button color
+    { label: "THAI MASS", color: "#FF4081" },
+    { label: "T-POP", color: "#FF4081" },
+    { label: "K-POP", color: "#FF4081" },
+    { label: "INTERNATIONAL", color: "#FF4081" },
   ];
 
   const events = [
@@ -119,7 +109,7 @@ const Concert: React.FC = () => {
     },
     {
       image: c5Image,
-      title: "❤️‍🔥: โอเอสเคเอ็น รียูเนี่ยน ปาร์ตี้ 2024 ปาร์ตี้ให้สนุก",
+      title: "❤️‍🔥: โอเอสเคเอ็น รียูเนี่ยน ปาร์ตี้ 2024 ",
       date: "🗓️: 26 ตุลาคม 2567",
       time: "⏰: 15:30 - 22:00 น.",
       location: "📌: โรงเรียนสวนกุหลาบวิทยาลัย นนทบุรี",
@@ -134,16 +124,16 @@ const Concert: React.FC = () => {
       price: 5500,
     },
     {
-      image: c7Image,
-      title: "❤️‍🔥: Knock Knock Knock: BUS 1st THAILAND FANCON",
-      date: "🗓️: 6 ตุลาคม 2567",
-      time: "⏰: 13.00 น.",
-      location: "📌: เทอร์มินอล ฮอลล์",
-      price: 7500,
+      image: c11Image,
+      title: "❤️‍🔥: TATE MCRAE THINK LATER ",
+      date: "🗓️:  2 พฤศจิกายน 2567",
+      time: "⏰: 19:00 น.",
+      location: "📌: ยูโอบี ไลฟ์, เอ็มสเฟียร์",
+      price: 2500,
     },
     {
       image: c8Image,
-      title: "❤️‍🔥: PIT BABE 1st ANNIVERSARY (LEVEL UP) Presented by IN2IT",
+      title: "❤️‍🔥: PIT BABE 1st ANNIVERSARY (LEVEL UP) ",
       date: "🗓️:  17 พฤศจิกายน 2567",
       time: "⏰: 18.00 น.",
       location: "📌: TRUE ICON HALL",
@@ -166,13 +156,14 @@ const Concert: React.FC = () => {
       price: 4500,
     },
     {
-      image: c11Image,
-      title: "❤️‍🔥: TATE MCRAE THINK LATER ",
-      date: "🗓️:  2 พฤศจิกายน 2567",
-      time: "⏰: 19:00 น.",
-      location: "📌: ยูโอบี ไลฟ์, เอ็มสเฟียร์",
-      price: 2500,
+      image: c7Image,
+      title: "❤️‍🔥: Knock Knock Knock: BUS 1st THAILAND FANCON",
+      date: "🗓️: 6 ตุลาคม 2567",
+      time: "⏰: 13.00 น.",
+      location: "📌: เทอร์มินอล ฮอลล์",
+      price: 7500,
     },
+  
   ];
   const thaiMassConcerts = [
     {
@@ -192,6 +183,15 @@ const Concert: React.FC = () => {
       location: "📌: โรงเรียนสวนกุหลาบวิทยาลัย นนทบุรี",
       price: 6500,
     },
+  
+    {
+      image: c8Image,
+      title: "❤️‍🔥: PIT BABE 1st ANNIVERSARY (LEVEL UP) ",
+      date: "🗓️:  17 พฤศจิกายน 2567",
+      time: "⏰: 18.00 น.",
+      location: "📌: TRUE ICON HALL",
+      price: 3500,
+    },
     {
       image: c7Image,
       title: "❤️‍🔥: Knock Knock Knock: BUS 1st THAILAND FANCON",
@@ -199,14 +199,6 @@ const Concert: React.FC = () => {
       time: "⏰: 13.00 น.",
       location: "📌: เทอร์มินอล ฮอลล์",
       price: 7500,
-    },
-    {
-      image: c8Image,
-      title: "❤️‍🔥: PIT BABE 1st ANNIVERSARY (LEVEL UP) Presented by IN2IT",
-      date: "🗓️:  17 พฤศจิกายน 2567",
-      time: "⏰: 18.00 น.",
-      location: "📌: TRUE ICON HALL",
-      price: 3500,
     },
     {
       image: c9Image,
@@ -303,12 +295,8 @@ const Concert: React.FC = () => {
       ? interConcerts
       : [];
 
-useEffect(() =>{
-
-},[dataconcert])
   return (
     <>
-    {/* <ConcertDetailPage data={dataconcert}/> */}
     <Box
       p={2}
       mb={8}
@@ -320,7 +308,7 @@ useEffect(() =>{
       borderColor="gray.700"
       width={1140}
       sx={{
-        background: "linear-gradient(135deg, #f3e5f5 30%, #FFB3BA 100%)",
+        background: "linear-gradient(135deg, #EECDA3 0%, #EF629F 100%);",
       }}
     >
       {/* ส่วนที่ 1 */}
@@ -673,12 +661,12 @@ useEffect(() =>{
               border: "2px solid white",
               borderRadius: 2,
               padding: 2,
-              flexBasis: "calc(33.33% - 50px)", // ใช้ 33.33% ของความกว้างลดด้วยระยะห่าง
+              flexBasis: "calc(36.33% - 50px)", // ใช้ 33.33% ของความกว้างลดด้วยระยะห่าง
               margin: "10px 0", // เพิ่ม margin เพื่อเว้นระยะห่างระหว่างกรอบ
               transition: "transform 0.3s",
               "&:hover": {
                 transform: "scale(1.05)",
-                backgroundColor: "palevioletred",
+                backgroundColor: "#fce4ec",
                 boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)",
               },
             }}

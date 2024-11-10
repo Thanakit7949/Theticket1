@@ -14,7 +14,7 @@ const SportDetail: React.FC = () => {
         alignItems: "flex-start",
         borderRadius: "20px",
         boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)",
-        background: "linear-gradient(135deg, #e3f2fd, #84ffff)",
+        background: 'linear-gradient(135deg, #FFC0CB, #B19CD9)',
         color: "black",
         maxWidth: "800px", // ขนาดกรอบใหญ่ขึ้น
         margin: "auto",
@@ -37,7 +37,7 @@ const SportDetail: React.FC = () => {
         <Typography variant="body1" color="green" align="left">
           วันที่: {sport.date}
         </Typography>
-        <Typography variant="body1" color="#f48fb1" align="left">
+        <Typography variant="body1" color="#2196f3" align="left">
           เวลา: {sport.time}
         </Typography>
         <Typography variant="body1" color="blue" align="left">
