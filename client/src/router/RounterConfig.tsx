@@ -11,7 +11,9 @@ import HomeTest from "../views/User/HomeTest"
 import HomeUser from "../views/User/HomeUser"
 import Information from "../views/User/Information"
 import Page1Page from "../views/User/Page1"
+import PaymentPage from "../views/User/PaymentPage"
 import Product from "../views/User/Product"
+import ProductDetail from "../views/User/ProductDetail"
 
 export const routesConfig: {
     publicRoute: MainRouter[]
@@ -34,7 +36,7 @@ export const routesConfig: {
     ],
     privateRoute: [
         {
-            path: "/home-user",
+            path: "/home-test",
             name: "home",
             header: "home",
             component: HomeTest,
@@ -104,14 +106,14 @@ export const routesConfig: {
                 },
             ],
         },
-        {
-            path: "/home-test",
-            name: "llll",
-            header: "tset2",
-            component: HomeTest,
-            icon: null,
-            children: [],
-        },
+        // {
+        //     path: "/home-test",
+        //     name: "llll",
+        //     header: "tset2",
+        //     component: HomeTest,
+        //     icon: null,
+        //     children: [],
+        // },
         {
             path: "/information",
             name: "Information",
@@ -138,7 +140,25 @@ export const routesConfig: {
             icon: null,
             children: [],
         },
-       
+        {
+            path: "/product/:id",
+            name: "",
+            header: "",
+            component: ProductDetail ,
+            icon: null,
+            children: [],
+        },
+
+        {
+            path: "/payment",
+            name: "",
+            header: "",
+            component: PaymentPage ,
+            icon: null,
+            children: [],
+        },
+
+        
     ],
 
 }

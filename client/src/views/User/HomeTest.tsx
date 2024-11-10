@@ -1103,6 +1103,7 @@ sx={{
     </Button>
   </Box>
 </Box>
+ 
 <Box
   mt={4}
   sx={{
@@ -1164,6 +1165,12 @@ sx={{
       Shop Now
     </Button>
   </Box>
+  
+  
+
+</Box>
+
+  </Box>
   <Box sx={{ display: 'flex', justifyContent: 'center', mt: 6 }}>
   <Button
     variant="contained"
@@ -1173,18 +1180,18 @@ sx={{
       px: 4,
       py: 1.5,
       borderRadius: '50px',
-      background: 'linear-gradient(to right, #FF6B6B, #FFD93D)', // สีโทนแดงและเหลืองเพื่อความสดใส
-      color: '#fff',
-      boxShadow: '0px 8px 16px rgba(255, 107, 107, 0.3)',
+      background: 'linear-gradient(to right, #ffd1dc, #ff9e80)',
+      boxShadow: '0px 8px 16px rgba(255, 158, 128, 0.3)',
       transition: 'transform 0.3s, background 0.3s, box-shadow 0.3s',
       '&:hover': {
-        background: 'linear-gradient(to right, #FFD93D, #FF6B6B)',
-        boxShadow: '0px 12px 24px rgba(255, 219, 61, 0.4)',
-        transform: 'translateY(-4px) scale(1.05)',
+        background: 'linear-gradient(to right, #ff9e80, #ff6e40)',
+        boxShadow: '0px 12px 24px rgba(255, 110, 64, 0.4)',
+        transform: 'translateY(-3px)',
+        color: '#656C5C'
       },
       '&:active': {
         transform: 'translateY(1px)',
-        boxShadow: '0px 8px 16px rgba(255, 107, 107, 0.2)',
+        boxShadow: '0px 8px 16px rgba(255, 110, 64, 0.2)',
       },
     }}
     component={Link}
@@ -1193,8 +1200,6 @@ sx={{
     Go to Next Page
   </Button>
 </Box>
-</Box>
-  </Box>
   </Box>
   
         </>
