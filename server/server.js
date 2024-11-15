@@ -11,7 +11,7 @@ const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: '',
-  database: 'test',
+  database: 'ticket_db',
 });
 
 db.connect((err) => {
@@ -92,7 +92,39 @@ app.get('/getAllSports', (req, res) => {
     return res.json(results); // ส่งผลลัพธ์เป็น JSON
   });
 });
-  
+
+app.get('/api/concerts', (req, res) => {
+  db.query('SELECT * FROM concerts', (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(results);
+  });
+});
+
+app.post('/api/concerts', (req, res) => {
+  const { name, date, location } = req.body;
+  db.query('INSERT INTO concerts (name, date, location) VALUES (?, ?, ?)', [name, date, location], (err, result) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ message: 'Concert added successfully' });
+  });
+});
+
+app.put('/api/concerts/:id', (req, res) => {
+  const { id } = req.params;
+  const { name, date, location } = req.body;
+  db.query('UPDATE concerts SET name = ?, date = ?, location = ? WHERE id = ?', [name, date, location, id], (err, result) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ message: 'Concert updated successfully' });
+  });
+});
+
+app.delete('/api/concerts/:id', (req, res) => {
+  const { id } = req.params;
+  db.query('DELETE FROM concerts WHERE id = ?', [id], (err, result) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ message: 'Concert deleted successfully' });
+  });
+});
+
   
 
 app.listen(port, () => {

@@ -24,7 +24,7 @@ const LoginPage: React.FunctionComponent<ILoginPagePageProps> = (props) => {
       if (data.role === 'admin') {
         navigate('/home-admin');
       } else if (data.role === 'user') {
-        navigate('/home-user');
+        navigate('/home-test');
       } else {
         setMessage('Unknown role');
       }

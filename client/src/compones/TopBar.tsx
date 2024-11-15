@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { IChildrenRouter } from "../interface/Router.interface";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
 import {
   AppBar,
   Avatar,
@@ -24,22 +24,17 @@ export interface ITopBarProps {
   open: any;
   handleDrawerClose: any;
 }
+
 export interface miniChilden {
   name: string;
   path: string;
 }
+
 export interface Childen {
   name: string;
   path: string;
-  // childens: miniChilden[]
   childens: IChildrenRouter[];
   icon?: any;
-}
-
-export interface Childenmini {
-  name: string;
-  path: string;
-  // childens: miniChilden[];
 }
 
 export interface MenuSideBar {
@@ -48,20 +43,17 @@ export interface MenuSideBar {
   childens: Childen[];
   icon: any;
 }
-// export interface MenuSideBar {
-//     name: string;
-//     path: string;
-//     childens: IChildrenRouter[];
-//     icon: any;
-// }
 
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
+const settings = [
+  { name: "Profile", path: "/profile" },
+  { name: "Account", path: "/account" },
+  { name: "Dashboard", path: "/dashboard" },
+  { name: "Logout", path: "/login" }, // กำหนด path ของ Logout ไปที่ /login
+];
 
 const TopBar: React.FunctionComponent<ITopBarProps> = ({ open }) => {
   const [sidebar, setSidebar] = useState<MenuSideBar[]>([]);
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
-    null
-  );
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
   const navigate = useNavigate();
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -91,11 +83,7 @@ const TopBar: React.FunctionComponent<ITopBarProps> = ({ open }) => {
           };
 
           for await (const itemchildren of item.children) {
-            // let inputChildrenmini: Childenmini[] =
-            //     itemchildren?.children ?? []
-
-            let inputChildrenmini: IChildrenRouter[] =
-              itemchildren?.children ?? [];
+            let inputChildrenmini: IChildrenRouter[] = itemchildren?.children ?? [];
 
             let ch: Childen = {
               name: itemchildren.name ?? "",
@@ -108,9 +96,7 @@ const TopBar: React.FunctionComponent<ITopBarProps> = ({ open }) => {
             }
           }
 
-          // if (input.childens.length > 0) {
           temp.push(input);
-          // }
         }
       }
     }
@@ -118,28 +104,20 @@ const TopBar: React.FunctionComponent<ITopBarProps> = ({ open }) => {
     setSidebar(temp);
   };
 
+  const handleMenuClick = (path: string) => {
+    setAnchorElUser(null);
+    if (path === "/login") {
+      // เพิ่ม logic การ logout ที่นี่ เช่น การล้าง token หรือข้อมูลของผู้ใช้
+    }
+    navigate(path);
+  };
+
   return (
     <>
-      <AppBar
-        position="fixed"
-        style={{
-          background: "linear-gradient(to right, #D8BFD8, #FFEBCD)",
-          borderRadius: "10px",
-        }}
-      >
+      <AppBar position="fixed" style={{ background: "linear-gradient(to right, #D8BFD8, #FFEBCD)", borderRadius: "10px" }}>
         <Container maxWidth="xl">
           <Toolbar disableGutters>
-            <Box
-              component="img"
-              src={logo}
-              alt="Logo"
-              sx={{
-                display: { xs: "none", md: "flex" },
-                mr: 1,
-                width: 30,
-                height: 30,
-              }}
-            />
+            <Box component="img" src={logo} alt="Logo" sx={{ display: { xs: "none", md: "flex" }, mr: 1, width: 30, height: 30 }} />
             <Typography
               variant="h6"
               noWrap
@@ -192,21 +170,15 @@ const TopBar: React.FunctionComponent<ITopBarProps> = ({ open }) => {
                 sx={{ mt: "45px" }}
                 id="menu-appbar"
                 anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
+                anchorOrigin={{ vertical: "top", horizontal: "right" }}
                 keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
+                transformOrigin={{ vertical: "top", horizontal: "right" }}
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
                 {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                    <Typography textAlign="center">{setting}</Typography>
+                  <MenuItem key={setting.name} onClick={() => handleMenuClick(setting.path)}>
+                    <Typography textAlign="center">{setting.name}</Typography>
                   </MenuItem>
                 ))}
               </Menu>
