@@ -93,40 +93,60 @@ app.get('/getAllSports', (req, res) => {
   });
 });
 
-app.get('/api/concerts', (req, res) => {
+app.get('/getAllconcerts', (req, res) => {
   db.query('SELECT * FROM concerts', (err, results) => {
-    if (err) return res.status(500).json({ error: err.message });
+    if (err) {
+      return res.status(500).json({ error: err.message });
     res.json(results);
+    }
   });
 });
 
-app.post('/api/concerts', (req, res) => {
-  const { name, date, location } = req.body;
-  db.query('INSERT INTO concerts (name, date, location) VALUES (?, ?, ?)', [name, date, location], (err, result) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json({ message: 'Concert added successfully' });
+// Add ticket
+app.post('/addTicket', (req, res) => {
+  const { name, date, location, price } = req.body;
+
+  const query = 'INSERT INTO concerts (name, date, location, price) VALUES (?, ?, ?, ?)';
+  db.query(query, [name, date, location, price], (err, result) => {
+    if (err) {
+      return res.status(500).json({ message: 'Database error', error: err.message });
+    }
+    res.status(201).json({ message: 'Ticket added successfully' });
   });
 });
 
-app.put('/api/concerts/:id', (req, res) => {
+// Update ticket
+app.put('/updateTicket/:id', (req, res) => {
   const { id } = req.params;
-  const { name, date, location } = req.body;
-  db.query('UPDATE concerts SET name = ?, date = ?, location = ? WHERE id = ?', [name, date, location, id], (err, result) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json({ message: 'Concert updated successfully' });
+  const { name, date, location, price } = req.body;
+
+  const query = 'UPDATE concerts SET name = ?, date = ?, location = ?, price = ? WHERE id = ?';
+  db.query(query, [name, date, location, price, id], (err, result) => {
+    if (err) {
+      return res.status(500).json({ message: 'Database error', error: err.message });
+    }
+    res.status(200).json({ message: 'Ticket updated successfully' });
   });
 });
 
-app.delete('/api/concerts/:id', (req, res) => {
+// Delete ticket
+app.delete('/deleteTicket/:id', (req, res) => {
   const { id } = req.params;
-  db.query('DELETE FROM concerts WHERE id = ?', [id], (err, result) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json({ message: 'Concert deleted successfully' });
+
+  const query = 'DELETE FROM concerts WHERE id = ?';
+  db.query(query, [id], (err, result) => {
+    if (err) {
+      console.error('Error deleting ticket:', err);
+      return res.status(500).json({ message: 'Database error', error: err.message });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Ticket not found' });
+    }
+
+    res.status(200).json({ message: 'Ticket deleted successfully' });
   });
 });
-
-  
-
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });

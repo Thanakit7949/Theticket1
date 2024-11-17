@@ -20,6 +20,8 @@ import ConcertDetail from "../views/User/ConcertDetail";
 import SportDetail from "../views/User/SportDetail";
 import RegisterPage from "../views/Register";
 import Dashboard from "../views/User/Dashboard";
+import Dashboards from "../views/Admin/Dashboards";
+import Profile from "../views/User/Profile";
 
 const Router: React.FC = () => {
   const [publicRouteElements, setPublicRouteElements] = useState<any[]>([])
@@ -149,7 +151,8 @@ const Router: React.FC = () => {
     <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/dashboards" element={<Dashboards />} />
         
         
         <Route path="/" element={
