@@ -8,7 +8,7 @@ import ConcertHypen from "../views/User/detailconcert/ConcertHypen"
 import ConcertLykn from "../views/User/detailconcert/ConcertLykn"
 import ConcertPixxie from "../views/User/detailconcert/ConcertPixxie"
 import HomeTest from "../views/User/HomeTest"
-import HomeUser from "../views/User/HomeUser"
+//import HomeUser from "../views/User/HomeUser"
 import Information from "../views/User/Information"
 import Page1Page from "../views/User/Page1"
 import Sport from "../views/User/Sport"
@@ -168,14 +168,6 @@ export const routesConfig: {
             name: "promotion",
             header: "promotion",
             component: Promotion,
-            icon: null,
-            children: [],
-        },
-        {
-            path: "/home-test",
-            name: "test2",
-            header: "tset2",
-            component: HomeTest,
             icon: null,
             children: [],
         },

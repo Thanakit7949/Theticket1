@@ -66,7 +66,7 @@ const Concert: React.FC = () => {
   const events = [
     {
       image: cImage,
-      title: "❤️‍🔥: 2024 ZEROBASEONE THE FIRST TOUR",
+      title: "2024 ZEROBASEONE THE FIRST TOUR",
       date: "🗓️:  5 ตุลาคม 2567",
       time: "⏰: 10:00 น. - 22:00 น.",
       location: "📌: อิมแพ็ค เอ็กซิบิชั่น เมืองทองธานี",
@@ -75,7 +75,7 @@ const Concert: React.FC = () => {
     },
     {
       image: c1Image,
-      title: "❤️‍🔥: 2024 YUGYEOM TOUR [TRUSTY] IN BANGKOK",
+      title: " 2024 YUGYEOM TOUR [TRUSTY] IN BANGKOK",
       date: "🗓️: 12 ตุลาคม 2567",
       time: "⏰: 10:00 น. - 22:00 น.",
       location: "📌: อิมแพ็ค อารีน่า เมืองทองธานี",
@@ -84,7 +84,7 @@ const Concert: React.FC = () => {
     },
     {
       image: c2Image,
-      title: "❤️‍🔥: POLYCAT VIRTUAL MEMORY CONCERT 2024",
+      title: "POLYCAT VIRTUAL MEMORY CONCERT 2024",
       date: "🗓️:  19 ตุลาคม 2567",
       time: "⏰: 12:00 น. - 23:00 น.",
       location: "📌: ธันเดอร์โดม เมืองทองธานี",
@@ -93,7 +93,7 @@ const Concert: React.FC = () => {
     },
     {
       image: c3Image,
-      title: "❤️‍🔥: 2024 JIN YOUNG FANMEETING IN THAILAND",
+      title: "2024 JIN YOUNG FANMEETING IN THAILAND",
       date: "🗓️: 14 ตุลาคม 2567",
       time: "⏰: 17:00 - 18:30 น.",
       location: "📌: Siam-Pic Ganesha Hall",
@@ -101,7 +101,7 @@ const Concert: React.FC = () => {
     },
     {
       image: c4Image,
-      title: "❤️‍🔥: SUNSU Presents Sweet Sunshine With StangTari",
+      title: "SUNSU Presents Sweet Sunshine With StangTari",
       date: "🗓️: 20 ตุลาคม 2567",
       time: "⏰: 14:00 - 20:00 น.",
       location: "📌: LIDO CONNECT HALL 2",
@@ -109,7 +109,7 @@ const Concert: React.FC = () => {
     },
     {
       image: c5Image,
-      title: "❤️‍🔥: โอเอสเคเอ็น รียูเนี่ยน ปาร์ตี้ 2024 ",
+      title: "โอเอสเคเอ็น รียูเนี่ยน ปาร์ตี้ 2024 ",
       date: "🗓️: 26 ตุลาคม 2567",
       time: "⏰: 15:30 - 22:00 น.",
       location: "📌: โรงเรียนสวนกุหลาบวิทยาลัย นนทบุรี",
@@ -117,7 +117,7 @@ const Concert: React.FC = () => {
     },
     {
       image: c6Image,
-      title: "❤️‍🔥: LONGLAY BEACH LIFE FESTIVAL 2024",
+      title: "LONGLAY BEACH LIFE FESTIVAL 2024",
       date: "🗓️: 7-8 ธันวาคม 2567",
       time: "⏰: 14:00 - 23:59 น.",
       location: "📌: Diamond Beach (Longlay Beach)",
@@ -125,7 +125,7 @@ const Concert: React.FC = () => {
     },
     {
       image: c11Image,
-      title: "❤️‍🔥: TATE MCRAE THINK LATER ",
+      title: "TATE MCRAE THINK LATER ",
       date: "🗓️:  2 พฤศจิกายน 2567",
       time: "⏰: 19:00 น.",
       location: "📌: ยูโอบี ไลฟ์, เอ็มสเฟียร์",
@@ -133,7 +133,7 @@ const Concert: React.FC = () => {
     },
     {
       image: c8Image,
-      title: "❤️‍🔥: PIT BABE 1st ANNIVERSARY (LEVEL UP) ",
+      title: "PIT BABE 1st ANNIVERSARY (LEVEL UP) ",
       date: "🗓️:  17 พฤศจิกายน 2567",
       time: "⏰: 18.00 น.",
       location: "📌: TRUE ICON HALL",
@@ -141,7 +141,7 @@ const Concert: React.FC = () => {
     },
     {
       image: c9Image,
-      title: "❤️‍🔥: TANATAT SOLO STAGE BIRTHDAY",
+      title: "TANATAT SOLO STAGE BIRTHDAY",
       date: "🗓️:  5 ตุลาคม 2567",
       time: "⏰: 17:00 - 18:30 น.",
       location: "📌: Siam-Pic Ganesha Hall",
@@ -149,7 +149,7 @@ const Concert: React.FC = () => {
     },
     {
       image: c10Image,
-      title: "❤️‍🔥: 2024 (G)I-DLE WORLD TOUR ",
+      title: "2024 (G)I-DLE WORLD TOUR ",
       date: "🗓️:  19 ตุลาคม 2567",
       time: "⏰: 18:00 น.",
       location: "📌: อิมแพ็ค อารีน่า เมืองทองธานี",
@@ -157,7 +157,7 @@ const Concert: React.FC = () => {
     },
     {
       image: c7Image,
-      title: "❤️‍🔥: Knock Knock Knock: BUS 1st THAILAND FANCON",
+      title: "Knock Knock Knock: BUS 1st THAILAND FANCON",
       date: "🗓️: 6 ตุลาคม 2567",
       time: "⏰: 13.00 น.",
       location: "📌: เทอร์มินอล ฮอลล์",
@@ -168,7 +168,7 @@ const Concert: React.FC = () => {
   const thaiMassConcerts = [
     {
       image: c2Image,
-      title: "❤️‍🔥: POLYCAT VIRTUAL MEMORY CONCERT",
+      title: "POLYCAT VIRTUAL MEMORY CONCERT",
       date: "🗓️:  19 ตุลาคม 2567",
       time: "⏰: 12:00 น. - 23:00 น.",
       location: "📌: ธันเดอร์โดม เมืองทองธานี",
@@ -177,7 +177,7 @@ const Concert: React.FC = () => {
     },
     {
       image: c5Image,
-      title: "❤️‍🔥: โอเอสเคเอ็น รียูเนี่ยน ปาร์ตี้ 2024",
+      title: "โอเอสเคเอ็น รียูเนี่ยน ปาร์ตี้ 2024",
       date: "🗓️: 26 ตุลาคม 2567",
       time: "⏰: 15:30 - 22:00 น.",
       location: "📌: โรงเรียนสวนกุหลาบวิทยาลัย นนทบุรี",
@@ -186,7 +186,7 @@ const Concert: React.FC = () => {
   
     {
       image: c8Image,
-      title: "❤️‍🔥: PIT BABE 1st ANNIVERSARY (LEVEL UP) ",
+      title: "PIT BABE 1st ANNIVERSARY (LEVEL UP) ",
       date: "🗓️:  17 พฤศจิกายน 2567",
       time: "⏰: 18.00 น.",
       location: "📌: TRUE ICON HALL",
@@ -194,7 +194,7 @@ const Concert: React.FC = () => {
     },
     {
       image: c7Image,
-      title: "❤️‍🔥: Knock Knock Knock: BUS 1st THAILAND FANCON",
+      title: "Knock Knock Knock: BUS 1st THAILAND FANCON",
       date: "🗓️:  6 ตุลาคม 2567",
       time: "⏰: 13.00 น.",
       location: "📌: เทอร์มินอล ฮอลล์",
@@ -202,7 +202,7 @@ const Concert: React.FC = () => {
     },
     {
       image: c9Image,
-      title: "❤️‍🔥: TANATAT SOLO STAGE BIRTHDAY",
+      title: "TANATAT SOLO STAGE BIRTHDAY",
       date: "🗓️:  5 ตุลาคม 2567",
       time: "⏰: 17:00 - 18:30 น.",
       location: "📌: Siam-Pic Ganesha Hall",
@@ -212,7 +212,7 @@ const Concert: React.FC = () => {
   const tpopConcerts = [
     {
       image: c7Image,
-      title: "❤️‍🔥: Knock Knock Knock: BUS 1st THAILAND FANCON",
+      title: "Knock Knock Knock: BUS 1st THAILAND FANCON",
       date: "🗓️:  6 ตุลาคม 2567",
       time: "⏰: 13.00 น.",
       location: "📌: เทอร์มินอล ฮอลล์",
@@ -222,7 +222,7 @@ const Concert: React.FC = () => {
   const kpopConcerts = [
     {
       image: cImage,
-      title: "❤️‍🔥: 2024 ZEROBASEONE THE FIRST TOUR",
+      title: "2024 ZEROBASEONE THE FIRST TOUR",
       date: "🗓️:  5 ตุลาคม 2567",
       time: "⏰: 10:00 น. - 22:00 น.",
       location: "📌: อิมแพ็ค เอ็กซิบิชั่น เมืองทองธานี",
@@ -231,7 +231,7 @@ const Concert: React.FC = () => {
     },
     {
       image: c1Image,
-      title: "❤️‍🔥: 2024 YUGYEOM TOUR [TRUSTY] IN BANGKOK",
+      title: "2024 YUGYEOM TOUR [TRUSTY] IN BANGKOK",
       date: "🗓️: 12 ตุลาคม 2567",
       time: "⏰: 10:00 น. - 22:00 น.",
       location: "📌: อิมแพ็ค อารีน่า เมืองทองธานี",
@@ -240,7 +240,7 @@ const Concert: React.FC = () => {
     },
     {
       image: c3Image,
-      title: "❤️‍🔥: 2024 JIN YOUNG FANMEETING IN THAILAND",
+      title: "2024 JIN YOUNG FANMEETING IN THAILAND",
       date: "🗓️: 14 ตุลาคม 2567",
       time: "⏰: 17:00 - 18:30 น.",
       location: "📌: Siam-Pic Ganesha Hall",
@@ -248,7 +248,7 @@ const Concert: React.FC = () => {
     },
     {
       image: c4Image,
-      title: "❤️‍🔥: SUNSU Presents Sweet Sunshine With StangTari",
+      title: "SUNSU Presents Sweet Sunshine With StangTari",
       date: "🗓️: 20 ตุลาคม 2567",
       time: "⏰: 14:00 - 20:00 น.",
       location: "📌: LIDO CONNECT HALL 2",
@@ -256,7 +256,7 @@ const Concert: React.FC = () => {
     },
     {
       image: c10Image,
-      title: "❤️‍🔥: 2024 (G)I-DLE WORLD TOUR ",
+      title: "2024 (G)I-DLE WORLD TOUR ",
       date: "🗓️: วันเสาร์ที่ 19 ตุลาคม 2567",
       time: "⏰: 18:00 น.",
       location: "📌: อิมแพ็ค อารีน่า เมืองทองธานี",
@@ -266,7 +266,7 @@ const Concert: React.FC = () => {
   const interConcerts = [
     {
       image: c6Image,
-      title: "❤️‍🔥: LONGLAY BEACH LIFE FESTIVAL 2024",
+      title: "LONGLAY BEACH LIFE FESTIVAL 2024",
       date: "🗓️: 7-8 ธันวาคม 2567",
       time: "⏰: 14:00 - 23:59 น.",
       location: "📌: Diamond Beach (Longlay Beach)",
@@ -274,7 +274,7 @@ const Concert: React.FC = () => {
     },
     {
       image: c11Image,
-      title: "❤️‍🔥: TATE MCRAE THINK LATER ",
+      title: "TATE MCRAE THINK LATER ",
       date: "🗓️:  2 พฤศจิกายน 2567",
       time: "⏰: 19:00 น.",
       location: "📌: ยูโอบี ไลฟ์, เอ็มสเฟียร์",

@@ -8,6 +8,7 @@ import HomeUser from "../views/User/HomeUser";
 import { routesConfig } from "./RounterConfig";
 import { MainRouter } from "../interface/Router.interface";
 import Home from "../views/Home"
+import RegisterPage from "../views/Register";
 
 
 const Router: React.FC = () => {
@@ -23,7 +24,7 @@ const Router: React.FC = () => {
       const path = window.location.pathname
 
       if (path === "/") {
-          window.location.href = "/home-user"
+          window.location.href = "/login"
       }
   }, [])
 
@@ -137,6 +138,7 @@ const Router: React.FC = () => {
     <BrowserRouter>
     <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
         
         
         <Route path="/" element={

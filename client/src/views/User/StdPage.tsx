@@ -165,38 +165,40 @@ const StdPage: React.FC = () => {
           {/* แสดงที่นั่งที่เลือก */}
           {selectedSeats.length > 0 && (
             <Typography
-              variant="h6"
-              sx={{
-                color: "black",
-                mb: 2,
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-              }}
-            >
-              {" "}
-              ที่นั่ง:
-              {selectedSeats.map((seat, index) => (
-                <Box
-                  key={index}
-                  sx={{
-                    width: "50px",
-                    height: "50px",
-                    borderRadius: "50%",
-                    backgroundColor: "#00FF00",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    color: "black",
-                    fontWeight: "bold",
-                    fontSize: "14px",
-                  }}
-                >
-                  {" "}
-                  {`${label}${seat.row}-${seat.col}`}{" "}
-                </Box>
-              ))}
-            </Typography>
+            variant="h6"
+            sx={{
+              color: "black",
+              mb: 2,
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              flexWrap: "wrap",  // เพิ่ม flexWrap เพื่อทำให้ที่นั่งไหลลงบรรทัดถัดไป
+              width: "100%",     // ให้แน่ใจว่า width ใช้งานได้เต็มที่
+            }}
+          >
+            ที่นั่ง:
+            {selectedSeats.map((seat, index) => (
+              <Box
+                key={index}
+                sx={{
+                  width: "50px",
+                  height: "50px",
+                  borderRadius: "50%",
+                  backgroundColor: "#00FF00",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  color: "black",
+                  fontWeight: "bold",
+                  fontSize: "14px",
+                  marginBottom: "10px",  // เพิ่มระยะห่างระหว่างแถว
+                }}
+              >
+                {`${label}${seat.row}-${seat.col}`}
+              </Box>
+            ))}
+          </Typography>
+          
           )}
 
           {/* แสดงราคา */}

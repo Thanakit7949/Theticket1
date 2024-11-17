@@ -1,15 +1,21 @@
 import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom'; // นำเข้า useNavigate
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Box, Typography, Button } from '@mui/material';
 
 const ConcertDetail: React.FC = () => {
   const location = useLocation();
-  const navigate = useNavigate(); // สร้างฟังก์ชัน navigate
-  const concert = location.state; // รับข้อมูลจากหน้าเดิมที่ถูกส่งมา
+  const navigate = useNavigate();
+  const concert = location.state;
 
   // ฟังก์ชันสำหรับกดปุ่ม "ซื้อบัตร"
   const handleBuyTicket = () => {
-    navigate('stage'); // ไปที่หน้า 'stage'
+    // ส่งข้อมูลเฉพาะที่ต้องการไปยังหน้า 'stage'
+    navigate('stage', {
+      state: {
+        image: concert.image,
+        title: concert.title,
+      },
+    });
   };
 
   return (
@@ -22,20 +28,17 @@ const ConcertDetail: React.FC = () => {
         boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.2)',
         background: 'linear-gradient(135deg, #FFC0CB, #B19CD9)',
         color: 'black',
-        maxWidth: '800px', // ขนาดกรอบใหญ่ขึ้น
+        maxWidth: '800px',
         margin: 'auto',
       }}
     >
-      {/* ส่วนของรูปภาพ */}
       <Box sx={{ flex: '1 1 auto', mr: 3 }}>
         <img
           src={concert.image}
           alt={concert.title}
-          style={{ width: '100%', maxWidth: '300px', borderRadius: '10px' }} // รูปใหญ่ขึ้น
+          style={{ width: '100%', maxWidth: '300px', borderRadius: '10px' }}
         />
       </Box>
-
-      {/* ส่วนของรายละเอียด */}
       <Box sx={{ flex: '2 1 auto' }}>
         <Typography variant="h5" fontWeight="bold" gutterBottom align="left">
           {concert.title}
@@ -50,13 +53,12 @@ const ConcertDetail: React.FC = () => {
           สถานที่: {concert.location}
         </Typography>
 
-        {/* ส่วนของราคาและปุ่มซื้อ */}
         <Box
           sx={{
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            mt: 22, // เพิ่มค่า mt ให้มากขึ้นเพื่อลงไปข้างล่างอีก
+            mt: 22,
             padding: '12px 16px',
             borderRadius: '30px',
             boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
@@ -79,7 +81,7 @@ const ConcertDetail: React.FC = () => {
                 backgroundColor: 'darkred',
               },
             }}
-            onClick={handleBuyTicket} // เมื่อคลิกปุ่มจะเรียกใช้ฟังก์ชัน handleBuyTicket
+            onClick={handleBuyTicket}
           >
             ซื้อบัตร
           </Button>
