@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, TextField, InputAdornment, IconButton, Grid, Badge } from '@mui/material';
+import { Box, Typography, TextField, InputAdornment, IconButton, Grid, Badge, Button } from '@mui/material';
 import SearchIcon from "@mui/icons-material/Search";
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
@@ -12,7 +12,8 @@ import { useNavigate } from 'react-router-dom';
 const Product = () => {
   const [category, setCategory] = useState("Concert");
   const [subCategory, setSubCategory] = useState("");
-  const [favorites, setFavorites] = useState([]); // New state for favorite products
+  const [favorites, setFavorites] = useState([]); 
+  const [cart, setCart] = useState([]);
 
   const concertCategories = [
     { label: "Flash Sales", products: [
@@ -44,6 +45,7 @@ const Product = () => {
       { id: 9, name: 'Sports Shoes', price: '1500 ฿', image: '/images/product8.jpg' },
     ] },
   ];
+  
 
   const navigate = useNavigate();
 
@@ -88,6 +90,11 @@ const Product = () => {
       }
     });
   };
+  
+  const handleConfirmPayment = () => {
+    // Navigate to ProductDetail with cart data
+    navigate('/productDetail', { state: { selectedProducts: cart } });
+  };
 
   useEffect(() => {
     setSubCategory("Flash Sales");
@@ -101,6 +108,30 @@ const Product = () => {
     }
     return [];
   };
+  
+  const addToCart = (product) => {
+    setCart((prevCart) => {
+      const existingItem = prevCart.find((item) => item.id === product.id);
+      if (existingItem) {
+        return prevCart.map((item) =>
+          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+        );
+      } else {
+        return [...prevCart, { ...product, quantity: 1 }];
+      }
+    });
+  };
+  
+  const removeFromCart = (product) => {
+    setCart((prevCart) => {
+      return prevCart
+        .map((item) =>
+          item.id === product.id ? { ...item, quantity: item.quantity - 1 } : item
+        )
+        .filter((item) => item.quantity > 0);
+    });
+  };
+  
 
   const products = getProducts();
 
@@ -354,12 +385,39 @@ const Product = () => {
                 <IconButton onClick={() => handleFavoriteClick(product.id)}>
                   <FavoriteBorderIcon color={favorites.includes(product.id) ? "error" : "inherit"} />
                 </IconButton>
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 1 }}>
+  <Button onClick={() => removeFromCart(product)}>-</Button>
+  <Typography>{cart.find(item => item.id === product.id)?.quantity || 0}</Typography>
+  <Button onClick={() => addToCart(product)}>+</Button>
+</Box>
+                
               </Box>
             </Box>
           </Grid>
         ))}
       </Grid>
+      <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '40px' }}>
+  <Button 
+    variant="contained" 
+    onClick={handleConfirmPayment} 
+    color="primary"
+    sx={{
+      padding: '10px 30px',
+      fontWeight: 'bold',
+      fontSize: '18px',
+      borderRadius: '8px',
+      boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)',
+      '&:hover': {
+        backgroundColor: '#1976d2',
+      },
+    }}
+  >
+    Confirm Payment
+  </Button>
+</Box>
     </Box>
+    
+    
   );
 };
 

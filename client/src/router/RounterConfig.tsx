@@ -171,14 +171,14 @@ export const routesConfig: {
             icon: null,
             children: [],
         },
-        {
-            path: "/home-test",
-            name: "test2",
-            header: "tset2",
-            component: HomeTest,
-            icon: null,
-            children: [],
-        },
+        // {
+        //     path: "/home-test",
+        //     name: "test2",
+        //     header: "tset2",
+        //     component: HomeTest,
+        //     icon: null,
+        //     children: [],
+        // },
         // {
         //     path: "/home-test",
         //     name: "llll",
@@ -230,7 +230,16 @@ export const routesConfig: {
             icon: null,
             children: [],
         },
+        {
+            path: "/productDetail",
+            name: "",
+            header: "",
+            component: ProductDetail,
+            icon: null,
+            children: [],
+        },
 
+        
         
     ],
 
