@@ -6,14 +6,13 @@ import {
   Button,
   Container,
   IconButton,
-  Link,
   Menu,
   MenuItem,
   Toolbar,
   Tooltip,
   Typography,
 } from "@mui/material";
-import MovieIcon from "@mui/icons-material/Movie";
+import { Link as RouterLink, Routes, Route } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 import Photo from "../assets/react.svg";
 import HomeTest from "../views/User/HomeTest";
@@ -22,18 +21,29 @@ import Sport from "../views/User/Sport";
 import Promotion from "../views/User/Promotion";
 import Product from "../views/User/Product";
 import Information from "../views/User/Information";
-import logo from '../assets/logo/pillars.png'; 
-import { red } from "@mui/material/colors";
+import Profile from "../views/User/Profile";
+import Logout from "../views/Logout";
+import logo from '../assets/logo/pillars.png';
+import Dashboard from "../views/User/Dashboard";
+import Account from "../views/User/Account";
 
-const pages = ["Concert", "Sport", "Promotion", "Product", "Information"];
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
-
+const pages = [
+  { name: "Concert", path: "/concert" },
+  { name: "Sport", path: "/sport" },
+  { name: "Promotion", path: "/promotion" },
+  { name: "Product", path: "/product" },
+  { name: "Information", path: "/information" },
+];
+const settings = [
+  { name: "Profile", path: "/profile" },
+  { name: "Account", path: "/account" },
+  { name: "Dashboard", path: "/dashboard" },
+  { name: "Logout", path: "/logout" }
+];
 
 const AppBarT: React.FunctionComponent = () => {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
-  const [activePage, setActivePage] = useState<string>("Concert");
-  const [isPaused, setIsPaused] = React.useState(false);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -50,80 +60,27 @@ const AppBarT: React.FunctionComponent = () => {
     setAnchorElUser(null);
   };
 
-  const handleMouseEnter = () => setIsPaused(true);
-  const handleMouseLeave = () => setIsPaused(false);
-
   return (
     <>
- 
-    {/* Scrolling Text with MUI components */}
-    <Box 
-      component="div" 
-      sx={{ 
-        position: "relative",
-        width: "100%", 
-        height: "90px",
-        overflow: "hidden", 
-        backgroundColor: "#FFC0CB",
-        py: 2, 
-        px: 4, 
-        display: "flex", 
-        justifyContent: "center", 
-        alignItems: "center", 
-        borderRadius: "12px", 
-        boxShadow: "0 4px 15px rgba(255, 182, 193, 0.5)", 
-        marginBottom: "-50px",
-        marginTop: "60px",
-       
-      }}
-    >
-      <Typography 
-        component="p" 
-        sx={{ 
-          position: "absolute", 
-          whiteSpace: "nowrap", 
-          fontSize: "45px", 
-          fontFamily: "'Quicksand', sans-serif", 
-          fontWeight: "bold", 
-          color: "#FFFFFF", 
-          textShadow: "2px 2px 8px rgba(247, 45, 89, 0.3)", 
-          left: "100%", 
-          animation: "marquee 20s linear infinite", 
-          "&:hover": {
-            animationPlayState: "paused", // หยุดแอนิเมชันเมื่อเมาส์ไปอยู่บนข้อความ
-          },
-          "@keyframes marquee": {
-            "0%": { left: "100%" },
-            "100%": { left: "-100%" }
-          }
-        }}
-      >
-        Welcome to the INTERGETHER CONCERTS & SPORTS! Enjoy the best events and experiences.
-      </Typography>
-    </Box>
-
-    
-
-      <AppBar position="fixed"  sx={{ background: 'linear-gradient(to right, #D8BFD8, #FFEBCD) '}}>
+      <AppBar position="fixed" sx={{ background: 'linear-gradient(to right, #D8BFD8, #FFEBCD)' }}>
         <Container maxWidth="xl">
           <Toolbar disableGutters>
-          <Box
-                component="img"
-                src= {logo}
-                alt="Logo"
-                sx={{
-                    display: { xs: "none", md: "flex" },
-                    mr: 1,
-                    width: 30,  // Adjust the width to match the size of your icon
-                    height: 30,  // Adjust the height to match the size of your icon
-                }}
+            <Box
+              component="img"
+              src={logo}
+              alt="Logo"
+              sx={{
+                display: { xs: "none", md: "flex" },
+                mr: 1,
+                width: 30,
+                height: 30,
+              }}
             />
             <Typography
               variant="h6"
               noWrap
-              component="a"
-              href="#"
-              onClick={() => setActivePage("Home")}
+              component={RouterLink}
+              to="/"
               sx={{
                 mr: 2,
                 display: { xs: "none", md: "flex" },
@@ -137,7 +94,7 @@ const AppBarT: React.FunctionComponent = () => {
               INTERGETHER
             </Typography>
 
-            <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" }}}>
+            <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
               <IconButton
                 size="large"
                 aria-label="open menu"
@@ -162,61 +119,29 @@ const AppBarT: React.FunctionComponent = () => {
                 }}
                 open={Boolean(anchorElNav)}
                 onClose={handleCloseNavMenu}
-                sx={{ display: { xs: "block", md: "none" }  }}
               >
                 {pages.map((page) => (
                   <MenuItem
-                    key={page}
-                    onClick={() => {
-                      setActivePage(page);
-                      handleCloseNavMenu();
-                    }}
+                    key={page.name} // Use `page.name` as a unique key
+                    onClick={handleCloseNavMenu}
+                    component={RouterLink}
+                    to={page.path}
                   >
-                    <Typography textAlign="center">{page}</Typography>
+                    <Typography textAlign="center">{page.name}</Typography>
                   </MenuItem>
                 ))}
-              </Menu>
-            </Box>
 
-            <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-              {pages.map((page) => (
-                <Button
-                  key={page}
-                  onClick={() => setActivePage(page)}
-                  sx={{ my: 2, color: "#8B0000", display: "block",fontSize: "16px", fontWeight:"bold"}}
-                >
-                  {page}
-                </Button>
-              ))}
-            </Box>
-
-            <Box sx={{ flexGrow: 0 }}>
-              <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="Remy Sharp" src={Photo} />
-                </IconButton>
-              </Tooltip>
-              <Menu
-                sx={{ mt: "45px" }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-              >
                 {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                    <Typography textAlign="center">{setting}</Typography>
+                  <MenuItem
+                    key={setting.name} // Use `setting.name` as a unique key
+                    onClick={handleCloseUserMenu}
+                    component={RouterLink}
+                    to={setting.path}
+                  >
+                    <Typography textAlign="center">{setting.name}</Typography>
                   </MenuItem>
                 ))}
+
               </Menu>
             </Box>
           </Toolbar>
@@ -224,19 +149,21 @@ const AppBarT: React.FunctionComponent = () => {
       </AppBar>
 
       <Box sx={{ mt: 10, p: 3 }}>
-  {activePage === "Home" && <HomeTest />}
-  {activePage === "Concert" && <Concert />}
-  {activePage === "Sport" && <Sport />}
-  {activePage === "Promotion" && <Promotion />}
-  {activePage === "Product" && <Product />}
-  {activePage === "Information" && <Information />}
-</Box>
-
-
+        <Routes>
+          <Route path="/" element={<HomeTest />} />
+          <Route path="/concert" element={<Concert />} />
+          <Route path="/sport" element={<Sport />} />
+          <Route path="/promotion" element={<Promotion />} />
+          <Route path="/product" element={<Product />} />
+          <Route path="/information" element={<Information />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/account" element={<Account />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/logout" element={<Logout />} />
+        </Routes>
+      </Box>
     </>
-    
   );
-  
 };
 
 export default AppBarT;

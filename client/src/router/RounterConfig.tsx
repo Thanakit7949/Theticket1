@@ -20,6 +20,7 @@ import Product from "../views/User/Product"
 import ProductDetail from "../views/User/ProductDetail"
 import Payment from "../views/User/Payment"
 import PaymentPage from "../views/User/PaymentPage"
+import Dashboard from "../views/User/Dashboard"
 
 export const routesConfig: {
     publicRoute: MainRouter[]
@@ -41,6 +42,14 @@ export const routesConfig: {
         // },
     ],
     privateRoute: [
+        // {
+        //     path: "/dashboard",
+        //     name: "dashboard",
+        //     header: "dashboard",
+        //     component: Dashboard,
+        //     icon: null,
+        //     children: [],
+        // },
         {
             path: "/home-test",
             name: "home",

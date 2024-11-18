@@ -385,16 +385,16 @@ const Promotion: React.FC = () => {
     <Box
       p={2}
       mb={8}
-      bgcolor="gray.800"
-      color="white"
-      borderRadius={2}
-      boxShadow={3}
-      border={1}
-      borderColor="gray.700"
+      // bgcolor="gray.800"
+      // color="white"
+      // borderRadius={2}
+      // boxShadow={3}
+      // border={1}
+      // borderColor="gray.700"
       width={1140}
-      sx={{
-        background: "linear-gradient(135deg, #EECDA3 0%, #EF629F 100%);",
-      }}
+      // sx={{
+      //   background: "linear-gradient(135deg, #EECDA3 0%, #EF629F 100%);",
+      // }}
     >
             <Typography
         variant="h4"

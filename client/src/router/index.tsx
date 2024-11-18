@@ -25,6 +25,7 @@ const Router: React.FC = () => {
 
       if (path === "/") {
           window.location.href = "/login"
+          window.location.href = "/login"
       }
   }, [])
 
@@ -138,6 +139,8 @@ const Router: React.FC = () => {
     <BrowserRouter>
     <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/register" element={<RegisterPage />} />
         
         

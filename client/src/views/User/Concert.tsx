@@ -298,18 +298,18 @@ const Concert: React.FC = () => {
   return (
     <>
     <Box
-      p={2}
-      mb={8}
-      bgcolor="gray.800"
-      color="white"
-      borderRadius={2}
-      boxShadow={3}
-      border={1}
-      borderColor="gray.700"
-      width={1140}
-      sx={{
-        background: "linear-gradient(135deg, #EECDA3 0%, #EF629F 100%);",
-      }}
+      // p={2}
+      // mb={8}
+      // bgcolor="gray.800"
+      // color="white"
+      // borderRadius={2}
+      // boxShadow={3}
+      // border={1}
+      // borderColor="gray.700"
+      // width={1140}
+      // sx={{
+      //   background: "linear-gradient(135deg, #EECDA3 0%, #EF629F 100%);",
+      // }}
     >
       {/* ส่วนที่ 1 */}
       <Typography
@@ -437,7 +437,7 @@ const Concert: React.FC = () => {
             />
             <Typography mt={1} color="black" fontWeight="bold">
               {" "}
-              BUS
+              {'BUS'}
             </Typography>
           </Box>
         </Link>
