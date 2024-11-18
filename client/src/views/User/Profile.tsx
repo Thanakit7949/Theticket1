@@ -1,15 +1,7 @@
-import React, { useState, useEffect, ChangeEvent } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import {
-  Box,
-  Typography,
-  Container,
-  Grid,
-  TextField,
-  Button,
-  Avatar,
-  CircularProgress,
-} from '@mui/material';
+import { Box, Typography, Container, Grid, TextField, Button, Avatar, CircularProgress } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 interface UserProfile {
   first_name: string;
@@ -33,12 +25,25 @@ const Profile: React.FC = () => {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [image, setImage] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const savedUser = JSON.parse(localStorage.getItem('user') || '{}');
-    if (savedUser && savedUser.id) {
-      fetchUserProfile(savedUser.id);
+    // Get the users array from localStorage
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    if (users.length > 0) {
+      const user = users[users.length - 1]; // Get the last logged-in user
+      fetchUserProfile(user.id);
     } else {
+      // Reset profile if no user is logged in
+      setProfile({
+        first_name: '',
+        last_name: '',
+        email: '',
+        phone: '',
+        birth_date: '',
+        gender: '',
+        profile_image: null,
+      });
       setIsLoading(false);
     }
   }, []);
@@ -63,50 +68,17 @@ const Profile: React.FC = () => {
       });
   };
 
-  const formatDate = (isoDate: string): string => {
-    const date = new Date(isoDate);
-    const year = date.getFullYear();
-    const month = (`0${date.getMonth() + 1}`).slice(-2);
-    const day = (`0${date.getDate()}`).slice(-2);
-    return `${year}-${month}-${day}`;
-  };
-
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setProfile((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const formData = new FormData();
-      formData.append('image', file);
-      formData.append('userId', JSON.parse(localStorage.getItem('user') || '{}').id);
-
-      axios
-        .post('http://localhost:3001/uploads', formData)
-        .then((response) => {
-          setImage(response.data.imageUrl);
-          setProfile((prevProfile) => ({
-            ...prevProfile,
-            profile_image: response.data.imageUrl,
-          }));
-        })
-        .catch((error) => {
-          console.error('Error uploading image:', error);
-        });
-    }
-  };
-
   const handleUpdate = () => {
-    const savedUser = JSON.parse(localStorage.getItem('user') || '{}');
-    if (!savedUser || !savedUser.id) {
-      alert('User ID is undefined');
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    if (users.length === 0) {
+      alert('You must log in first!');
       return;
     }
+    const user = users[users.length - 1]; // Get the last logged-in user
+
     axios
       .put(
-        `http://localhost:3001/users/${savedUser.id}`,
+        `http://localhost:3001/users/${user.id}`,
         { ...profile, profile_image: image },
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       )
@@ -118,8 +90,36 @@ const Profile: React.FC = () => {
       });
   };
 
+  const handleLogout = () => {
+    // Remove the last logged-in user from localStorage
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    users.pop(); // Remove the last user from the array
+    localStorage.setItem('users', JSON.stringify(users));
+
+    // Remove token and reset profile
+    localStorage.removeItem('token');
+    setProfile({
+      first_name: '',
+      last_name: '',
+      email: '',
+      phone: '',
+      birth_date: '',
+      gender: '',
+      profile_image: null,
+    });
+    navigate('/login'); // Redirect to login page
+  };
+
+  const formatDate = (isoDate: string): string => {
+    const date = new Date(isoDate);
+    const year = date.getFullYear();
+    const month = (`0${date.getMonth() + 1}`).slice(-2);
+    const day = (`0${date.getDate()}`).slice(-2);
+    return `${year}-${month}-${day}`;
+  };
+
   if (isLoading) {
-    return <CircularProgress />;
+    return <CircularProgress />; // Show loading spinner while fetching
   }
 
   return (
@@ -127,9 +127,6 @@ const Profile: React.FC = () => {
       <Box textAlign="center" mt={5} mb={3}>
         <Typography variant="h4" fontWeight="bold">
           User Profile
-        </Typography>
-        <Typography variant="subtitle1" color="text.secondary">
-          Manage your profile details and update your information.
         </Typography>
       </Box>
 
@@ -141,20 +138,16 @@ const Profile: React.FC = () => {
               alt="Profile Picture"
               sx={{ width: 150, height: 150, mb: 2 }}
             />
-            <Button variant="contained" component="label">
-              Upload Picture
-              <input type="file" hidden accept="image/*" onChange={handleImageChange} />
-            </Button>
           </Box>
         </Grid>
         <Grid item xs={12} md={8}>
-          <Box>
+          <Box component="form" noValidate autoComplete="off">
             <TextField
               fullWidth
               label="First Name"
               name="first_name"
               value={profile.first_name}
-              onChange={handleInputChange}
+              onChange={(e) => setProfile({ ...profile, first_name: e.target.value })}
               margin="normal"
             />
             <TextField
@@ -162,7 +155,7 @@ const Profile: React.FC = () => {
               label="Last Name"
               name="last_name"
               value={profile.last_name}
-              onChange={handleInputChange}
+              onChange={(e) => setProfile({ ...profile, last_name: e.target.value })}
               margin="normal"
             />
             <TextField
@@ -170,7 +163,7 @@ const Profile: React.FC = () => {
               label="Email"
               name="email"
               value={profile.email}
-              onChange={handleInputChange}
+              onChange={(e) => setProfile({ ...profile, email: e.target.value })}
               margin="normal"
             />
             <TextField
@@ -178,37 +171,41 @@ const Profile: React.FC = () => {
               label="Phone"
               name="phone"
               value={profile.phone}
-              onChange={handleInputChange}
+              onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
               margin="normal"
             />
             <TextField
               fullWidth
               label="Birth Date"
-              type="date"
               name="birth_date"
+              type="date"
               value={profile.birth_date}
-              onChange={handleInputChange}
+              onChange={(e) => setProfile({ ...profile, birth_date: e.target.value })}
+              InputLabelProps={{
+                shrink: true,
+              }}
               margin="normal"
-              InputLabelProps={{ shrink: true }}
             />
             <TextField
               fullWidth
               label="Gender"
               name="gender"
               value={profile.gender}
-              onChange={handleInputChange}
+              onChange={(e) => setProfile({ ...profile, gender: e.target.value })}
               margin="normal"
-              select
-              SelectProps={{ native: true }}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ mt: 2 }}
+              onClick={() => handleUpdate()}
             >
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="other">Other</option>
-            </TextField>
-            <Button variant="contained" color="primary" onClick={handleUpdate}>
               Update Profile
             </Button>
           </Box>
+          <Button variant="contained" color="secondary" onClick={handleLogout}>
+            Logout
+          </Button>
         </Grid>
       </Grid>
     </Container>

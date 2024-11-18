@@ -22,6 +22,8 @@ import RegisterPage from "../views/Register";
 import Dashboard from "../views/User/Dashboard";
 import Dashboards from "../views/Admin/Dashboards";
 import Profile from "../views/User/Profile";
+import Dbconcerts from "../views/Admin/Dbconcerts";
+import Dbsports from "../views/Admin/Dbsports";
 
 const Router: React.FC = () => {
   const [publicRouteElements, setPublicRouteElements] = useState<any[]>([])
@@ -153,6 +155,8 @@ const Router: React.FC = () => {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/dashboards" element={<Dashboards />} />
+        <Route path="/dbconcerts" element={<Dbconcerts />} />
+        <Route path="/dbsports" element={<Dbsports />} />
         
         
         <Route path="/" element={

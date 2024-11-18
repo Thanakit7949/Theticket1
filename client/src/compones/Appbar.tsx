@@ -26,6 +26,8 @@ import logo from '../assets/logo/pillars.png';
 import Dashboard from "../views/User/Dashboard";
 import Account from "../views/User/Account";
 import Dashboards from "../views/Admin/Dashboards";
+import Sidebar from "../views/Admin/sidebar";
+
 
 const pages = [
   { name: "Concert", path: "/concert" },
@@ -158,7 +160,10 @@ const AppBarT: React.FunctionComponent = () => {
           <Route path="/information" element={<Information />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/account" element={<Account />} />
-          <Route path="/dashboards" element={<Dashboards />} />         
+          <Route path="/dashboards" element={<Dashboards />} />  
+          <Route path="/sidebar" element={<Sidebar />} />  
+           
+
         </Routes>
       </Box>
     </>
