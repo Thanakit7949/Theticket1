@@ -273,16 +273,20 @@ export const routesConfig: {
       header: "",
       component: ProductDetail,
       icon: null,
-      children: [],
+      children: [
+        {
+            path: "payment",
+            name: "",
+            header: "",
+            component: PaymentPage,
+            icon: null,
+            children: [],
+          },
+
+
+      ],
     },
 
-    {
-      path: "/payment",
-      name: "",
-      header: "",
-      component: PaymentPage,
-      icon: null,
-      children: [],
-    },
+    
   ],
 };
