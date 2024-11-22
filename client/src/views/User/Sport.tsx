@@ -24,12 +24,12 @@ import { useNavigate } from "react-router-dom";
 const Sport: React.FC = () => {
   const navigate = useNavigate();
   const handleBuyTicket = (item: {
-    img: string;
-    title: string;
+    id: number;
+    name: string;
     date: string;
-    time: string;
     location: string;
-    price:number
+    price: number;
+    availableSeats: number;
   }) => {
     navigate("sport-detail", { state: item });
   };
@@ -50,103 +50,31 @@ const Sport: React.FC = () => {
   const allSports = [
     {
       img: s1Image,
-      title: "❤️‍🔥: ONE LUMPINEE UNITED Electric Cup 2024",
-      date: "🗓️: วันศุกร์ที่ 12 มกราคม 2567",
-      time: "⏰:  19:30 น.",
-      location: "📌: สนามมวยเวทีลุมพินี",
+      title: "❤️‍🔥: ",
+      date: "🗓️: ",
+      time: "⏰:  ",
+      location: "📌: ",
       price: 3800
-    },
-    {
-      img: s2Image,
-      title: "❤️‍🔥: MUANGTHONG UNITED Electric Cup 2024",
-      date: "🗓️: วันอาทิตย์ที่ 18 สิงหาคม 2567",
-      time: "⏰: 18.00 น.",
-      location: "📌: ธันเดอร์โดม สเตเดี้ยม",
-      price: 2900
-    },
-    {
-      img: s3Image,
-      title: "❤️‍🔥: MUANGTHONG UNITED Thai League Matchday",
-      date: "🗓️: วันอาทิตย์ที่ 18 สิงหาคม 2567",
-      time: "⏰: 20.00 น.",
-      location: "📌: ธันเดอร์โดม สเตเดี้ยม",
-      price: 3700
-    },
-    {
-      img: s4Image,
-      title: "❤️‍🔥: Muangthong United AFC Champions",
-      date: "🗓️: วันพฤหัสบดีที่ 5 ธันวาคม 2567",
-      time: "⏰: 19.00 น.",
-      location: "📌: สนามราชมังคลากีฬาสถาน",
-      price: 2800
-    },
-    {
-      img: s5Image,
-      title: "❤️‍🔥: ONE Fight Night 25 : Nicolas vs. Eersel II",
-      date: "🗓️: วันเสาร์ที่ 5 ตุลาคม 2567",
-      time: "⏰: 07.00 น.",
-      location: "📌:  สนามราชมังคลากีฬาสถาน",
-      price: 3200
-    },
-    {
-      img: s6Image,
-      title: "❤️‍🔥: ฟุตบอลชิงถ้วยพระราชทาน คิงส์คัพ Champions ",
-      date: "🗓️: วันศุกร์ที่ 11 ตุลาคม 2567",
-      time: "⏰: 16.30 น.",
-      location: "📌: สนามกีฬาติณสูลานนท์",
-      price: 5500
-    },
-    {
-      img: s7Image,
-      title: "❤️‍🔥: ASEAN Mitsubishi Electric Cup 2024",
-      date: "🗓️: วันอังคารที่ 15 ตุลาคม 2567",
-      time: "⏰: 19.30 น.",
-      location: "📌: Chonburi stadium",
-      price: 2500
     },
   ];
   const boxingSports = [
     {
       img: s1Image,
-      title: "❤️‍🔥: ONE LUMPINEE Electric Cup 2024",
-      date: "🗓️: วันศุกร์ที่ 12 มกราคม 2567",
-      time: "⏰:  19:30 น.",
-      location: "📌: สนามมวยเวทีลุมพินี",
+      title: "❤️‍🔥: ",
+      date: "🗓️: ",
+      time: "⏰:  ",
+      location: "📌: ",
       price: 3800
-    },
-    {
-      img: s5Image,
-      title: "❤️‍🔥: ONE Fight Night Electric Cup 2024",
-      date: "🗓️: วันเสาร์ที่ 5 ตุลาคม 2567",
-      time: "⏰: 07.00 น.",
-      location: "📌: สนามมวยเวทีลุมพินี",
-      price: 3200
     },
   ];
   const ballSports = [
     {
       img: s2Image,
-      title: "❤️‍🔥: MUANGTHONG UNITED Electric Cup 2024",
-      date: "🗓️: วันอาทิตย์ที่ 18 สิงหาคม 2567",
-      time: "⏰: 18.00 น.",
+      title: "❤️‍🔥: ",
+      date: "🗓️: ",
+      time: "⏰: ",
       location: "📌:สนามราชมังคลากีฬาสถาน",
       price: 2900
-    },
-    {
-      img: s3Image,
-      title: "❤️‍🔥: MUANGTHONG UNITED Thai League Matchday",
-      date: "🗓️: วันอาทิตย์ที่ 18 สิงหาคม 2567",
-      time: "⏰: 20.00 น.",
-      location: "📌: ธันเดอร์โดม สเตเดี้ยม",
-      price: 3700
-    },
-    {
-      img: s4Image,
-      title: "❤️‍🔥: Muangthong United AFC Champions",
-      date: "🗓️: วันพฤหัสบดีที่ 5 ธันวาคม 2567",
-      time: "⏰: 19.00 น.",
-      location: "📌: สนามราชมังคลากีฬาสถาน",
-      price: 2800
     },
   ];
   const otherSports = [
@@ -157,14 +85,6 @@ const Sport: React.FC = () => {
       time: "⏰: 16.30 น.",
       location: "📌: สนามกีฬาติณสูลานนท์",
       price: 5500
-    },
-    {
-      img: s7Image,
-      title: "❤️‍🔥: ASEAN Mitsubishi Electric Cup 2024",
-      date: "🗓️: วันอังคารที่ 15 ตุลาคม 2567",
-      time: "⏰: 19.30 น.",
-      location: "📌: Chonburi stadium ",
-      price: 2500
     },
   ];
 

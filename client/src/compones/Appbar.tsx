@@ -22,10 +22,12 @@ import Promotion from "../views/User/Promotion";
 import Product from "../views/User/Product";
 import Information from "../views/User/Information";
 import Profile from "../views/User/Profile";
-import Logout from "../views/Logout";
 import logo from '../assets/logo/pillars.png';
 import Dashboard from "../views/User/Dashboard";
 import Account from "../views/User/Account";
+import Dashboards from "../views/Admin/Dashboards";
+import Sidebar from "../views/Admin/sidebar";
+
 
 const pages = [
   { name: "Concert", path: "/concert" },
@@ -37,7 +39,7 @@ const pages = [
 const settings = [
   { name: "Profile", path: "/profile" },
   { name: "Account", path: "/account" },
-  { name: "Dashboard", path: "/dashboard" },
+  { name: "Dashboards", path: "/dashboards" },
   { name: "Logout", path: "/logout" }
 ];
 
@@ -158,8 +160,10 @@ const AppBarT: React.FunctionComponent = () => {
           <Route path="/information" element={<Information />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/account" element={<Account />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/logout" element={<Logout />} />
+          <Route path="/dashboards" element={<Dashboards />} />  
+          <Route path="/sidebar" element={<Sidebar />} />  
+           
+
         </Routes>
       </Box>
     </>
