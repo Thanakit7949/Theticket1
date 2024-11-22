@@ -16,7 +16,7 @@ const ProductDetail = () => {
 
   // แก้ไขปุ่ม navigate เพื่อส่ง selectedProducts ไปยัง PaymentPage
 const handleGoToPayment = () => {
-  navigate('/payment', { state: { selectedProducts, totalPrice: calculateTotalPrice() } });
+  navigate('payment', { state: { selectedProducts, totalPrice: calculateTotalPrice() } });
 };
 
 

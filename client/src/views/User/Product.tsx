@@ -50,7 +50,7 @@ const Product = () => {
   const navigate = useNavigate();
 
   const handleProductClick = (productId) => {
-    navigate(`/product/${productId}`);
+    navigate(`product/${productId}`);
   };
 
   const sliderSettings = {
@@ -93,7 +93,7 @@ const Product = () => {
   
   const handleConfirmPayment = () => {
     // Navigate to ProductDetail with cart data
-    navigate('/productDetail', { state: { selectedProducts: cart } });
+    navigate('productDetail', { state: { selectedProducts: cart } });
   };
 
   useEffect(() => {
@@ -130,6 +130,16 @@ const Product = () => {
         )
         .filter((item) => item.quantity > 0);
     });
+  };
+  
+  const [cartCount, setCartCount] = useState(0);
+  const [addedToCart, setAddedToCart] = useState(new Set());
+  
+  const handleCartIconClick = (productId) => {
+    if (!addedToCart.has(productId)) {
+      setCartCount((prevCount) => prevCount + 1);
+      setAddedToCart((prevSet) => new Set(prevSet).add(productId));
+    }
   };
   
 
@@ -191,8 +201,11 @@ const Product = () => {
             </Badge>
           </IconButton>
           <IconButton color="primary">
+          <Badge badgeContent={cartCount} color="error">
             <ShoppingCartIcon sx={{ fontSize: 32 }} />
+            </Badge>
           </IconButton>
+        
         </Box>
       </Box>
 
@@ -385,6 +398,12 @@ const Product = () => {
                 <IconButton onClick={() => handleFavoriteClick(product.id)}>
                   <FavoriteBorderIcon color={favorites.includes(product.id) ? "error" : "inherit"} />
                 </IconButton>
+                <IconButton 
+            onClick={() => handleCartIconClick(product.id)}
+            disabled={addedToCart.has(product.id)}
+          >
+            <ShoppingCartIcon color={addedToCart.has(product.id) ? "disabled" : "primary"} />
+          </IconButton>
                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 1 }}>
   <Button onClick={() => removeFromCart(product)}>-</Button>
   <Typography>{cart.find(item => item.id === product.id)?.quantity || 0}</Typography>

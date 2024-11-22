@@ -220,33 +220,44 @@ export const routesConfig: {
             header: "product",
             component: Product,
             icon: null,
-            children: [],
-        },
-        {
-            path: "/product/:id",
-            name: "",
-            header: "",
-            component: ProductDetail ,
-            icon: null,
-            children: [],
-        },
+            children: [
 
-        {
-            path: "/payment",
-            name: "",
-            header: "",
-            component: PaymentPage,
-            icon: null,
-            children: [],
+                {
+                    path: "product/:id",
+                    name: "",
+                    header: "",
+                    component: ProductDetail ,
+                    icon: null,
+                    children: [],
+                },
+
+                {
+                    path: "productDetail",
+                    name: "",
+                    header: "",
+                    component: ProductDetail,
+                    icon: null,
+                    children: [
+                        {
+                            path: "payment",
+                            name: "",
+                            header: "",
+                            component: PaymentPage,
+                            icon: null,
+                            children: [],
+                        },
+
+                    ],
+                },
+
+               
+
+
+            ],
         },
-        {
-            path: "/productDetail",
-            name: "",
-            header: "",
-            component: ProductDetail,
-            icon: null,
-            children: [],
-        },
+        
+
+       
 
         
         

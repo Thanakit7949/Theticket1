@@ -62,7 +62,7 @@ const PaymentPage = () => {
           <ListItem key={item.id} sx={{ display: 'flex', justifyContent: 'space-between', bgcolor: '#f9f9f9', borderRadius: 2, padding: 1, mb: 1 }}>
             <ListItemText
               primary={<Typography variant="body1" sx={{ fontWeight: 'bold' }}>{item.name}</Typography>}
-              secondary={<Typography variant="body2" color="text.secondary">จำนวน: {item.quantity} ราคา: {item.price} บาท</Typography>}
+              secondary={<Typography variant="body2" color="text.secondary">จำนวน: {item.quantity} ราคา: {item.price} </Typography>}
             />
           </ListItem>
         ))}

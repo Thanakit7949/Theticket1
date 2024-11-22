@@ -48,7 +48,7 @@ const RegisterPage: React.FC = () => {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '50px' }}>
-      <Typography variant="h4">Register</Typography>
+      <Typography variant="h4" color='black'>Register</Typography>
       <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', width: '400px' }}>
         
         <Box sx={{ display: 'flex', gap: '10px' }}>

@@ -36,7 +36,7 @@ const LoginPage: React.FunctionComponent<ILoginPagePageProps> = (props) => {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '50px' }}>
-      <Typography variant="h4">Login</Typography>
+      <Typography variant="h4" color='black'>Login</Typography>
       <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', width: '300px' }}>
         <TextField
           label="Email"
