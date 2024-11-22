@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import SportImage from "/src/assets/sport/sports.jpg";
 import Sport1Image from "/src/assets/sport/sports1.jpg";
@@ -19,6 +19,7 @@ import s5Image from "/src/assets/sport/all/s5.png";
 import s6Image from "/src/assets/sport/all/s6.png";
 import s7Image from "/src/assets/sport/all/s7.png";
 import { useNavigate } from "react-router-dom";
+import { ISports } from "./HomeTest";
 
 
 const Sport: React.FC = () => {
@@ -26,19 +27,72 @@ const Sport: React.FC = () => {
   const handleBuyTicket = (item: {
     id: number;
     name: string;
+    img: string;
     date: string;
+    time: string;
     location: string;
     price: number;
     availableSeats: number;
   }) => {
+    console.log("Item data:", item); // ตรวจสอบค่าที่ส่งมา
     navigate("sport-detail", { state: item });
   };
+  
 
   const [isHovered, setIsHovered] = useState(false);
   const [selected, setSelected] = useState("ทั้งหมด");
-
+  const [dataSports, setDataSports] = useState<any[]>([]); // Mock data for sports events
+  const [databoxingSports, setDataboxingSports] = useState<any[]>([]); // Mock data for sports events
   const images = [Sport6, Sport7, Sport8, Sport9];
 
+  useEffect(() => {
+    const fetchSports = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/getAllSports");
+        const data: ISports[] = await response.json();
+  // http://localhost:5000/src/assets/sport/sport5.jpg
+        // แปลงข้อมูลให้ตรงกับโครงสร้าง allSports
+        const formattedSports = data.map((item) => ({
+          id:item.id,
+          img: `http://localhost/sport/${item.image}`, // ใช้ฟิลด์ `img` จาก API
+          title: item.name, // ใช้ฟิลด์ `name` จาก API
+          date: `🗓️: ${item.date}`, // เพิ่มไอคอนหรือฟอร์แมตข้อความ
+          time: `⏰: ${item.time}`, // ฟิลด์ `time` (ถ้ามี)
+          location: `📌: ${item.location}`, // ใช้ฟิลด์ `location`
+          price: item.price, // ใช้ฟิลด์ `price`
+        }));
+  
+        setDataSports(formattedSports);
+      } catch (error) {
+        console.error("Error fetching sports data:", error);
+      }
+    };
+    const fetchSportsBoxing = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/getAllSportsBoxing");
+        const data: ISports[] = await response.json();
+  
+        // แปลงข้อมูลให้ตรงกับโครงสร้าง allSports
+        const formattedSports = data.map((item) => ({
+          id:item.id,
+          img: item.image, // ใช้ฟิลด์ `img` จาก API
+          title: item.name, // ใช้ฟิลด์ `name` จาก API
+          date: `🗓️: ${item.date}`, // เพิ่มไอคอนหรือฟอร์แมตข้อความ
+          time: `⏰: ${item.time}`, // ฟิลด์ `time` (ถ้ามี)
+          location: `📌: ${item.location}`, // ใช้ฟิลด์ `location`
+          price: item.price, // ใช้ฟิลด์ `price`
+        }));
+  
+        setDataboxingSports(formattedSports);
+      } catch (error) {
+        console.error("Error fetching sports data:", error);
+      }
+    };
+  
+    fetchSports();
+    fetchSportsBoxing();
+  }, []);
+  
   const categories = [
     { label: "ทั้งหมด", color: "#FF4081" }, // Highlighted button color
     { label: "BOXING", color: "#FF4081" },
@@ -46,6 +100,12 @@ const Sport: React.FC = () => {
     { label: "OTHER", color: "#FF4081" },
   ];
 
+      // img: image, 
+      // title: name,
+      // date:date,
+      // time: time,
+      // location: location,
+      // price: price
   // ข้อมูลกีฬา
   const allSports = [
     {
@@ -90,9 +150,9 @@ const Sport: React.FC = () => {
 
   const filteredEvents =
     selected === "ทั้งหมด"
-      ? allSports
+      ? dataSports
       : selected === "BOXING"
-      ? boxingSports
+      ? databoxingSports
       : selected === "FOOTBALL"
       ? ballSports
       : selected === "OTHER"
@@ -501,7 +561,19 @@ const Sport: React.FC = () => {
                 {event.location}
               </Typography>
               <Button
-                onClick={() => handleBuyTicket(event)}
+                // onClick={() => handleBuyTicket(event)}
+                onClick={() =>
+                  handleBuyTicket({
+                    id: event.id,
+                    img: event.img,
+                    time: event.time,
+                    name: event.title,
+                    date: event.date,
+                    location: event.location,
+                    price: event.price,
+                    availableSeats: event.availableSeats,
+                  })
+                }
                 variant="contained"
                 sx={{
                   marginTop: 2,

@@ -56,6 +56,7 @@ export interface ISports {
   id: number;
   name: string;
   date: string;
+  time: string;
   price: string;
   available_seats: number;
   location: string;

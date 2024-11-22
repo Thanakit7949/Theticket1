@@ -113,6 +113,18 @@ app.get('/getAllSports', (req, res) => {
   });
 });
 
+app.get('/getAllSportsBoxing', (req, res) => {
+  const query = 'SELECT * FROM boxing'; // ดึงข้อมูลทั้งหมดจาก concerts
+  db.query(query, (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: 'Database error', error: err.message });
+    }
+    return res.json(results); // ส่งผลลัพธ์เป็น JSON
+  });
+});
+
+
+
 // Add concert
 app.post('/addConcert', (req, res) => {
   const { name, description, date, location, price, availableSeats } = req.body;
