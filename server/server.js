@@ -11,12 +11,7 @@ const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: '',
-// <<<<<<<<< Temporary merge branch 1
   database: 'ticket_db'
-// =========
-  // database: 'testtwo',
-// >>>>>>>>> Temporary merge branch 2
-  database: 'db_data',
 });
 
 db.connect((err) => {

@@ -551,12 +551,13 @@ const Sport: React.FC = () => {
               border: "2px solid white",
               borderRadius: 2,
               padding: 2,
+              backgroundColor:"#fce4ec",
               flexBasis: "calc(36.33% - 50px)", // ใช้ 33.33% ของความกว้างลดด้วยระยะห่าง
               margin: "10px 0", // เพิ่ม margin เพื่อเว้นระยะห่างระหว่างกรอบ
               transition: "transform 0.3s",
               "&:hover": {
                 transform: "scale(1.05)",
-                backgroundColor: "#fce4ec",
+                backgroundColor: "white",
                 boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)",
               },
             }}

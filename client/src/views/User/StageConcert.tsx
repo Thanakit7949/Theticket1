@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Box, Button, Stack, Tooltip, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom"; // นำเข้า useNavigate
 
-const ConcertStage: React.FC = () => {
+const StageConcert: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState(5 * 60);
   const [selectedPrice, setSelectedPrice] = useState<string | null>(null);
   const navigate = useNavigate(); // ประกาศใช้ navigate
@@ -48,7 +48,7 @@ const ConcertStage: React.FC = () => {
     : tickets;
 
   const handleBuyTicket = (price: string, label: string) => {
-    navigate("/concert/std-page", { state: { price, label } });
+    navigate("/concert/seat-concert", { state: { price, label } });
   };
 
   return (
@@ -61,6 +61,8 @@ const ConcertStage: React.FC = () => {
         minHeight: "100vh",
         padding: "20px",
         width: "1150px", // เพิ่มความยาวของกรอบ
+        height:"1100px",
+        maxHeight:"none",
         maxWidth: "none", // กำหนดให้ไม่มีขนาดกว้างสุดที่จำกัด
       }}
     >
@@ -245,8 +247,8 @@ const ConcertStage: React.FC = () => {
                     const ticket = tickets.find(
                       (ticket) => ticket.label === label
                     );
-                    // ส่งข้อมูลไปยังหน้า StdPage พร้อมกับชื่อโซน (label) และราคา
-                    navigate("/concert/std-page", {
+                    // ส่งข้อมูลไปยังหน้า seat-concert พร้อมกับชื่อโซน (label) และราคา
+                    navigate("/concert/seat-concert", {
                       state: { price: ticket?.price, label },
                     });
                   }}
@@ -288,8 +290,8 @@ const ConcertStage: React.FC = () => {
                  const ticket = tickets.find(
                    (ticket) => ticket.label === label
                  );
-                 // ส่งข้อมูลไปยังหน้า StdPage พร้อมกับชื่อโซน (label) และราคา
-                 navigate("/concert/std-page", {
+                 // ส่งข้อมูลไปยังหน้า seat-concert พร้อมกับชื่อโซน (label) และราคา
+                 navigate("/concert/seat-concert", {
                    state: { price: ticket?.price, label },
                  });
                }}
@@ -332,8 +334,8 @@ const ConcertStage: React.FC = () => {
                  const ticket = tickets.find(
                    (ticket) => ticket.label === label
                  );
-                 // ส่งข้อมูลไปยังหน้า StdPage พร้อมกับชื่อโซน (label) และราคา
-                 navigate("/concert/std-page", {
+                 // ส่งข้อมูลไปยังหน้า seat-concert พร้อมกับชื่อโซน (label) และราคา
+                 navigate("/concert/seat-concert", {
                    state: { price: ticket?.price, label },
                  });
                }}
@@ -377,8 +379,8 @@ const ConcertStage: React.FC = () => {
                 const ticket = tickets.find(
                   (ticket) => ticket.label === label
                 );
-                // ส่งข้อมูลไปยังหน้า StdPage พร้อมกับชื่อโซน (label) และราคา
-                navigate("/concert/std-page", {
+                // ส่งข้อมูลไปยังหน้า seat-concert พร้อมกับชื่อโซน (label) และราคา
+                navigate("/concert/seat-concert", {
                   state: { price: ticket?.price, label },
                 });
               }}
@@ -422,4 +424,4 @@ const ConcertStage: React.FC = () => {
   );
 };
 
-export default ConcertStage;
+export default StageConcert;

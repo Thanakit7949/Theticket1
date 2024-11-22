@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 
-const StdPage: React.FC = () => {
+const SeatConcert: React.FC = () => {
   const location = useLocation();
   const { price, label } = location.state || {}; // รับข้อมูลทั้งราคาและชื่อโซน (label)
   const [selectedSeats, setSelectedSeats] = useState<
@@ -74,7 +74,7 @@ const StdPage: React.FC = () => {
   const navigate = useNavigate(); // เรียกใช้ useNavigate
     // ฟังก์ชันสำหรับการไปที่หน้า Payment
     const handleBuyTicket = () => {
-      navigate("payment", {
+      navigate("payment-concert", {
         state: {
           price,
           label,
@@ -90,8 +90,9 @@ const StdPage: React.FC = () => {
         flexDirection: "row",
         alignItems: "flex-start",
         background: "linear-gradient(135deg, #EECDA3 0%, #EF629F 100%);",
-        minHeight: "100vh",
+        height:"800px",
         padding: "20px",
+        maxHeight:"none",
         width: "1150px",
         maxWidth: "none",
       }}
@@ -444,4 +445,4 @@ const StdPage: React.FC = () => {
   );
 };
 
-export default StdPage;
+export default SeatConcert;

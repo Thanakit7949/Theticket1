@@ -1,10 +1,17 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Box, Typography, Button } from "@mui/material";
 
 const SportDetail: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const sport = location.state; // รับข้อมูลจากหน้าเดิมที่ถูกส่งมา
+
+    // ฟังก์ชันสำหรับกดปุ่ม "ซื้อบัตร"
+    const handleBuyTicket = () => {
+      // ส่งข้อมูลเฉพาะที่ต้องการไปยังหน้า 'stage'
+      navigate('stage-sport');
+    };
 
   return (
     <Box
@@ -64,15 +71,16 @@ const SportDetail: React.FC = () => {
           <Button
             variant="contained"
             sx={{
-              backgroundColor: "red",
-              color: "white",
-              padding: "8px 16px",
-              borderRadius: "30px",
-              fontWeight: "bold",
-              "&:hover": {
-                backgroundColor: "darkred",
+              backgroundColor: 'red',
+              color: 'white',
+              padding: '8px 16px',
+              borderRadius: '30px',
+              fontWeight: 'bold',
+              '&:hover': {
+                backgroundColor: 'darkred',
               },
             }}
+            onClick={handleBuyTicket}
           >
             ซื้อบัตร
           </Button>

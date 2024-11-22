@@ -9,6 +9,7 @@ import { routesConfig } from "./RounterConfig";
 import { MainRouter } from "../interface/Router.interface";
 import Home from "../views/Home"
 import RegisterPage from "../views/Register";
+import Dashboard from "../views/User/Dashboard";
 
 
 const Router: React.FC = () => {

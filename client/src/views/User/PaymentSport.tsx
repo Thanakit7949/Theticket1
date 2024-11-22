@@ -16,7 +16,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import Image from "/src/assets/concert/mastercard.png";
@@ -24,24 +24,10 @@ import Image1 from "/src/assets/concert/visa.jpg";
 import Image2 from "/src/assets/concert/jcb.png";
 import Image3 from "/src/assets/concert/express.png";
 import Image4 from "/src/assets/concert/prompt.png";
+import Image5 from "/src/assets/concert/qrcode.jpg";
 import CloseIcon from "@mui/icons-material/Close";
-import { toPng } from "html-to-image";
-import download from "downloadjs";
 
-const handleSaveAsImage = () => {
-  const dialogContent = document.getElementById("dialog-content");
-  if (!dialogContent) return;
-
-  toPng(dialogContent)
-    .then((dataUrl) => {
-      download(dataUrl, "confirmation.png"); // ตั้งชื่อไฟล์ที่ต้องการบันทึก
-    })
-    .catch((error) => {
-      console.error("Failed to save as image:", error);
-    });
-};
-
-const Payment: React.FC = () => {
+const PaymentSport: React.FC = () => {
   const location = useLocation();
   const { price, label, selectedSeats } = location.state || {}; // ค่าที่ส่งมาจากหน้า Concert
 
@@ -73,6 +59,7 @@ const Payment: React.FC = () => {
   const handleCloseCardDialog = () => setOpenCardDialog(false);
 
   const [openPromptPayDialog, setOpenPromptPayDialog] = useState(false);
+
   const handleOpenPromptPayDialog = () => setOpenPromptPayDialog(true);
   const handleClosePromptPayDialog = () => setOpenPromptPayDialog(false);
 
@@ -107,6 +94,8 @@ const Payment: React.FC = () => {
     validateForm();
   }, [creditCardNumber, cardName, expirationMonth, expirationYear, cvv]);
 
+  const navigate = useNavigate();
+
   return (
     <Box
       p={2}
@@ -118,6 +107,8 @@ const Payment: React.FC = () => {
       border={1}
       borderColor="gray.700"
       width={970}
+      maxHeight="none"
+      height={1750}
       sx={{
         background: "linear-gradient(135deg, #EECDA3 0%, #EF629F 100%);",
       }}
@@ -675,13 +666,13 @@ const Payment: React.FC = () => {
               </Box>
               {/* ข้อมูลการชำระเงิน */}
               <Typography
-                variant="body2"
+                variant="h6"
                 sx={{ mt: 2, color: "black", textAlign: "left", mb: 2 }}
               >
                 ข้อมูลการชำระจะปรากฎชื่อ OPN "INTERGATER"
               </Typography>
               <Typography
-                variant="body2"
+                variant="h6"
                 sx={{ color: "black", textAlign: "left" }}
               >
                 เรารองรับการชำระเงินผ่านบัตรเดบิตของ KTB, Bangkok Bank, SCB,
@@ -724,32 +715,54 @@ const Payment: React.FC = () => {
                   }}
                 >
                   <Typography variant="h5" sx={{ color: "white" }}>
-                    คุณทำการสั่งซื้อเรียบร้อยแล้ว!!!
+                    คุณแน่ใจหรือไม่ว่าจะยืนยันการสั่งซื้อ!!!
                   </Typography>
-                  <IconButton onClick={handleCloseCardDialog}>
-                    <CloseIcon />
-                  </IconButton>
                 </DialogTitle>
 
-                <DialogContent
-                  id="dialog-content"
-                  sx={{ backgroundColor: "white" }}
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    padding: "20px",
+                  }}
                 >
-                  {/* เนื้อหาของ Dialog */}
-                  <Box sx={{ padding: 2, color: "#151515" }}>
-                    {/* ใส่ข้อมูลตามที่ต้องการ */}
-                  </Box>
-                  <DialogActions>
-                    <Button onClick={handleSaveAsImage} color="success">
-                      บันทึกเป็นภาพ
-                    </Button>
-                    <Button onClick={handleCloseCardDialog} color="primary">
-                      ปิด
-                    </Button>
-                  </DialogActions>
-                </DialogContent>
+                  <Button
+                    variant="contained"
+                    sx={{
+                      borderRadius: 20,
+                      backgroundColor: "green",
+                      width: "48%",
+                      height: 50,
+                      fontSize: "18px",
+                      "&:hover": {
+                        backgroundColor: "#c40d19",
+                      },
+                    }}
+                    onClick={() => navigate("/sport/ticket-sport", { state: { price, label, selectedSeats } })}
+                  >
+                    ยืนยัน
+                  </Button>
+
+                  <Button
+                    variant="outlined"
+                    sx={{
+                      borderRadius: 20,
+                      border: "1px solid red",
+                      color: "red",
+                      width: "48%",
+                      height: 50,
+                      fontSize: "18px",
+                      "&:hover": {
+                        backgroundColor: "rgba(255, 0, 0, 0.1)",
+                        border: "1px solid red",
+                      },
+                    }}
+                    onClick={handleCloseCardDialog}
+                  >
+                    ยกเลิก
+                  </Button>
+                </div>
               </Dialog>
-              ;
             </Box>
           </Collapse>
         </Box>
@@ -787,7 +800,7 @@ const Payment: React.FC = () => {
           <Collapse in={openSection === "promptPay"}>
             <Box sx={{ backgroundColor: "white", color: "black", p: 3 }}>
               <Typography
-                variant="body2"
+                variant="h6"
                 sx={{ mb: 2, color: "black", textAlign: "left" }}
               >
                 ชำระผ่านช่องทางพร้อมเพย์
@@ -804,13 +817,13 @@ const Payment: React.FC = () => {
 
               {/* ข้อมูลการชำระเงิน */}
               <Typography
-                variant="body2"
+                variant="h6"
                 sx={{ mt: 2, color: "black", textAlign: "left" }}
               >
                 ขั้นตอนการชำระเงิน
               </Typography>
               <Typography
-                variant="body2"
+                variant="h6"
                 sx={{ color: "black", textAlign: "left" }}
               >
                 หลังจากคลิกยืนยันการชำระเงิน ระบบจะสร้าง QR Code สำหรับชำระเงิน
@@ -852,7 +865,7 @@ const Payment: React.FC = () => {
                   }}
                 >
                   <Typography variant="h6" sx={{ color: "white" }}>
-                    รอการชำระเงินจากคุณfffff
+                    รอการชำระเงินจากคุณ
                   </Typography>
                   <IconButton onClick={handleClosePromptPayDialog}>
                     <CloseIcon />
@@ -861,123 +874,42 @@ const Payment: React.FC = () => {
 
                 <DialogContent sx={{ backgroundColor: "white" }}>
                   <Box sx={{ padding: 2, color: "#151515" }}>
-                    <Box
-                      display="flex"
-                      alignItems="center"
-                      gap={2}
-                      sx={{ mb: 2 }}
+                    <Typography
+                      variant="h4"
+                      align="center"
+                      sx={{ fontWeight: "bold", mb: 5 }}
                     >
-                      <img
-                        src="image_url_here"
-                        alt="Event Thumbnail"
-                        style={{ width: 100, borderRadius: 8 }}
-                      />
-                      <Box>
-                        <Typography variant="h6">
-                          Y and Pride Perspectives Talk : Charlotte Austin
-                        </Typography>
-                        <Typography variant="h6" color="gray">
-                          📅 6 ธันวาคม 2024
-                        </Typography>
-                        <Typography variant="h6" color="gray">
-                          🕒 17:00 – 22:00 น.
-                        </Typography>
-                        <Typography variant="h6" color="gray">
-                          📍 Glowfish Siam Patumwan
-                        </Typography>
-                      </Box>
-                    </Box>
+                      PromptPay QR Code
+                    </Typography>
 
+                    <img
+                      src={Image5}
+                      alt="Event Thumbnail"
+                      style={{
+                        width: "400px", // ปรับขนาดภาพให้ใหญ่ขึ้น
+                        borderRadius: "16px", // ขอบมน
+                        marginTop: "15px",
+                        display: "block", // ทำให้ภาพเป็นบล็อกเพื่อจัดตำแหน่ง
+                        margin: "0 auto", // จัดให้ภาพอยู่ตรงกลาง
+                      }}
+                    />
+                    <Typography
+                      variant="h6"
+                      align="center"
+                      sx={{ fontWeight: "bold", mb: 2 }}
+                    >
+                      SCAN QR CODE
+                    </Typography>
                     <Divider sx={{ backgroundColor: "gray" }} />
 
                     <Box sx={{ mt: 2 }}>
-                      <Typography variant="h6">
-                        หมายเลขคำสั่งซื้อ : 2024111413633000264
-                      </Typography>
-                      <Box sx={{ mt: 2 }}>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                          }}
-                        >
-                          <Typography variant="h6">จำนวนบัตร:</Typography>
-                          <Typography variant="h6">
-                            {selectedSeats.length} ใบ
-                          </Typography>
-                        </Box>
-
-                        <Box
-                          sx={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            mt: 1,
-                          }}
-                        >
-                          <Typography variant="h6">โซน:</Typography>
-                          <Typography variant="h6">{label}</Typography>
-                        </Box>
-
-                        <Box
-                          sx={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                          }}
-                        >
-                          <Typography variant="h6">ราคาบัตร:</Typography>
-                          <Typography variant="h6">฿{numericPrice}</Typography>
-                        </Box>
-                      </Box>
-                      <Divider sx={{ backgroundColor: "gray", my: 2 }} />
-                      <Box
-                        sx={{
-                          mt: 2,
-                          display: "flex",
-                          justifyContent: "space-between",
-                        }}
-                      >
-                        <Typography variant="h6">ราคารวม:</Typography>
-                        <Typography variant="h6">
-                          ฿{totalSeatPrice.toFixed(2)}
-                        </Typography>
-                      </Box>
-
-                      <Box
-                        sx={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                        }}
-                      >
-                        <Typography variant="h6">
-                          ค่าบริการ (VAT 7%):
-                        </Typography>
-                        <Typography variant="h6">
-                          ฿{vatAmount.toFixed(2)}
-                        </Typography>
-                      </Box>
-
-                      <Box
-                        sx={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                        }}
-                      >
-                        <Typography variant="h6">
-                          ค่าธรรมเนียมบัตรเดบิต/เครดิต (VAT 7%):
-                        </Typography>
-                        <Typography variant="h6">
-                          ฿{serviceFee.toFixed(2)}
-                        </Typography>
-                      </Box>
-
-                      <Divider sx={{ backgroundColor: "gray", my: 2 }} />
-
+                      <Box sx={{ mt: 2 }}></Box>
                       <Typography
                         variant="h5"
                         align="center"
-                        sx={{ color: "#e91e63" }}
+                        sx={{ color: "black", fontWeight: "bold" }}
                       >
-                        ราคาสุทธิ ฿{totalPrice.toFixed(2)}
+                        ฿{totalPrice.toFixed(2)}
                       </Typography>
                     </Box>
                     <Button
@@ -994,8 +926,9 @@ const Payment: React.FC = () => {
                           border: "1px solid white",
                         },
                       }}
+                      onClick={() => navigate("/sport/ticket-sport", { state: { price, label, selectedSeats } })}
                     >
-                      ชำระเงินด้วยเดบิต/เครดิตการ์ด
+                      กดเพื่อแสดงหน้าใบเสร็จ
                     </Button>
                   </Box>
                 </DialogContent>
@@ -1008,4 +941,4 @@ const Payment: React.FC = () => {
   );
 };
 
-export default Payment;
+export default PaymentSport;
