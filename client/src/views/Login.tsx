@@ -3,9 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { TextField, Button, Typography, Box } from '@mui/material';
 
-export interface ILoginPagePageProps {}
-
-const LoginPage: React.FunctionComponent<ILoginPagePageProps> = (props) => {
+const LoginPage: React.FunctionComponent = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -21,6 +19,23 @@ const LoginPage: React.FunctionComponent<ILoginPagePageProps> = (props) => {
       });
   
       const data = response.data;
+  
+      // Save user info in localStorage as an array
+      const userData = {
+        id: data.id,
+        first_name: data.first_name,
+        last_name: data.last_name,
+        email: data.email,
+        role: data.role,
+      };
+      let users = JSON.parse(localStorage.getItem('users') || '[]');
+      users.push(userData);
+      localStorage.setItem('users', JSON.stringify(users));
+  
+      // Save token as usual
+      localStorage.setItem('token', data.token);
+  
+      // Redirect based on role
       if (data.role === 'admin') {
         navigate('/home-admin');
       } else if (data.role === 'user') {
@@ -28,16 +43,26 @@ const LoginPage: React.FunctionComponent<ILoginPagePageProps> = (props) => {
       } else {
         setMessage('Unknown role');
       }
-    } catch (error) {
-      console.error(error);
-      setMessage('Login failed');
+    } catch (error: any) {
+      console.error('Login error:', error.response?.data || error.message);
+      setMessage(error.response?.data?.message || 'Login failed');
     }
   };
-
+  
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '50px' }}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        marginTop: '50px',
+      }}
+    >
       <Typography variant="h4">Login</Typography>
-      <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', width: '300px' }}>
+      <form
+        onSubmit={handleLogin}
+        style={{ display: 'flex', flexDirection: 'column', width: '300px' }}
+      >
         <TextField
           label="Email"
           value={email}
@@ -53,7 +78,12 @@ const LoginPage: React.FunctionComponent<ILoginPagePageProps> = (props) => {
           margin="normal"
           fullWidth
         />
-        <Button type="submit" variant="contained" color="primary" style={{ marginTop: '20px' }}>
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          style={{ marginTop: '20px' }}
+        >
           Login
         </Button>
         <Button
@@ -65,7 +95,11 @@ const LoginPage: React.FunctionComponent<ILoginPagePageProps> = (props) => {
           Register
         </Button>
       </form>
-      {message && <Typography variant="body1" color="error">{message}</Typography>}
+      {message && (
+        <Typography variant="body1" color="error">
+          {message}
+        </Typography>
+      )}
     </Box>
   );
 };

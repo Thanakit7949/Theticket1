@@ -10,6 +10,10 @@ import { MainRouter } from "../interface/Router.interface";
 import Home from "../views/Home"
 import RegisterPage from "../views/Register";
 import Dashboard from "../views/User/Dashboard";
+import Dashboards from "../views/Admin/Dashboards";
+import Profile from "../views/User/Profile";
+import Dbconcerts from "../views/Admin/Dbconcerts";
+import Dbsports from "../views/Admin/Dbsports";
 
 
 const Router: React.FC = () => {
@@ -141,8 +145,10 @@ const Router: React.FC = () => {
     <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/dashboards" element={<Dashboards />} />
+        <Route path="/dbconcerts" element={<Dbconcerts />} />
+        <Route path="/dbsports" element={<Dbsports />} />
         
         
         <Route path="/" element={

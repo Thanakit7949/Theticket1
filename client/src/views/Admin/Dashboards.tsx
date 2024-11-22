@@ -1,49 +1,69 @@
-// Dashboard.tsx
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { Box, Typography, Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
-
-interface DashboardsData {
-  id: number;
-  name: string;
-  value: string; // Adjust fields according to your MySQL table structure
-}
+import React, { useState } from "react";
+import { Box, Typography, Button } from "@mui/material";
+import Dbconcerts from "./Dbconcerts";
+import Dbsports from "./Dbsports";
+import Profile from "../User/Profile";
 
 const Dashboards: React.FC = () => {
-  const [data, setData] = useState<DashboardsData[]>([]);
-
-  useEffect(() => {
-    axios.get("/api/dashboard/data") // Fetch data from Express API
-      .then((response) => setData(response.data))
-      .catch((error) => console.error("Error fetching data:", error));
-  }, []);
+  // State สำหรับจัดการการแสดงเนื้อหา
+  const [activeContent, setActiveContent] = useState<string>("profile");
 
   return (
-    <Container>
-      <Box textAlign="center" mt={5}>
-        <Typography variant="h4">Dashboards</Typography>
+    <Box display="flex" position="fixed" top={0} left={0} width="100vw" height="100vh">
+      {/* Sidebar */}
+      <Box width="250px" bgcolor="primary.main" color="white" height="100%" p={2}>
+        <Typography variant="h6" mb={2}>
+          Admin Dashboard
+        </Typography>
+        {/* Sidebar Buttons */}
+        <Button
+          fullWidth
+          variant="text"
+          color="inherit"
+          sx={{
+            justifyContent: "flex-start",
+            textTransform: "none",
+            "&:hover": { bgcolor: "primary.light" },
+          }}
+          onClick={() => setActiveContent("welcome")}
+        >
+          Profile
+        </Button>
+        <Button
+          fullWidth
+          variant="text"
+          color="inherit"
+          sx={{
+            justifyContent: "flex-start",
+            textTransform: "none",
+            "&:hover": { bgcolor: "primary.light" },
+          }}
+          onClick={() => setActiveContent("concerts")}
+        >
+          Concerts
+        </Button>
+        <Button
+          fullWidth
+          variant="text"
+          color="inherit"
+          sx={{
+            justifyContent: "flex-start",
+            textTransform: "none",
+            "&:hover": { bgcolor: "primary.light" },
+          }}
+          onClick={() => setActiveContent("sports")}
+        >
+          Sports
+        </Button>
       </Box>
-      <TableContainer component={Paper} sx={{ mt: 3 }}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Value</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {data.map((item) => (
-              <TableRow key={item.id}>
-                <TableCell>{item.id}</TableCell>
-                <TableCell>{item.name}</TableCell>
-                <TableCell>{item.value}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Container>
+
+      {/* Main Content */}
+      <Box flexGrow={1} p={3} bgcolor="#fff5e6">
+        {activeContent === "profile" && <Profile />}
+        {activeContent === "concerts" && <Dbconcerts />}
+        {activeContent === "sports" && <Dbsports />}
+      </Box>
+    </Box>
   );
 };
 
