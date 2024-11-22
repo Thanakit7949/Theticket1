@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Typography, TextField, Button, MenuItem, FormControl, Select, InputLabel, Snackbar } from '@mui/material';
+import { Box, Typography, TextField, Button, MenuItem, FormControl, Select, InputLabel, Snackbar, List, ListItem, ListItemText } from '@mui/material';
 import { useLocation } from 'react-router-dom';
 import MuiAlert from '@mui/material/Alert';
 
@@ -9,7 +9,7 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 
 const PaymentPage = () => {
   const location = useLocation();
-  const { product, quantity } = location.state || {};
+  const { selectedProducts, totalPrice } = location.state || { selectedProducts: [], totalPrice: 0 };
 
   const [name, setName] = useState('');
   const [surname, setSurname] = useState('');
@@ -25,18 +25,15 @@ const PaymentPage = () => {
   const [orderNumber, setOrderNumber] = useState('');
 
   const handleSubmit = () => {
-    // Validate all fields
     if (!name || !surname || !address || !phone || !paymentMethod) {
-      alert("Please fill in all required fields.");
+      alert("กรุณากรอกข้อมูลให้ครบถ้วน");
       return;
     }
 
-    // Generate a random order number
     const generatedOrderNumber = Math.floor(Math.random() * 1000000).toString();
     setOrderNumber(generatedOrderNumber);
     setOpen(true);
 
-    // Handle the form submission (log the details)
     console.log({
       name,
       surname,
@@ -56,126 +53,68 @@ const PaymentPage = () => {
     setOpen(false);
   };
 
-  if (!product) return <Typography>Loading...</Typography>;
-
   return (
-    <Box sx={{ padding: 4, maxWidth: '500px', margin: 'auto', borderRadius: 2, boxShadow: 3, bgcolor: 'background.paper' }}>
-      <Typography variant="h4" sx={{ marginBottom: 2 }}>Payment Details</Typography>
+    <Box sx={{ padding: 4, maxWidth: '600px', margin: 'auto', borderRadius: 3, boxShadow: 4, bgcolor: 'background.paper' }}>
+      <Typography variant="h4" sx={{ marginBottom: 2, color: 'primary.main', textAlign: 'center' }}>Payment</Typography>
 
-      <Typography variant="h6">{product.name} x {quantity}</Typography>
-      <Typography variant="h6">Total Price: {(product.price * quantity).toLocaleString()} ฿</Typography>
+      <List sx={{ marginBottom: 3 }}>
+        {selectedProducts.map((item) => (
+          <ListItem key={item.id} sx={{ display: 'flex', justifyContent: 'space-between', bgcolor: '#f9f9f9', borderRadius: 2, padding: 1, mb: 1 }}>
+            <ListItemText
+              primary={<Typography variant="body1" sx={{ fontWeight: 'bold' }}>{item.name}</Typography>}
+              secondary={<Typography variant="body2" color="text.secondary">จำนวน: {item.quantity} ราคา: {item.price} </Typography>}
+            />
+          </ListItem>
+        ))}
+      </List>
 
-      <TextField
-        fullWidth
-        label="Name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        sx={{ marginY: 2 }}
-        required
-      />
-      <TextField
-        fullWidth
-        label="Surname"
-        value={surname}
-        onChange={(e) => setSurname(e.target.value)}
-        sx={{ marginY: 2 }}
-        required
-      />
-      <TextField
-        fullWidth
-        label="Address"
-        value={address}
-        onChange={(e) => setAddress(e.target.value)}
-        sx={{ marginY: 2 }}
-        required
-      />
-      <TextField
-        fullWidth
-        label="Phone Number"
-        value={phone}
-        onChange={(e) => setPhone(e.target.value)}
-        sx={{ marginY: 2 }}
-        required
-      />
+      <Typography variant="h6" sx={{ marginBottom: 4, color: 'secondary.main', textAlign: 'center' }}>
+        ราคารวมทั้งหมด: {totalPrice.toLocaleString()} บาท
+      </Typography>
+
+      <TextField fullWidth label="ชื่อ" value={name} onChange={(e) => setName(e.target.value)} sx={{ marginY: 1 }} required />
+      <TextField fullWidth label="นามสกุล" value={surname} onChange={(e) => setSurname(e.target.value)} sx={{ marginY: 1 }} required />
+      <TextField fullWidth label="ที่อยู่" value={address} onChange={(e) => setAddress(e.target.value)} sx={{ marginY: 1 }} required />
+      <TextField fullWidth label="เบอร์โทรศัพท์" value={phone} onChange={(e) => setPhone(e.target.value)} sx={{ marginY: 1 }} required />
 
       <FormControl fullWidth sx={{ marginY: 2 }}>
-        <InputLabel>Payment Method</InputLabel>
-        <Select
-          value={paymentMethod}
-          onChange={(e) => setPaymentMethod(e.target.value)}
-        >
-          <MenuItem value="Credit Card">Credit Card</MenuItem>
-          <MenuItem value="Bank Transfer">Bank Transfer</MenuItem>
+        <InputLabel>วิธีการชำระเงิน</InputLabel>
+        <Select value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)} sx={{ borderRadius: 2 }}>
+          <MenuItem value="Credit Card">บัตรเครดิต</MenuItem>
+          <MenuItem value="Bank Transfer">โอนผ่านธนาคาร</MenuItem>
         </Select>
       </FormControl>
 
       {paymentMethod === 'Credit Card' && (
         <Box>
-          <TextField
-            fullWidth
-            label="Card Number"
-            value={cardNumber}
-            onChange={(e) => setCardNumber(e.target.value)}
-            sx={{ marginY: 2 }}
-            required
-          />
-          <TextField
-            fullWidth
-            label="Card Holder Name"
-            value={cardHolder}
-            onChange={(e) => setCardHolder(e.target.value)}
-            sx={{ marginY: 2 }}
-            required
-          />
+          <TextField fullWidth label="หมายเลขบัตร" value={cardNumber} onChange={(e) => setCardNumber(e.target.value)} sx={{ marginY: 1 }} required />
+          <TextField fullWidth label="ชื่อผู้ถือบัตร" value={cardHolder} onChange={(e) => setCardHolder(e.target.value)} sx={{ marginY: 1 }} required />
         </Box>
       )}
 
       {paymentMethod === 'Bank Transfer' && (
-        <Box>
-          <FormControl fullWidth sx={{ marginY: 2 }}>
-            <InputLabel>Bank Name</InputLabel>
-            <Select
-              value={bankName}
-              onChange={(e) => setBankName(e.target.value)}
-              required
-            >
-              <MenuItem value="Bank of America">Bank of America</MenuItem>
-              <MenuItem value="Chase Bank">Chase Bank</MenuItem>
-              <MenuItem value="Wells Fargo">Wells Fargo</MenuItem>
+        <Box sx={{ mt: 2 }}>
+          <FormControl fullWidth sx={{ marginY: 1 }}>
+            <InputLabel>ชื่อธนาคาร</InputLabel>
+            <Select value={bankName} onChange={(e) => setBankName(e.target.value)} sx={{ borderRadius: 2 }} required>
+              <MenuItem value="ธนาคารกรุงเทพ">ธนาคารกรุงเทพ</MenuItem>
+              <MenuItem value="ธนาคารกรุงไทย">ธนาคารกรุงไทย</MenuItem>
             </Select>
           </FormControl>
 
-          <TextField
-            fullWidth
-            label="Transaction Reference Number"
-            value={transactionReference}
-            onChange={(e) => setTransactionReference(e.target.value)}
-            sx={{ marginY: 2 }}
-            required
-          />
-
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => setSlip(e.target.files[0])}
-            style={{ marginY: 2 }}
-          />
-          <Typography variant="body2" color="text.secondary">Upload your transfer slip</Typography>
+          <TextField fullWidth label="รหัสอ้างอิงการโอน" value={transactionReference} onChange={(e) => setTransactionReference(e.target.value)} sx={{ marginY: 1 }} required />
+          <input type="file" accept="image/*" onChange={(e) => setSlip(e.target.files[0])} style={{ marginY: 2 }} />
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>อัปโหลดสลิปโอนเงิน</Typography>
         </Box>
       )}
 
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleSubmit}
-        sx={{ marginTop: 2 }}
-      >
-        Confirm Payment
+      <Button variant="contained" color="primary" onClick={handleSubmit} sx={{ marginTop: 3, padding: 1.5, fontSize: '1rem' }}>
+        ยืนยันการชำระเงิน
       </Button>
 
       <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-        <Alert onClose={handleClose} severity="success">
-          คุณทำการสั่งซื้อเรียบร้อยแล้ว! หมายเลขสั่งซื้อของคุณคือ: {orderNumber}
+        <Alert onClose={handleClose} severity="success" sx={{ bgcolor: 'primary.main', color: 'white' }}>
+          การสั่งซื้อสำเร็จ! หมายเลขคำสั่งซื้อของคุณคือ: {orderNumber}
         </Alert>
       </Snackbar>
     </Box>

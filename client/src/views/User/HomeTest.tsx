@@ -19,6 +19,9 @@ import toy from "/src/assets/home/toy.jpg";
 import pur from "/src/assets/home/pur.jpg";
 import bbrick from "/src/assets/home/bbrick.jpg";
 import labubu from "/src/assets/home/labubu.jpg";
+import MusicNoteIcon from '@mui/icons-material/MusicNote';
+import SportsSoccerIcon from '@mui/icons-material/SportsSoccer';
+
 
 import "swiper/swiper-bundle.css";
 import HTMLFlipBook from "react-pageflip";
@@ -98,9 +101,77 @@ const HomeTest: React.FunctionComponent<IHomeTestProps> = (props) => {
     fetchSports();
   }, []);
 
+
   return (
     <>
+      
+    
       <Paper>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: 6,
+          padding: 4,
+          backgroundColor: "#f0f4f8", // สีพื้นหลังโทนพาสเทล
+          borderRadius: "12px",
+        }}
+      >
+        {/* Concert Button */}
+        <Button
+          variant="contained"
+          color="primary"
+          component={Link}
+          to="/concert"
+          startIcon={<MusicNoteIcon />}
+          sx={{
+            fontWeight: "bold",
+            fontSize: "32px", // ขยายขนาดฟอนต์
+            padding: "20px 40px", // ขยายขนาดปุ่ม
+            background: "linear-gradient(135deg, #FFB6C1, #FF69B4)", // Gradient สีพาสเทล
+            color: "#fff",
+            borderRadius: "25px", // ขอบมน
+            boxShadow: "0 6px 12px rgba(255, 182, 193, 0.5)",
+            transition: "0.3s ease-in-out",
+            "&:hover": {
+              background: "linear-gradient(135deg, #FF69B4, #FF1493)", // เปลี่ยน Gradient เมื่อ hover
+              transform: "scale(1.1) rotate(-2deg)", // ขยายและหมุนเมื่อ hover
+              boxShadow: "0 8px 20px rgba(255, 105, 180, 0.7)",
+            },
+          }}
+        >
+          Concert
+        </Button>
+        
+
+          {/* Sport Button */}
+      <Button
+        variant="contained"
+        color="secondary"
+        component={Link}
+        to="/sport"
+        startIcon={<SportsSoccerIcon />}
+        sx={{
+          fontWeight: "bold",
+          fontSize: "32px",
+          padding: "20px 40px",
+          background: "linear-gradient(135deg, #B2DFDB, #4DB6AC)", // Gradient สีพาสเทล
+          color: "#fff",
+          borderRadius: "25px",
+          boxShadow: "0 6px 12px rgba(178, 223, 219, 0.5)",
+          transition: "0.3s ease-in-out",
+          "&:hover": {
+            background: "linear-gradient(135deg, #4DB6AC, #004D40)", // เปลี่ยน Gradient เมื่อ hover
+            transform: "scale(1.1) rotate(2deg)", // ขยายและหมุนเมื่อ hover
+            boxShadow: "0 8px 20px rgba(0, 77, 64, 0.7)",
+          },
+        }}
+      >
+        Sport
+      </Button>
+    </Box>
+
         {/* Concerts Section */}
         <Box
           p={3}
