@@ -70,6 +70,7 @@ export const routesConfig: {
       component: Concert,
       icon: null,
       children: [
+        
         {
           path: "bus",
           name: "bus",

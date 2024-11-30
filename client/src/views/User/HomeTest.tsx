@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Box,
   Card,
@@ -7,11 +8,9 @@ import {
   Paper,
   Grid,
 } from "@mui/material";
-import { purple } from "@mui/material/colors";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom"; // สำหรับการใช้งาน Link
-import { Swiper, SwiperSlide } from "swiper/react";
 import bas from "/src/assets/home/bas.jpg";
 import molly from "/src/assets/home/molly.jpg";
 import pop from "/src/assets/home/pop.jpg";
@@ -19,12 +18,11 @@ import toy from "/src/assets/home/toy.jpg";
 import pur from "/src/assets/home/pur.jpg";
 import bbrick from "/src/assets/home/bbrick.jpg";
 import labubu from "/src/assets/home/labubu.jpg";
-import MusicNoteIcon from '@mui/icons-material/MusicNote';
-import SportsSoccerIcon from '@mui/icons-material/SportsSoccer';
-
+import MusicNoteIcon from "@mui/icons-material/MusicNote";
+import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
 
 import "swiper/swiper-bundle.css";
-import HTMLFlipBook from "react-pageflip";
+
 
 // // Sample Data for Sports Events
 // const sportsMock = [
@@ -39,12 +37,11 @@ import HTMLFlipBook from "react-pageflip";
 //     { id: 3, name: 'Tennis Tournament', image: 'https://via.placeholder.com/800x300?text=Tennis+Tournament' },
 // ];
 
-export interface IHomeTestProps {}
 export interface IConcert {
   id: number;
   name: string;
-  description: string;
   date: string;
+  time: string;
   location: string;
   price: string;
   available_seats: number;
@@ -64,7 +61,7 @@ export interface ISports {
   sport_id: number;
 }
 
-const HomeTest: React.FunctionComponent<IHomeTestProps> = (props) => {
+const HomeTest: React.FunctionComponent = () => {
   const [dataconcerts, setDataconcerts] = useState<IConcert[]>([]);
   const [dataSports, setDataSports] = useState<ISports[]>([]); // Mock data for sports events
 
@@ -89,7 +86,9 @@ const HomeTest: React.FunctionComponent<IHomeTestProps> = (props) => {
 
   const fetchSports = async () => {
     try {
-      const response = await fetch("http://localhost:5000/getAllSports");
+      const response = await fetch(
+        "http://localhost:5000/getAllSportsFootball"
+      );
       const data: ISports[] = await response.json();
       setDataSports(data);
       console.log(data);
@@ -102,76 +101,72 @@ const HomeTest: React.FunctionComponent<IHomeTestProps> = (props) => {
     fetchSports();
   }, []);
 
-
   return (
     <>
-      
-    
-      <Paper>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: 6,
-          padding: 4,
-          backgroundColor: "#f0f4f8", // สีพื้นหลังโทนพาสเทล
-          borderRadius: "12px",
-        }}
-      >
-        {/* Concert Button */}
-        <Button
-          variant="contained"
-          color="primary"
-          component={Link}
-          to="/concert"
-          startIcon={<MusicNoteIcon />}
+      <Box>
+        <Box
           sx={{
-            fontWeight: "bold",
-            fontSize: "32px", // ขยายขนาดฟอนต์
-            padding: "20px 40px", // ขยายขนาดปุ่ม
-            background: "linear-gradient(135deg, #FFB6C1, #FF69B4)", // Gradient สีพาสเทล
-            color: "#fff",
-            borderRadius: "25px", // ขอบมน
-            boxShadow: "0 6px 12px rgba(255, 182, 193, 0.5)",
-            transition: "0.3s ease-in-out",
-            "&:hover": {
-              background: "linear-gradient(135deg, #FF69B4, #FF1493)", // เปลี่ยน Gradient เมื่อ hover
-              transform: "scale(1.1) rotate(-2deg)", // ขยายและหมุนเมื่อ hover
-              boxShadow: "0 8px 20px rgba(255, 105, 180, 0.7)",
-            },
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 6,
+            padding: 4,
+            //backgroundColor: "#f0f4f8", // สีพื้นหลังโทนพาสเทล
+            borderRadius: "12px",
           }}
         >
-          Concert
-        </Button>
-        
+          {/* Concert Button */}
+          <Button
+            variant="contained"
+            color="primary"
+            component={Link}
+            to="/concert"
+            startIcon={<MusicNoteIcon />}
+            sx={{
+              fontWeight: "bold",
+              fontSize: "32px", // ขยายขนาดฟอนต์
+              padding: "20px 40px", // ขยายขนาดปุ่ม
+              background: "linear-gradient(135deg, #FFB6C1, #FF69B4)", // Gradient สีพาสเทล
+              color: "#fff",
+              borderRadius: "25px", // ขอบมน
+              boxShadow: "0 6px 12px rgba(255, 182, 193, 0.5)",
+              transition: "0.3s ease-in-out",
+              "&:hover": {
+                background: "linear-gradient(135deg, #FF69B4, #FF1493)", // เปลี่ยน Gradient เมื่อ hover
+                transform: "scale(1.1) rotate(-2deg)", // ขยายและหมุนเมื่อ hover
+                boxShadow: "0 8px 20px rgba(255, 105, 180, 0.7)",
+              },
+            }}
+          >
+            Concert
+          </Button>
 
           {/* Sport Button */}
-      <Button
-        variant="contained"
-        color="secondary"
-        component={Link}
-        to="/sport"
-        startIcon={<SportsSoccerIcon />}
-        sx={{
-          fontWeight: "bold",
-          fontSize: "32px",
-          padding: "20px 40px",
-          background: "linear-gradient(135deg, #B2DFDB, #4DB6AC)", // Gradient สีพาสเทล
-          color: "#fff",
-          borderRadius: "25px",
-          boxShadow: "0 6px 12px rgba(178, 223, 219, 0.5)",
-          transition: "0.3s ease-in-out",
-          "&:hover": {
-            background: "linear-gradient(135deg, #4DB6AC, #004D40)", // เปลี่ยน Gradient เมื่อ hover
-            transform: "scale(1.1) rotate(2deg)", // ขยายและหมุนเมื่อ hover
-            boxShadow: "0 8px 20px rgba(0, 77, 64, 0.7)",
-          },
-        }}
-      >
-        Sport
-      </Button>
-    </Box>
+          <Button
+            variant="contained"
+            color="secondary"
+            component={Link}
+            to="/sport"
+            startIcon={<SportsSoccerIcon />}
+            sx={{
+              fontWeight: "bold",
+              fontSize: "32px",
+              padding: "20px 40px",
+              background: "linear-gradient(135deg, #B2DFDB, #4DB6AC)", // Gradient สีพาสเทล
+              color: "#fff",
+              borderRadius: "25px",
+              boxShadow: "0 6px 12px rgba(178, 223, 219, 0.5)",
+              transition: "0.3s ease-in-out",
+              "&:hover": {
+                background: "linear-gradient(135deg, #4DB6AC, #004D40)", // เปลี่ยน Gradient เมื่อ hover
+                transform: "scale(1.1) rotate(2deg)", // ขยายและหมุนเมื่อ hover
+                boxShadow: "0 8px 20px rgba(0, 77, 64, 0.7)",
+              },
+            }}
+          >
+            Sport
+          </Button>
+        </Box>
 
         {/* Concerts Section */}
         <Box
@@ -246,19 +241,19 @@ const HomeTest: React.FunctionComponent<IHomeTestProps> = (props) => {
                   "&:hover": { transform: "scale(1.05)", boxShadow: 6 },
                   cursor: "pointer",
                   minWidth: 350,
-                  height: 400,
+                  height: 450,
                 }}
                 onClick={() => openModal(concert)}
               >
                 <CardMedia
                   component="img"
-                  height="150"
-                  image={concert.image}
+                  height="230"
+                  image={`http://localhost/concert/all/${concert.image}`}
                   alt={concert.name}
                   sx={{ borderRadius: 2, mb: 2 }}
                 />
                 <Typography
-                  variant="h3"
+                  variant="h5"
                   fontWeight="bold"
                   color="pink.500"
                   gutterBottom
@@ -266,7 +261,7 @@ const HomeTest: React.FunctionComponent<IHomeTestProps> = (props) => {
                   {concert.name}
                 </Typography>
                 <Typography
-                  variant="h3"
+                  variant="h6"
                   fontWeight="bold"
                   color="pink.500"
                   gutterBottom
@@ -401,14 +396,14 @@ const HomeTest: React.FunctionComponent<IHomeTestProps> = (props) => {
                   "&:hover": { transform: "scale(1.05)", boxShadow: 6 },
                   cursor: "pointer",
                   minWidth: 350,
-                  height: 400,
+                  height: 430,
                 }}
                 onClick={() => openModal(sport)}
               >
                 <CardMedia
                   component="img"
-                  height="150"
-                  image={sport.image}
+                  height="210"
+                  src={`http://localhost/sport/all/${sport.image}`}
                   alt={sport.name}
                   sx={{ borderRadius: 2, mb: 2 }}
                 />
@@ -478,27 +473,7 @@ const HomeTest: React.FunctionComponent<IHomeTestProps> = (props) => {
               View All Sports Events
             </Button>
           </Box>
-          <Box mt={3} sx={{ bgcolor: "#f0f0f0", borderRadius: 1, p: 2 }}>
-            <Swiper
-              spaceBetween={30}
-              slidesPerView={1}
-              pagination={{ clickable: true }}
-              navigation
-            >
-              {dataSports.map((sport) => (
-                <SwiperSlide key={sport.id}>
-                  <Card sx={{ borderRadius: 1, overflow: "hidden" }}>
-                    <CardMedia
-                      component="img"
-                      height="300"
-                      image={bas}
-                      alt={sport.name}
-                    />
-                  </Card>
-                </SwiperSlide>
-              ))}
-            </Swiper>
-          </Box>
+          
         </Box>
         <Box
           p={4}
@@ -1531,7 +1506,7 @@ const HomeTest: React.FunctionComponent<IHomeTestProps> = (props) => {
             </Button>
           </Box>
         </Box>
-      </Paper>
+      </Box>
     </>
   );
 };

@@ -1,17 +1,32 @@
-import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React,{ useEffect, useState }  from 'react';
+import { useLocation, useNavigate,useParams} from 'react-router-dom';
 import { Box, Typography, Button } from '@mui/material';
 
 const ConcertDetail: React.FC = () => {
-  const location = useLocation();
+  
   const navigate = useNavigate();
+  const { id } = useParams(); // ดึง ID จาก URL
+  const [concertA, setConcert] = useState<any>(null);
+  const [loading, setLoading] = useState(true); // ใช้เช็คสถานะการโหลดข้อมูล
+  const [error, setError] = useState<string | null>(null);
+  const location = useLocation();
   const concert = location.state;
+
 
   // ฟังก์ชันสำหรับกดปุ่ม "ซื้อบัตร"
   const handleBuyTicket = () => {
     // ส่งข้อมูลเฉพาะที่ต้องการไปยังหน้า 'stage'
     navigate('stage-concert');
   };
+
+  useEffect(() => {
+    if (!location.state) {
+      console.log("ไม่มีข้อมูล state ที่ถูกส่งมา");
+    } else {
+      console.log("concert:", concert);
+    }
+  }, [location.state, concert]);
 
   return (
     <Box
@@ -29,14 +44,14 @@ const ConcertDetail: React.FC = () => {
     >
       <Box sx={{ flex: '1 1 auto', mr: 3 }}>
         <img
-          src={concert.image}
-          alt={concert.title}
+          src={concert.img}
+          alt={concert.name}
           style={{ width: '100%', maxWidth: '300px', borderRadius: '10px' }}
         />
       </Box>
       <Box sx={{ flex: '2 1 auto' }}>
         <Typography variant="h5" fontWeight="bold" gutterBottom align="left">
-          {concert.title}
+          {concert.name}
         </Typography>
         <Typography variant="body1" color="green" align="left">
           วันที่: {concert.date}

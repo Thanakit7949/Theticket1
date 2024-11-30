@@ -103,6 +103,64 @@ app.get('/getAllConcerts', (req, res) => {
   });
 });
 
+app.get('/getAllConcertsthaiMass', (req, res) => {
+  const query = 'SELECT * FROM conthaiMass'; // ดึงข้อมูลทั้งหมดจาก concerts
+  db.query(query, (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: 'Database error', error: err.message });
+    }
+    return res.json(results); // ส่งผลลัพธ์เป็น JSON
+  });
+});
+
+app.get('/getAllConcertstpop', (req, res) => {
+  const query = 'SELECT * FROM contpop'; // ดึงข้อมูลทั้งหมดจาก concerts
+  db.query(query, (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: 'Database error', error: err.message });
+    }
+    return res.json(results); // ส่งผลลัพธ์เป็น JSON
+  });
+});
+
+app.get('/getAllConcertskpop', (req, res) => {
+  const query = 'SELECT * FROM conkpop'; // ดึงข้อมูลทั้งหมดจาก concerts
+  db.query(query, (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: 'Database error', error: err.message });
+    }
+    return res.json(results); // ส่งผลลัพธ์เป็น JSON
+  });
+});
+
+app.get('/getAllConcertsinter', (req, res) => {
+  const query = 'SELECT * FROM coninter'; // ดึงข้อมูลทั้งหมดจาก concerts
+  db.query(query, (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: 'Database error', error: err.message });
+    }
+    return res.json(results); // ส่งผลลัพธ์เป็น JSON
+  });
+});
+
+app.get('/concertsImage', (req, res) => {
+  const query = 'SELECT * FROM concert_image'; // ดึงข้อมูลทั้งหมดจาก concerts
+  db.query(query, (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: 'Database error', error: err.message });
+    }
+    return res.json(results); // ส่งผลลัพธ์เป็น JSON
+  });
+});
+
+app.get('/concertsDetail', (req, res) => {
+  const query = 'SELECT * FROM concert_detail';
+  db.query(query, (err, results) => {
+    if (err) throw err;
+    res.json(results);
+  });
+});
+
 app.get('/getAllSports', (req, res) => {
   const query = 'SELECT * FROM sports'; // ดึงข้อมูลทั้งหมดจาก concerts
   db.query(query, (err, results) => {
@@ -123,7 +181,85 @@ app.get('/getAllSportsBoxing', (req, res) => {
   });
 });
 
+app.get('/getAllSportsFootball', (req, res) => {
+  const query = 'SELECT * FROM football';
+  db.query(query, (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: 'Database error', error: err.message });
+    }
+    return res.json(results);
+  });
+});
 
+app.get('/getAllSportsOther', (req, res) => {
+  const query = 'SELECT * FROM other';
+  db.query(query, (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: 'Database error', error: err.message });
+    }
+    return res.json(results);
+  });
+});
+
+// Route สำหรับดึงข้อมูลกีฬาและภาพ
+app.get('/sportsImage', (req, res) => {
+  const query = 'SELECT * FROM sport_images';
+  db.query(query, (err, result) => {
+    if (err) {
+      res.status(500).send('Error fetching data');
+    } else {
+      res.json(result);
+    }
+  });
+});
+
+//  สำหรับดึงข้อมูลรูปภาพของsport
+app.get("/getImages", (req, res) => {
+  // ดึงข้อมูลจากฐานข้อมูล
+  db.query("SELECT image FROM images", (err, results) => {
+    if (err) {
+      console.error("Error fetching images:", err);
+      return res.status(500).send("Error fetching images");
+    }
+    res.json(results); // ส่งข้อมูลภาพในรูปแบบ JSON
+  });
+});
+
+// product สำหรับดึงข้อมูลภาพ
+app.get('/getproductImage', (req, res) => {
+  const query = 'SELECT * FROM product_image';
+  db.query(query, (err, result) => {
+    if (err) {
+      res.status(500).send('Error fetching data');
+    } else {
+      res.json(result);
+    }
+  });
+});
+
+// promotion สำหรับดึงข้อมูลภาพ
+app.get('/getpromotionImage', (req, res) => {
+  const query = 'SELECT image FROM promotion_image';
+  db.query(query, (err, result) => {
+    if (err) {
+      res.status(500).send('Error fetching data');
+    } else {
+      res.json(result);
+    }
+  });
+});
+
+// promotion สำหรับดึงข้อมูล
+app.get('/getpromotionDetail', (req, res) => {
+  const query = 'SELECT * FROM promotion_detail';
+  db.query(query, (err, result) => {
+    if (err) {
+      res.status(500).send('Error fetching data');
+    } else {
+      res.json(result);
+    }
+  });
+});
 
 // Add concert
 app.post('/addConcert', (req, res) => {

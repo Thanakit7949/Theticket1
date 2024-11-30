@@ -1,7 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom"; // ใช้ useParams สำหรับดึง ID จาก URL
 import { Box, Typography, Button } from "@mui/material";
-import axios from "axios";
 
 const SportDetail: React.FC = () => {
   const navigate = useNavigate();
