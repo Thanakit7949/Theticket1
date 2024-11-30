@@ -25,6 +25,8 @@ const Product = () => {
   const [cart, setCart] = useState([]);
   const [productsImage, setProducts] = useState<any[]>([]);
   const [flashsale, setFlashsale] = useState<any[]>([]);
+  const [flashsaleSport, setFlashsaleSport] = useState<any[]>([]);
+  const [Shirt, setShirt] = useState<any[]>([]);
 
   useEffect(() => {
     // ฟังก์ชันดึงข้อมูลรูปภาพจาก Backend
@@ -52,6 +54,24 @@ const Product = () => {
         console.error("Error fetching products:", error);
       }
     };
+    const fetchFlashsaleSport = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/getAllflashsaleSport");
+        const data = await response.json();
+        setFlashsaleSport(data); // กำหนด state สำหรับข้อมูลรูปภาพ
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+    const fetchShirt = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/getAllShirt");
+        const data = await response.json();
+        setShirt(data); // กำหนด state สำหรับข้อมูลรูปภาพ
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
 
     fetchFlashsale();
   }, []);
@@ -59,26 +79,28 @@ const Product = () => {
   const concertCategories = [
     {
       label: "Flash Sales",
-      products: [
-        {
-          id: 1,
-          name: "Concert T-Shirt",
-          price: "500 ฿",
-          image: "/src/assets/home/molly.jpg",
-        },
-        { id: 2, name: "Album", price: "700 ฿", image: "/images/product2.jpg" },
-      ],
+      products:flashsale,
+      // products: [
+      //   {
+      //     id: 1,
+      //     name: "Concert T-Shirt",
+      //     price: "500 ฿",
+      //     image: "/src/assets/home/molly.jpg",
+      //   },
+      //   { id: 2, name: "Album", price: "700 ฿", image: "/images/product2.jpg" },
+      // ],
     },
     {
       label: "Shirt",
-      products: [
-        {
-          id: 3,
-          name: "Special Edition Shirt",
-          price: "600 ฿",
-          image: "/images/product3.jpg",
-        },
-      ],
+      products: Shirt,
+      // products: [
+      //   {
+      //     id: 3,
+      //     name: "Special Edition Shirt",
+      //     price: "600 ฿",
+      //     image: "/images/product3.jpg",
+      //   },
+      // ],
     },
     {
       label: "Light Stick",
@@ -102,14 +124,15 @@ const Product = () => {
   const sportsCategories = [
     {
       label: "Flash Sales",
-      products: [
-        {
-          id: 6,
-          name: "Sports Flash Sale Item",
-          price: "250 ฿",
-          image: "/images/product5.jpg",
-        },
-      ],
+      products:flashsaleSport,
+      // products: [
+      //   {
+      //     id: 6,
+      //     name: "Sports Flash Sale Item",
+      //     price: "250 ฿",
+      //     image: "/images/product5.jpg",
+      //   },
+      // ],
     },
     {
       label: "Shirt",
@@ -423,7 +446,7 @@ const Product = () => {
         </Box>
       </Box>
 
-      <Box
+      {/* <Box
         sx={{
           display: "flex",
           justifyContent: "center",
@@ -581,7 +604,170 @@ const Product = () => {
         >
           Confirm Payment
         </Button>
+      </Box> */}
+      <Box
+  sx={{
+    display: "flex",
+    justifyContent: "center",
+    backgroundColor: "#f8f9fa",
+    padding: "12px 16px",
+    boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+    marginTop: "20px",
+    borderRadius: "8px",
+  }}
+>
+  {category === "Concert" &&
+    concertCategories.map((cat) => (
+      <Box
+        key={cat.label}
+        sx={{
+          margin: "0 20px",
+          cursor: "pointer",
+          color: subCategory === cat.label ? "#1976d2" : "inherit",
+          transition: "color 0.3s, transform 0.2s",
+          "&:hover": {
+            color: "#1976d2",
+            transform: "scale(1.05)",
+          },
+        }}
+        onClick={() => handleSubCategoryClick(cat.label)}
+      >
+        <Typography variant="body1" sx={{ fontWeight: "bold" }}>
+          {cat.label}
+        </Typography>
       </Box>
+    ))}
+
+  {category === "Sports" &&
+    sportsCategories.map((cat) => (
+      <Box
+        key={cat.label}
+        sx={{
+          margin: "0 20px",
+          cursor: "pointer",
+          color: subCategory === cat.label ? "#1976d2" : "inherit",
+          transition: "color 0.3s, transform 0.2s",
+          "&:hover": {
+            color: "#1976d2",
+            transform: "scale(1.05)",
+          },
+        }}
+        onClick={() => handleSubCategoryClick(cat.label)}
+      >
+        <Typography variant="body1" sx={{ fontWeight: "bold" }}>
+          {cat.label}
+        </Typography>
+      </Box>
+    ))}
+</Box>
+
+<Grid container spacing={4} sx={{ marginTop: 4 }}>
+  {(category === "Concert"
+    ? concertCategories.find((cat) => cat.label === subCategory)?.products
+    : category === "Sports"
+    ? sportsCategories.find((cat) => cat.label === subCategory)?.products
+    : []
+  )?.map((product) => (
+    <Grid item key={product.id} xs={12} sm={6} md={4} lg={3}>
+      <Box
+        sx={{
+          border: "2px solid #FFB6C1",
+          borderRadius: 2,
+          boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
+          overflow: "hidden",
+          cursor: "pointer",
+          transition: "transform 0.3s ease",
+          "&:hover": {
+            transform: "scale(1.05)",
+          },
+        }}
+      >
+        <Box
+          sx={{
+            position: "relative",
+            width: "100%",
+            height: 0,
+            paddingBottom: "100%",
+            overflow: "hidden",
+          }}
+          onClick={() => handleProductClick(product.id)}
+        >
+          <img
+            src={`http://localhost/${category.toLowerCase()}/${product.image}`}
+            alt={product.name}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              position: "absolute",
+              top: 0,
+              left: 0,
+            }}
+          />
+        </Box>
+        <Box sx={{ padding: 2, textAlign: "center" }}>
+          <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+            {product.name}
+          </Typography>
+          <Typography
+            variant="body1"
+            sx={{ color: "#888888", marginBottom: 1 }}
+          >
+            {product.price}
+          </Typography>
+          <IconButton onClick={() => handleFavoriteClick(product.id)}>
+            <FavoriteBorderIcon
+              color={favorites.includes(product.id) ? "error" : "inherit"}
+            />
+          </IconButton>
+          <IconButton
+            onClick={() => handleCartIconClick(product.id)}
+            disabled={addedToCart.has(product.id)}
+          >
+            <ShoppingCartIcon
+              color={addedToCart.has(product.id) ? "disabled" : "primary"}
+            />
+          </IconButton>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: 1,
+            }}
+          >
+            <Button onClick={() => removeFromCart(product)}>-</Button>
+            <Typography>
+              {cart.find((item: any) => item.id === product.id)?.quantity || 0}
+            </Typography>
+            <Button onClick={() => addToCart(product)}>+</Button>
+          </Box>
+        </Box>
+      </Box>
+    </Grid>
+  ))}
+</Grid>
+
+<Box sx={{ display: "flex", justifyContent: "center", marginTop: "40px" }}>
+  <Button
+    variant="contained"
+    onClick={handleConfirmPayment}
+    color="primary"
+    sx={{
+      padding: "10px 30px",
+      fontWeight: "bold",
+      fontSize: "18px",
+      borderRadius: "8px",
+      boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+      "&:hover": {
+        backgroundColor: "#1976d2",
+      },
+    }}
+  >
+    Confirm Payment
+  </Button>
+</Box>
+
     </Box>
   );
 };
