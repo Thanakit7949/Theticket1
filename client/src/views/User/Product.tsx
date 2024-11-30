@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
 import {
   Box,
@@ -24,14 +23,14 @@ const Product = () => {
   const [subCategory, setSubCategory] = useState("");
   const [favorites, setFavorites] = useState([]);
   const [cart, setCart] = useState([]);
-
   const [productsImage, setProducts] = useState<any[]>([]);
+  const [flashsale, setFlashsale] = useState<any[]>([]);
 
   useEffect(() => {
     // ฟังก์ชันดึงข้อมูลรูปภาพจาก Backend
     const fetchProductImages = async () => {
       try {
-        const response = await fetch("http://localhost:5000/getproductImage");
+        const response = await fetch("http://localhost:5000/getAllProduct");
         const data = await response.json();
         setProducts(data); // กำหนด state สำหรับข้อมูลรูปภาพ
       } catch (error) {
@@ -40,6 +39,21 @@ const Product = () => {
     };
 
     fetchProductImages();
+  }, []);
+
+  useEffect(() => {
+    // ฟังก์ชันดึงข้อมูลรูปภาพจาก Backend
+    const fetchFlashsale = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/getAllflashsale");
+        const data = await response.json();
+        setFlashsale(data); // กำหนด state สำหรับข้อมูลรูปภาพ
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    fetchFlashsale();
   }, []);
 
   const concertCategories = [
@@ -134,7 +148,7 @@ const Product = () => {
 
   const navigate = useNavigate();
 
-  const handleProductClick = (productId) => {
+  const handleProductClick = (productId: any) => {
     navigate(`product/${productId}`);
   };
 
@@ -158,7 +172,7 @@ const Product = () => {
     setSubCategory("");
   };
 
-  const handleSubCategoryClick = (subCat) => {
+  const handleSubCategoryClick = (subCat: any) => {
     setSubCategory(subCat);
   };
 
@@ -166,10 +180,10 @@ const Product = () => {
     setSubCategory("Flash Sales");
   }, [category]);
 
-  const handleFavoriteClick = (productId) => {
-    setFavorites((prevFavorites) => {
+  const handleFavoriteClick = (productId: any) => {
+    setFavorites((prevFavorites: any) => {
       if (prevFavorites.includes(productId)) {
-        return prevFavorites.filter((id) => id !== productId);
+        return prevFavorites.filter((id: any) => id !== productId);
       } else {
         return [...prevFavorites, productId];
       }
@@ -186,25 +200,34 @@ const Product = () => {
   }, []);
 
   const getProducts = () => {
+    // รีเซ็ตการนับ id ใหม่ให้กับสินค้าของหมวดหมู่ที่เลือก
     if (category === "Concert") {
       return (
-        concertCategories.find((cat) => cat.label === subCategory)?.products ||
-        []
+        concertCategories
+          .find((cat) => cat.label === subCategory)
+          ?.products.map((product, index) => ({
+            ...product,
+            id: index + 1, // เริ่มต้น id ใหม่จาก 1
+          })) || []
       );
     } else if (category === "Sports") {
       return (
-        sportsCategories.find((cat) => cat.label === subCategory)?.products ||
-        []
+        sportsCategories
+          .find((cat) => cat.label === subCategory)
+          ?.products.map((product, index) => ({
+            ...product,
+            id: index + 1, // เริ่มต้น id ใหม่จาก 1
+          })) || []
       );
     }
     return [];
   };
 
-  const addToCart = (product) => {
-    setCart((prevCart) => {
-      const existingItem = prevCart.find((item) => item.id === product.id);
+  const addToCart = (product: any) => {
+    setCart((prevCart: any) => {
+      const existingItem = prevCart.find((item: any) => item.id === product.id);
       if (existingItem) {
-        return prevCart.map((item) =>
+        return prevCart.map((item: any) =>
           item.id === product.id
             ? { ...item, quantity: item.quantity + 1 }
             : item
@@ -215,22 +238,22 @@ const Product = () => {
     });
   };
 
-  const removeFromCart = (product) => {
-    setCart((prevCart) => {
+  const removeFromCart = (product: any) => {
+    setCart((prevCart: any) => {
       return prevCart
-        .map((item) =>
+        .map((item: any) =>
           item.id === product.id
             ? { ...item, quantity: item.quantity - 1 }
             : item
         )
-        .filter((item) => item.quantity > 0);
+        .filter((item: any) => item.quantity > 0);
     });
   };
 
   const [cartCount, setCartCount] = useState(0);
   const [addedToCart, setAddedToCart] = useState(new Set());
 
-  const handleCartIconClick = (productId) => {
+  const handleCartIconClick = (productId: any) => {
     if (!addedToCart.has(productId)) {
       setCartCount((prevCount) => prevCount + 1);
       setAddedToCart((prevSet) => new Set(prevSet).add(productId));
@@ -432,6 +455,7 @@ const Product = () => {
               </Typography>
             </Box>
           ))}
+
         {category === "Sports" &&
           sportsCategories.map((cat) => (
             <Box
@@ -456,7 +480,7 @@ const Product = () => {
       </Box>
 
       <Grid container spacing={4} sx={{ marginTop: 4 }}>
-        {products.map((product) => (
+        {flashsale.map((product) => (
           <Grid item key={product.id} xs={12} sm={6} md={4} lg={3}>
             <Box
               sx={{
@@ -482,7 +506,7 @@ const Product = () => {
                 onClick={() => handleProductClick(product.id)}
               >
                 <img
-                  src={product.image}
+                  src={`http://localhost/sport/${product.image}`}
                   alt={product.name}
                   style={{
                     width: "100%",
@@ -527,7 +551,8 @@ const Product = () => {
                 >
                   <Button onClick={() => removeFromCart(product)}>-</Button>
                   <Typography>
-                    {cart.find((item) => item.id === product.id)?.quantity || 0}
+                    {cart.find((item: any) => item.id === product.id)
+                      ?.quantity || 0}
                   </Typography>
                   <Button onClick={() => addToCart(product)}>+</Button>
                 </Box>

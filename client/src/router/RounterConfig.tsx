@@ -265,7 +265,10 @@ export const routesConfig: {
       header: "product",
       component: Product,
       icon: null,
-      children: [],
+      children: [
+    
+        
+      ],
     },
   
     {
