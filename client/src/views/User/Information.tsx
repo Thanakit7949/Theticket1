@@ -1,9 +1,68 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Paper, Typography, Grid, Box, Button } from '@mui/material';
 import HTMLFlipBook from 'react-pageflip';
 import pop3 from '/src/assets/product/pop3.jpg'
 
 const Information = () => {
+  const [InformationBook, setinformationbook] = useState<any[]>([]);
+  const [AdditionalInformation, setadditionalinformation] = useState<any[]>([]);
+  const [EventPoster, seteventposter] = useState<any[]>([]);
+
+
+  const defaultIcons = ['🎉', '🚀', '🌍', '💡'];
+
+  useEffect(() => {
+    
+const fetchInformationBook = async () => {
+  try {
+    const response = await fetch('http://localhost:5000/getInformationbook');
+    const data = await response.json();
+    setinformationbook(data); 
+  } catch (error) {
+    console.error('Error fetching products:', error);
+  }
+};
+
+fetchInformationBook();
+}, []);
+
+
+
+//AdditionalInformation
+  useEffect(() => {
+    
+const fetchAdditionalInformation = async () => {
+  try {
+    const response = await fetch('http://localhost:5000/getAdditionalInformation');
+    const data = await response.json();
+    setadditionalinformation(data); 
+  } catch (error) {
+    console.error('Error fetching products:', error);
+  }
+};
+
+fetchAdditionalInformation();
+}, []);
+
+
+
+
+//EventPoster
+  useEffect(() => {
+    
+const fetchEventposter = async () => {
+  try {
+    const response = await fetch('http://localhost:5000/getEventPoster');
+    const data = await response.json();
+    seteventposter(data); 
+  } catch (error) {
+    console.error('Error fetching products:', error);
+  }
+};
+
+fetchEventposter();
+}, []);
+
     return (
         <Box
         sx={{
@@ -99,79 +158,47 @@ const Information = () => {
                 </Paper>
 
                 {/* หน้า 2-3 (เลย์เอาต์แบบหน้าซ้าย-ขวา) */}
-                <Paper elevation={3} style={{ padding: 16, width: '100%', height: '100%' }}>
-                    <Grid container spacing={2}>
-                        <Grid item xs={6}>
-                            <img src="https://via.placeholder.com/400" alt="News 1" style={{ width: '100%', marginLeft:'6px',marginTop:'6px',borderRadius: 8 }} />
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Typography variant="h4" mt="40px" style={{ fontWeight: 'bold', marginBottom: 8 }}>
-                                Exciting New Launches!
-                            </Typography>
-                            <Typography variant="body1"  mt="40px" style={{ lineHeight: 1.6 }}>
-                                Stay ahead with all the exciting product launches happening this year!
-                                This section provides an overview of new products and innovations that will shape the market in the upcoming months. 
-                                Get a closer look at the technology, designs, and features that are expected to drive consumer interest.
-                            </Typography>
-                        </Grid>
-                    </Grid>
-                </Paper>
-
-                {/* หน้า 4-5 */}
-                <Paper elevation={3} style={{ padding: 16, width: '100%', height: '100%' }}>
-                    <Grid container spacing={2}>
-                        <Grid item xs={6}>
-                            <Typography variant="h4" mt="40px" style={{ fontWeight: 'bold', marginBottom: 8 }}>
-                                Innovation in Tech
-                            </Typography>
-                            <Typography variant="body1"  mt="40px" style={{ lineHeight: 1.6 }}>
-                                Explore how innovation in tech is shaping the future. From AI advancements to breakthrough technologies in various industries, 
-                                this section covers the latest developments that are driving change and redefining possibilities. 
-                                Read on to discover how these trends might impact the world in the coming years.
-                            </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <img src="https://via.placeholder.com/400" alt="Innovation in Tech" style={{ width: '100%',marginTop:'6px', transform: 'translateX(-10px)', borderRadius: 8 }} />
-                        </Grid>
-                    </Grid>
-                </Paper>
-
-                {/* หน้า 6-7 */}
-                <Paper elevation={3} style={{ padding: 16, width: '100%', height: '100%' }}>
-                    <Grid container spacing={2}>
-                        <Grid item xs={6}>
-                            <img src="https://via.placeholder.com/400" alt="Global Trends" style={{ width: '100%',marginLeft:'6px',marginTop:'6px', borderRadius: 8 }} />
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Typography variant="h4" mt="40px" style={{ fontWeight: 'bold', marginBottom: 8 }}>
-                                World Trends 2024
-                            </Typography>
-                            <Typography variant="body1" mt="40px" style={{ lineHeight: 1.6 }}>
-                                Catch up on the latest global trends for 2024, from economic shifts to social movements. 
-                                This section highlights key areas to watch and offers insights into how these trends could affect individuals and businesses worldwide.
-                            </Typography>
-                        </Grid>
-                    </Grid>
-                </Paper>
-
-                {/* หน้า 8-9 */}
-                <Paper elevation={3} style={{ padding: 16, width: '100%', height: '100%' }}>
-                    <Grid container spacing={2}>
-                        <Grid item xs={6}>
-                            <Typography variant="h4" mt="40px" style={{ fontWeight: 'bold', marginBottom: 8 }}>
-                                World Trends 2024
-                            </Typography>
-                            <Typography variant="body1" mt="40px" style={{ lineHeight: 1.6 }}>
-                                Catch up on the latest global trends for 2024, from economic shifts to social movements. 
-                                This section highlights key areas to watch and offers insights into how these trends could affect individuals and businesses worldwide.
-                            </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <img src="https://via.placeholder.com/400" alt="Global Trends" style={{ width: '100%',marginTop:'6px', transform: 'translateX(-10px)', borderRadius: 8 }} />
-                        </Grid>
-                    </Grid>
-                </Paper>
                 
+                {InformationBook.map((InformationBook, index) => (
+        <Paper
+            key={index}
+            elevation={3}
+            style={{ padding: 16, width: '100%', height: '100%' }}
+        >
+            <Grid container spacing={2}>
+                <Grid item xs={6}>
+                    <img
+                        src={`http://localhost/product/${InformationBook.image}`} // ใช้ URL จาก API
+                       
+                        style={{
+                            width: '100%',
+                            height: '400px',
+                            marginLeft: '6px',
+                            marginTop: '50px',
+                            borderRadius: 8,
+                        }}
+                    />
+                </Grid>
+                <Grid item xs={6}>
+                    <Typography
+                        variant="h4"
+                        style={{ fontWeight: 'bold', marginTop: 20 }}
+                    >
+                        {InformationBook.title} {/* หัวข้อจาก API */}
+                    </Typography>
+                    <Typography
+                        variant="body1"
+                        style={{ lineHeight: 1.6 , marginTop: 20  }}
+                    >
+                        {InformationBook.detail} {/* รายละเอียดจาก API */}
+                    </Typography>
+                </Grid>
+            </Grid>
+        </Paper>
+    ))}
+
+   
+    
                
             </HTMLFlipBook>
        
@@ -203,28 +230,9 @@ const Information = () => {
                     Additional Information
                 </Typography>
                 <Grid container spacing={4}>
-                    {[
-                        {
-                            icon: '🎉',
-                            title: 'Exciting News',
-                            text: 'Stay tuned for the latest updates and exciting news!',
-                        },
-                        {
-                            icon: '🚀',
-                            title: 'New Launches',
-                            text: "We’re launching new products! Don’t miss out on the latest releases.",
-                        },
-                        {
-                            icon: '🌍',
-                            title: 'Global Trends',
-                            text: "Explore the latest global trends and what’s shaping the world in 2024.",
-                        },
-                        {
-                            icon: '💡',
-                            title: 'Innovative Ideas',
-                            text: 'Discover innovative ideas that will revolutionize the industry.',
-                        },
-                    ].map((item, index) => (
+                  
+                   
+                    {AdditionalInformation.map((AdditionalInformation, index) => (
                         <Grid item xs={12} sm={6} md={6} key={index}>
                             <Box
                                 className="card"
@@ -252,7 +260,7 @@ const Information = () => {
                                         animation: 'bounce 2s infinite',
                                     }}
                                 >
-                                    {item.icon}
+                                   {defaultIcons[index % defaultIcons.length]} {/* เลือกไอคอนจาก defaultIcons */}
                                 </Box>
                                 <Typography
                                     variant="h6"
@@ -264,7 +272,7 @@ const Information = () => {
                                         marginBottom: 1,
                                     }}
                                 >
-                                    {item.title}
+                                    {AdditionalInformation.title}
                                 </Typography>
                                 <Typography
                                     variant="body2"
@@ -274,7 +282,7 @@ const Information = () => {
                                         textAlign: 'center',
                                     }}
                                 >
-                                    {item.text}
+                                    {AdditionalInformation.description}
                                 </Typography>
                             </Box>
                         </Grid>
@@ -354,194 +362,123 @@ const Information = () => {
                 
                 `}
             </style>
- 
+            <Box
+  className="posters-container"
+  display="grid"
+  sx={{
+    gridTemplateColumns: "repeat(2, 1fr)", // สร้าง 2 คอลัมน์
+    gap: 3, // ระยะห่างระหว่างคอลัมน์และแถว
+    width: "100%",
+    padding: 2,
+  }}
+>
+  {EventPoster.map((EventPoster, index) => (
     <Box
-      className="posters-container"
-      display="flex"
-      justifyContent="space-between"
-      gap={3}
-      alignItems="center"
-      sx={{ width: "100%", padding: 2}}
+      key={index}
+      className="poster-container"
+      sx={{
+        backgroundColor: "#f5f5f5",
+        padding: "15px",
+        borderRadius: "6px",
+        boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.1)",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        marginTop: "20px",
+        border: "2px solid #060202",
+        gap: "4px",
+        position: "relative",
+        width: "100%", // ให้ปรับขนาดตาม container
+        height: "750px",
+      }}
     >
-      {/* Poster 1 */}
-      <Box
-        className="poster-container"
-        sx={{
-          flex: 1,
-          backgroundColor: "#f5f5f5",
-          padding: "15px",
-          borderRadius: "6px",
-          boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.1)",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          marginTop: "20px",
-          border: "2px solid #060202",
-          gap: "4px",
-          position: "relative",
-          width: "1100px",
-          height: "750px"
-        }}
-      >
-        <Box className="poster-header">
-          <Typography
-            variant="h1"
-            sx={{
-              fontSize: "2rem",
-              fontWeight: "bold",
-              color: "#738ffe",
-              mb: 2,
-              fontFamily: "Bangers, sans-serif",
-              textTransform: "uppercase",
-              textShadow: "0px 0px 15px rgba(255, 0, 255, 0.6), 0px 0px 10px rgba(0, 255, 255, 0.4)",
-              animation: "floatUp 2s ease-in-out infinite",
-              "@keyframes floatUp": {
-                "0%": { transform: "translateY(0)" },
-                "50%": { transform: "translateY(-8px)" },
-                "100%": { transform: "translateY(0)" },
-              },
-            }}
-          >
-            Event Announcement
-          </Typography>
-          <img src={pop3} alt="Don't Miss Out" className="poster-subtitle-img" style={{ maxWidth: "100%" }} />
-        </Box>
+      <Box className="poster-header">
+        <Typography
+          variant="h1"
+          sx={{
+            fontSize: "2rem",
+            fontWeight: "bold",
+            color: "#738ffe",
+            mb: 2,
+            fontFamily: "Bangers, sans-serif",
+            textTransform: "uppercase",
+            textShadow:
+              "0px 0px 15px rgba(255, 0, 255, 0.6), 0px 0px 10px rgba(0, 255, 255, 0.4)",
+            animation: "floatUp 2s ease-in-out infinite",
+            "@keyframes floatUp": {
+              "0%": { transform: "translateY(0)" },
+              "50%": { transform: "translateY(-8px)" },
+              "100%": { transform: "translateY(0)" },
+            },
+          }}
+        >
+          {EventPoster.title}
+        </Typography>
 
-        <Box className="poster-body" sx={{ my: 4 }}>
-          <Typography
-            sx={{
-              fontSize: "1rem",
-              color: "#512da8",
-              lineHeight: 1.6,
-              fontFamily: "Open Sans, sans-serif",
-              textShadow: "1px 1px 3px rgba(0, 0, 0, 0.4)",
-              animation: "bounceText 1.5s ease-in-out infinite",
-              "@keyframes bounceText": {
-                "0%, 100%": { transform: "translateY(0)" },
-                "50%": { transform: "translateY(-10px)" },
-              },
-            }}
-          >
-            Join us for an unforgettable event filled with amazing experiences,
-            new opportunities, and thrilling moments. Save the date!
-          </Typography>
-        </Box>
-
-        <Box className="poster-footer" sx={{ position: "absolute", bottom: 20, left: "50%", transform: "translateX(-50%)" }}>
-          <Button
-            className="poster-btn"
-            variant="contained"
-            sx={{
-              backgroundColor: "#007bff",
-              color: "white",
-              p: "8px 16px",
-              fontSize: "1.2rem",
-              borderRadius: "30px",
-              cursor: "pointer",
-              boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.5)",
-              transition: "background-color 0.3s ease, transform 0.3s ease",
-              "&:hover": {
-                backgroundColor: "#0056b3",
-                transform: "scale(1.1)",
-                boxShadow: "0px 15px 50px rgba(0, 0, 0, 0.7)",
-              },
-            }}
-          >
-            Learn More
-          </Button>
-        </Box>
+        <img
+          src={`http://localhost/sport/${EventPoster.image}`}
+          className="poster-subtitle-img"
+          style={{ maxWidth: "100%", height: "480px" }}
+        />
       </Box>
 
-      {/* Poster 2 */}
+      <Box className="poster-body" sx={{ my: 4 }}>
+        <Typography
+          sx={{
+            fontSize: "1rem",
+            color: "#512da8",
+            lineHeight: 1.6,
+            fontFamily: "Open Sans, sans-serif",
+            textShadow: "1px 1px 3px rgba(0, 0, 0, 0.4)",
+            animation: "bounceText 1.5s ease-in-out infinite",
+            "@keyframes bounceText": {
+              "0%, 100%": { transform: "translateY(0)" },
+              "50%": { transform: "translateY(-10px)" },
+            },
+          }}
+        >
+          {EventPoster.text}
+        </Typography>
+      </Box>
+
       <Box
-        className="poster-container"
+        className="poster-footer"
         sx={{
-          flex: 1,
-          backgroundColor: "#f5f5f5",
-          padding: "15px",
-          borderRadius: "6px",
-          boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.1)",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          marginTop: "20px",
-          border: "2px solid #060202",
-          gap: "4px",
-          position: "relative",
-          width: "1100px",
-          height: "750px"
+          position: "absolute",
+          bottom: 20,
+          left: "50%",
+          transform: "translateX(-50%)",
         }}
       >
-        <Box className="poster-header">
-          <Typography
-            variant="h1"
-            sx={{
-              fontSize: "2rem",
-              fontWeight: "bold",
-              color: "#738ffe",
-              mb: 2,
-              fontFamily: "Bangers, sans-serif",
-              textTransform: "uppercase",
-              textShadow: "0px 0px 15px rgba(255, 0, 255, 0.6), 0px 0px 10px rgba(0, 255, 255, 0.4)",
-              animation: "floatUp 2s ease-in-out infinite",
-              "@keyframes floatUp": {
-                "0%": { transform: "translateY(0)" },
-                "50%": { transform: "translateY(-8px)" },
-                "100%": { transform: "translateY(0)" },
-              },
-            }}
-          >
-            Event Announcement
-          </Typography>
-          <img src={pop3} alt="Don't Miss Out" className="poster-subtitle-img" style={{ maxWidth: "100%" }} />
-        </Box>
-
-        <Box className="poster-body" sx={{ my: 4 }}>
-          <Typography
-            sx={{
-              fontSize: "1rem",
-              color: "#512da8",
-              lineHeight: 1.6,
-              fontFamily: "Open Sans, sans-serif",
-              textShadow: "1px 1px 3px rgba(0, 0, 0, 0.4)",
-              animation: "bounceText 1.5s ease-in-out infinite",
-              "@keyframes bounceText": {
-                "0%, 100%": { transform: "translateY(0)" },
-                "50%": { transform: "translateY(-10px)" },
-              },
-            }}
-          >
-            Join us for an unforgettable event filled with amazing experiences,
-            new opportunities, and thrilling moments. Save the date!
-          </Typography>
-        </Box>
-
-        <Box className="poster-footer" sx={{ position: "absolute", bottom: 20, left: "50%", transform: "translateX(-50%)" }}>
-          <Button
-            className="poster-btn"
-            variant="contained"
-            sx={{
-              backgroundColor: "#007bff",
-              color: "white",
-              p: "8px 16px",
-              fontSize: "1.2rem",
-              borderRadius: "30px",
-              cursor: "pointer",
-              boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.5)",
-              transition: "background-color 0.3s ease, transform 0.3s ease",
-              "&:hover": {
-                backgroundColor: "#0056b3",
-                transform: "scale(1.1)",
-                boxShadow: "0px 15px 50px rgba(0, 0, 0, 0.7)",
-              },
-            }}
-          >
-            Learn More
-          </Button>
-          
-        </Box>
-        
+        <Button
+          className="poster-btn"
+          variant="contained"
+          sx={{
+            backgroundColor: "#007bff",
+            color: "white",
+            p: "8px 16px",
+            fontSize: "1.2rem",
+            borderRadius: "30px",
+            cursor: "pointer",
+            boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.5)",
+            transition: "background-color 0.3s ease, transform 0.3s ease",
+            "&:hover": {
+              backgroundColor: "#0056b3",
+              transform: "scale(1.1)",
+              boxShadow: "0px 15px 50px rgba(0, 0, 0, 0.7)",
+            },
+          }}
+        >
+          Learn More
+        </Button>
       </Box>
+    </Box>
+  ))}
+
+
+
+       
+      
       
     </Box>
     <Box

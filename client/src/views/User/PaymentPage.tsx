@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Typography, TextField, Button, MenuItem, FormControl, Select, InputLabel, Snackbar, List, ListItem, ListItemText } from '@mui/material';
 import { useLocation } from 'react-router-dom';
 import MuiAlert from '@mui/material/Alert';
+import qr from '/src/assets/product/qr.jpg';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -10,7 +11,7 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 const PaymentPage = () => {
   const location = useLocation();
   const { selectedProducts, totalPrice } = location.state || { selectedProducts: [], totalPrice: 0 };
-
+  const [qrCode, setQrCode] = useState(null);
   const [name, setName] = useState('');
   const [surname, setSurname] = useState('');
   const [address, setAddress] = useState('');
@@ -19,6 +20,9 @@ const PaymentPage = () => {
   const [slip, setSlip] = useState(null);
   const [cardNumber, setCardNumber] = useState('');
   const [cardHolder, setCardHolder] = useState('');
+  const [cardExpiry, setCardExpiry] = useState('');
+  const [cvv, setCvv] = useState('');
+
   const [bankName, setBankName] = useState('');
   const [transactionReference, setTransactionReference] = useState('');
   const [open, setOpen] = useState(false);
@@ -29,6 +33,21 @@ const PaymentPage = () => {
       alert("กรุณากรอกข้อมูลให้ครบถ้วน");
       return;
     }
+
+     // ตรวจสอบข้อมูลเมื่อเลือกชำระเงินด้วยบัตรเครดิต
+  if (paymentMethod === 'Credit Card') {
+    if (!cardNumber || !cardHolder || !cardExpiry || !cvv) {
+      alert("กรุณากรอกข้อมูลบัตรเครดิตให้ครบถ้วน");
+      return;
+    }
+  }
+
+
+    if (paymentMethod === 'Bank Transfer' && !slip) {
+      alert("กรุณาแนบรูปสลิปการโอนเงินก่อนยืนยันการชำระเงิน");
+      return;
+    }
+  
 
     const generatedOrderNumber = Math.floor(Math.random() * 1000000).toString();
     setOrderNumber(generatedOrderNumber);
@@ -48,6 +67,17 @@ const PaymentPage = () => {
       orderNumber: generatedOrderNumber,
     });
   };
+
+
+  useEffect(() => {
+    if (paymentMethod === 'Bank Transfer') {
+      // จำลองการดึง QR Code จาก API
+      setTimeout(() => {
+        setQrCode(qr); // URL รูปภาพ QR Code
+      }, 1000);
+    }
+  }, [paymentMethod]);
+  
 
   const handleClose = () => {
     setOpen(false);
@@ -81,7 +111,7 @@ const PaymentPage = () => {
         <InputLabel>วิธีการชำระเงิน</InputLabel>
         <Select value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)} sx={{ borderRadius: 2 }}>
           <MenuItem value="Credit Card">บัตรเครดิต</MenuItem>
-          <MenuItem value="Bank Transfer">โอนผ่านธนาคาร</MenuItem>
+          <MenuItem value="Bank Transfer">QR Code</MenuItem>
         </Select>
       </FormControl>
 
@@ -89,24 +119,55 @@ const PaymentPage = () => {
         <Box>
           <TextField fullWidth label="หมายเลขบัตร" value={cardNumber} onChange={(e) => setCardNumber(e.target.value)} sx={{ marginY: 1 }} required />
           <TextField fullWidth label="ชื่อผู้ถือบัตร" value={cardHolder} onChange={(e) => setCardHolder(e.target.value)} sx={{ marginY: 1 }} required />
+          <TextField fullWidth label="วันหมดอายุ (MM/YY)" value={cardExpiry} onChange={(e) => setCardExpiry(e.target.value)}  sx={{  marginY: 1}}  required />
+          <TextField fullWidth label="รหัส CVV" value={cvv} onChange={(e) => setCvv(e.target.value)} sx={{ marginY: 1 }} required />
         </Box>
       )}
 
-      {paymentMethod === 'Bank Transfer' && (
+{paymentMethod === 'Bank Transfer' && (
+  <Box sx={{ mt: 2, textAlign: 'center' }}>
+    <Typography variant="body1" sx={{ mb: 2, color: 'text.primary' }}>
+      สแกน QR Code เพื่อชำระเงินผ่านพร้อมเพย์
+    </Typography>
+    {qrCode ? (
+      <img
+        src={qrCode}
+        alt="QR Code พร้อมเพย์"
+        style={{ maxWidth: '100%', height: 'auto', border: '1px solid #ccc', borderRadius: 8 }}
+      />
+    ) : (
+      <Typography variant="body2" color="text.secondary">
+        กำลังโหลด QR Code...
+      </Typography>
+    )}
+
+    <Box sx={{ mt: 2 }}>
+      <Typography variant="body1" sx={{ mb: 1 }}>
+        อัปโหลดสลิปการโอนเงิน:
+      </Typography>
+      <input
+        type="file"
+        accept="image/*"
+        onChange={(e) => setSlip(e.target.files[0])}
+        style={{ marginBottom: '10px' }}
+      />
+      {slip && (
         <Box sx={{ mt: 2 }}>
-          <FormControl fullWidth sx={{ marginY: 1 }}>
-            <InputLabel>ชื่อธนาคาร</InputLabel>
-            <Select value={bankName} onChange={(e) => setBankName(e.target.value)} sx={{ borderRadius: 2 }} required>
-              <MenuItem value="ธนาคารกรุงเทพ">ธนาคารกรุงเทพ</MenuItem>
-              <MenuItem value="ธนาคารกรุงไทย">ธนาคารกรุงไทย</MenuItem>
-            </Select>
-          </FormControl>
-
-          <TextField fullWidth label="รหัสอ้างอิงการโอน" value={transactionReference} onChange={(e) => setTransactionReference(e.target.value)} sx={{ marginY: 1 }} required />
-          <input type="file" accept="image/*" onChange={(e) => setSlip(e.target.files[0])} style={{ marginY: 2 }} />
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>อัปโหลดสลิปโอนเงิน</Typography>
+          <Typography variant="body1">ตัวอย่างสลิปที่แนบมา:</Typography>
+          <img
+            src={URL.createObjectURL(slip)}
+            alt="สลิปการโอนเงิน"
+            style={{ maxWidth: '100%', height: 'auto', border: '1px solid #ccc', borderRadius: 8 }}
+          />
         </Box>
       )}
+    </Box>
+  </Box>
+)}
+
+  
+
+
 
       <Button variant="contained" color="primary" onClick={handleSubmit} sx={{ marginTop: 3, padding: 1.5, fontSize: '1rem' }}>
         ยืนยันการชำระเงิน

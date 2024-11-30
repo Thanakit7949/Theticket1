@@ -9,11 +9,58 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { useNavigate } from 'react-router-dom';
 
+
+
+
+
+
+
 const Product = () => {
   const [category, setCategory] = useState("Concert");
   const [subCategory, setSubCategory] = useState("");
   const [favorites, setFavorites] = useState([]); 
   const [cart, setCart] = useState([]);
+ const [productsImage, setProducts] = useState<any[]>([]);
+ const [flashsale, setFlashsale] = useState<any[]>([]);
+
+
+  useEffect(() => {
+      // ฟังก์ชันดึงข้อมูลรูปภาพจาก Backend
+  const fetchProductImages = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/getAllProduct');
+      const data = await response.json();
+      setProducts(data); // กำหนด state สำหรับข้อมูลรูปภาพ
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
+  };
+
+    fetchProductImages();
+  }, []);
+  
+
+
+  useEffect(() => {
+      // ฟังก์ชันดึงข้อมูลรูปภาพจาก Backend
+  const fetchFlashsale = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/getAllflashsale');
+      const data = await response.json();
+      setFlashsale(data); // กำหนด state สำหรับข้อมูลรูปภาพ
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
+  };
+
+  fetchFlashsale();
+  }, []);
+
+  
+  
+ 
+  
+  
 
   const concertCategories = [
     { label: "Flash Sales", products: [
@@ -100,14 +147,22 @@ const Product = () => {
     setSubCategory("Flash Sales");
   }, []);
   
-  const getProducts = () => {
-    if (category === "Concert") {
-      return concertCategories.find(cat => cat.label === subCategory)?.products || [];
-    } else if (category === "Sports") {
-      return sportsCategories.find(cat => cat.label === subCategory)?.products || [];
-    }
-    return [];
-  };
+
+const getProducts = () => {
+  // รีเซ็ตการนับ id ใหม่ให้กับสินค้าของหมวดหมู่ที่เลือก
+  if (category === "Concert") {
+    return concertCategories.find(cat => cat.label === subCategory)?.products.map((product, index) => ({
+      ...product,
+      id: index + 1, // เริ่มต้น id ใหม่จาก 1
+    })) || [];
+  } else if (category === "Sports") {
+    return sportsCategories.find(cat => cat.label === subCategory)?.products.map((product, index) => ({
+      ...product,
+      id: index + 1, // เริ่มต้น id ใหม่จาก 1
+    })) || [];
+  }
+  return [];
+};
   
   const addToCart = (product) => {
     setCart((prevCart) => {
@@ -237,18 +292,22 @@ const Product = () => {
 
      {/* Image Carousel */}
      <Box sx={{ marginBottom: '30px' }}>
-        <Slider {...sliderSettings}>
-          {['/images/product1.jpg', '/images/product2.jpg', '/images/product3.jpg'].map((src, index) => (
-            <Box key={index} sx={{ width: '100%', height: '400px', overflow: 'hidden' }}>
-              <img
-                src={src}
-                alt={`Product ${index + 1}`}
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-            </Box>
-          ))}
-        </Slider>
-      </Box>
+      <Slider {...sliderSettings}>
+        {productsImage.map((productsImage, index) => (
+          <Box key={index} sx={{ width: '100%', height: '400px', overflow: 'hidden' }}>
+            <img
+               src={`http://localhost/sport/${productsImage.image}`}  // ใช้ URL จากฐานข้อมูล
+              alt={`Product ${index + 1}`}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          </Box>
+        ))}
+      </Slider>
+    </Box>
+
+
+
+      
       
       <Box
         sx={{
@@ -327,6 +386,8 @@ const Product = () => {
             </Typography>
           </Box>
         ))}
+
+        
         {category === "Sports" && sportsCategories.map((cat) => (
           <Box
             key={cat.label}
@@ -350,7 +411,7 @@ const Product = () => {
       </Box>
 
       <Grid container spacing={4} sx={{ marginTop: 4 }}>
-        {products.map((product) => (
+        {flashsale.map((product) => (
           <Grid item key={product.id} xs={12} sm={6} md={4} lg={3}>
             <Box
               sx={{
@@ -376,7 +437,7 @@ const Product = () => {
                 onClick={() => handleProductClick(product.id)}
               >
                 <img
-                  src={product.image}
+                  src={`http://localhost/sport/${product.image}`}
                   alt={product.name}
                   style={{
                     width: '100%',
