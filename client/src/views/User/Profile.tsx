@@ -1,6 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Box, Typography, Container, Grid, TextField, Button, Avatar, CircularProgress } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Container,
+  Grid,
+  TextField,
+  Button,
+  Avatar,
+  CircularProgress,
+  MenuItem,
+  Dialog,
+  DialogTitle,
+  DialogActions,
+} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 interface UserProfile {
@@ -24,17 +37,18 @@ const Profile: React.FC = () => {
     profile_image: null,
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [isUpdating, setIsUpdating] = useState(false);
   const [image, setImage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [logoutDialog, setLogoutDialog] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Get the users array from localStorage
     const users = JSON.parse(localStorage.getItem('users') || '[]');
     if (users.length > 0) {
-      const user = users[users.length - 1]; // Get the last logged-in user
+      const user = users[users.length - 1];
       fetchUserProfile(user.id);
     } else {
-      // Reset profile if no user is logged in
       setProfile({
         first_name: '',
         last_name: '',
@@ -48,55 +62,54 @@ const Profile: React.FC = () => {
     }
   }, []);
 
-  const fetchUserProfile = (userId: number) => {
-    axios
-      .get<UserProfile>(`http://localhost:3001/users/${userId}`, {
+  const fetchUserProfile = async (userId: number) => {
+    try {
+      const res = await axios.get<UserProfile>(`http://localhost:3001/users/${userId}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      })
-      .then((res) => {
-        const userData = res.data;
-        if (userData.birth_date) {
-          userData.birth_date = formatDate(userData.birth_date);
-        }
-        setProfile(userData);
-        setImage(userData.profile_image || null);
-        setIsLoading(false);
-      })
-      .catch((err) => {
-        console.error('Error fetching profile:', err);
-        setIsLoading(false);
       });
+      const userData = res.data;
+      if (userData.birth_date) {
+        userData.birth_date = formatDate(userData.birth_date);
+      }
+      setProfile(userData);
+      setImage(userData.profile_image || null);
+    } catch (err) {
+      console.error('Error fetching profile:', err);
+      setError('Failed to connect to the server. Please try again later.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleUpdate = () => {
+  const handleUpdate = async () => {
+    setIsUpdating(true);
     const users = JSON.parse(localStorage.getItem('users') || '[]');
     if (users.length === 0) {
       alert('You must log in first!');
       return;
     }
-    const user = users[users.length - 1]; // Get the last logged-in user
+    const user = users[users.length - 1];
 
-    axios
-      .put(
+    try {
+      await axios.put(
         `http://localhost:3001/users/${user.id}`,
         { ...profile, profile_image: image },
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
-      )
-      .then(() => {
-        alert('Profile updated successfully!');
-      })
-      .catch((error) => {
-        console.error('Update failed:', error);
-      });
+      );
+      alert('Profile updated successfully!');
+    } catch (error) {
+      console.error('Update failed:', error);
+      alert('Failed to update profile.');
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   const handleLogout = () => {
-    // Remove the last logged-in user from localStorage
+    setLogoutDialog(false);
     const users = JSON.parse(localStorage.getItem('users') || '[]');
-    users.pop(); // Remove the last user from the array
+    users.pop();
     localStorage.setItem('users', JSON.stringify(users));
-
-    // Remove token and reset profile
     localStorage.removeItem('token');
     setProfile({
       first_name: '',
@@ -107,7 +120,7 @@ const Profile: React.FC = () => {
       gender: '',
       profile_image: null,
     });
-    navigate('/login'); // Redirect to login page
+    navigate('/login');
   };
 
   const formatDate = (isoDate: string): string => {
@@ -119,7 +132,7 @@ const Profile: React.FC = () => {
   };
 
   if (isLoading) {
-    return <CircularProgress />; // Show loading spinner while fetching
+    return <CircularProgress />;
   }
 
   return (
@@ -129,7 +142,11 @@ const Profile: React.FC = () => {
           User Profile
         </Typography>
       </Box>
-
+      {error && (
+        <Typography color="error" textAlign="center" mb={3}>
+          {error}
+        </Typography>
+      )}
       <Grid container spacing={4}>
         <Grid item xs={12} md={4}>
           <Box display="flex" flexDirection="column" alignItems="center">
@@ -138,6 +155,22 @@ const Profile: React.FC = () => {
               alt="Profile Picture"
               sx={{ width: 150, height: 150, mb: 2 }}
             />
+            <Button variant="contained" component="label">
+              Change Picture
+              <input
+                type="file"
+                hidden
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    const reader = new FileReader();
+                    reader.onloadend = () => setImage(reader.result as string);
+                    reader.readAsDataURL(file);
+                  }
+                }}
+              />
+            </Button>
           </Box>
         </Grid>
         <Grid item xs={12} md={8}>
@@ -188,26 +221,48 @@ const Profile: React.FC = () => {
             />
             <TextField
               fullWidth
+              select
               label="Gender"
               name="gender"
               value={profile.gender}
               onChange={(e) => setProfile({ ...profile, gender: e.target.value })}
               margin="normal"
-            />
+            >
+              <MenuItem value="Male">Male</MenuItem>
+              <MenuItem value="Female">Female</MenuItem>
+              <MenuItem value="Other">Other</MenuItem>
+            </TextField>
             <Button
               variant="contained"
               color="primary"
               sx={{ mt: 2 }}
-              onClick={() => handleUpdate()}
+              onClick={handleUpdate}
+              disabled={isUpdating}
             >
-              Update Profile
+              {isUpdating ? <CircularProgress size={24} /> : 'Update Profile'}
             </Button>
           </Box>
-          <Button variant="contained" color="secondary" onClick={handleLogout}>
+          <Button
+            variant="contained"
+            color="secondary"
+            sx={{ mt: 2 }}
+            onClick={() => setLogoutDialog(true)}
+          >
             Logout
           </Button>
         </Grid>
       </Grid>
+      <Dialog open={logoutDialog} onClose={() => setLogoutDialog(false)}>
+        <DialogTitle>Are you sure you want to log out?</DialogTitle>
+        <DialogActions>
+          <Button onClick={() => setLogoutDialog(false)} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleLogout} color="secondary">
+            Logout
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };

@@ -65,6 +65,21 @@ app.post('/login', (req, res) => {
   });
 });
 
+app.get('/users/:id', async (req, res) => {
+  const userId = req.params.id;
+  try {
+    const user = await db.getUserById(userId); // Fetch user from the database
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.json(user);
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+
 app.post('/register', (req, res) => {
   const { email, password, phone, firstName, lastName, birthdate, gender } = req.body;
 
@@ -323,70 +338,67 @@ app.get('/getpromotionDetail', (req, res) => {
     }
   });
 });
-
-// Add concert
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Add Concert
 app.post('/addConcert', (req, res) => {
-  const { name, description, date, location, price, availableSeats } = req.body;
-
-  if (!name || !date || !location || price == null || availableSeats == null) {
-    return res.status(400).json({ message: 'All fields are required.' });
+  const { name, date, location, price, available_seats } = req.body;
+  if (!name || !date || !location || price == null || available_seats == null) {
+    return res.status(400).json({ message: 'Missing required fields.' });
   }
 
   const query = `
-    INSERT INTO concerts (name, description, date, location, price, available_seats)
-    VALUES (?, ?, ?, ?, ?, ?)
+    INSERT INTO concerts (name, date, location, price, available_seats)
+    VALUES (?, ?, ?, ?, ?)
   `;
-  db.query(query, [name, description, date, location, price, availableSeats], (err, result) => {
+  db.query(query, [name, date, location, price, available_seats], (err) => {
     if (err) {
-      return res.status(500).json({ message: 'Database error', error: err.message });
+      console.error('Database Error:', err.message);
+      return res.status(500).json({ message: 'Database error' });
     }
-    res.status(201).json({ message: 'Concert added successfully', result });
+    res.status(201).json({ message: 'Concert added successfully' });
   });
 });
 
-// Update concert
+// Update Concert
 app.put('/updateConcert/:id', (req, res) => {
   const { id } = req.params;
-  const { name, description, date, location, price, availableSeats } = req.body;
-
-  if (!concertName || !date || !location || price == null || availableSeats == null) {
+  const { name, date, location, price, available_seats } = req.body;
+  if (!name || !date || !location || price == null || available_seats == null) {
     return res.status(400).json({ message: 'All fields are required.' });
   }
 
   const query = `
-    UPDATE concerts
-    SET name = ?, description = ?, date = ?, location = ?, price = ?, available_seats = ?
+    UPDATE concerts SET name = ?, date = ?, location = ?, price = ?, available_seats = ?
     WHERE id = ?
   `;
-  db.query(query, [concertName, description, date, location, price, availableSeats, id], (err, result) => {
+  db.query(query, [name, date, location, price, available_seats, id], (err, result) => {
     if (err) {
-      return res.status(500).json({ message: 'Database error', error: err.message });
+      console.error('Database Error:', err.message);
+      return res.status(500).json({ message: 'Database error' });
     }
-
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: 'Concert not found.' });
     }
-
-    res.status(200).json({ message: 'Concert updated successfully', result });
+    res.status(200).json({ message: 'Concert updated successfully' });
   });
 });
-// Delete concert
+
+// Delete Concert
 app.delete('/deleteConcert/:id', (req, res) => {
   const { id } = req.params;
-
   const query = 'DELETE FROM concerts WHERE id = ?';
   db.query(query, [id], (err, result) => {
     if (err) {
-      return res.status(500).json({ message: 'Database error', error: err.message });
+      console.error('Database Error:', err.message);
+      return res.status(500).json({ message: 'Database error' });
     }
-
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: 'Concert not found.' });
     }
-
     res.status(200).json({ message: 'Concert deleted successfully' });
   });
 });
+
 
 
 // Add sport

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import {
   Box,
   Typography,
@@ -7,254 +7,184 @@ import {
   Button,
   Grid,
   Container,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-} from "@mui/material";
+} from '@mui/material';
 
-// Interface for sport data
 interface SportData {
-  id: number;
+  id?: number;
   name: string;
   date: string;
   location: string;
   price: number;
-  availableSeats: number;
+  available_seats: number;
 }
 
 const Dbsports: React.FC = () => {
-  const [sports, setSports] = useState<SportData[]>([]); // Store all sports
+  const [sports, setSports] = useState<SportData[]>([]);
   const [formData, setFormData] = useState<SportData>({
-    id: 0,
-    name: "",
-    date: "",
-    location: "",
+    name: '',
+    date: '',
+    location: '',
     price: 0,
-    availableSeats: 0,
-  }); // Form data
-  const [editId, setEditId] = useState<number | null>(null); // ID of the sport being edited
-  const [loading, setLoading] = useState(false);  // Loading state for async operations
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);  // Dialog for delete confirmation
-  const [sportToDelete, setSportToDelete] = useState<number | null>(null);  // Track the sport ID to delete
+    available_seats: 0,
+  });
+  const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  // Fetch sports data when component mounts
+  // Function to format the date to yyyy-MM-dd format
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   useEffect(() => {
     fetchSports();
   }, []);
 
-  const fetchSports = () => {
+  const fetchSports = async () => {
     setLoading(true);
-    axios
-      .get("http://localhost:5000/getAllSports")
-      .then((response) => setSports(response.data))
-      .catch((error) => console.error("Error fetching sports:", error))
-      .finally(() => setLoading(false));
+    try {
+      const response = await axios.get('http://localhost:5000/getAllSports');
+      // Format the date before storing in the state
+      const formattedSports = response.data.map((sport: SportData) => ({
+        ...sport,
+        date: formatDate(sport.date),
+      }));
+      setSports(formattedSports);
+    } catch (error) {
+      console.error('Error fetching sports:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: name === 'price' || name === 'available_seats' ? parseInt(value) : value,
     }));
   };
 
-  const handleAddOrUpdate = () => {
-    if (!formData.name || !formData.date || !formData.location) {
-      console.error("All required fields must be filled.");
-      return;
+  const handleAddOrUpdate = async () => {
+    try {
+      const payload = {
+        ...formData,
+        date: new Date(formData.date).toISOString(), // Convert back to ISO before sending to backend
+      };
+      const url = isEditing
+        ? `http://localhost:5000/updateSport/${formData.id}`
+        : 'http://localhost:5000/addSport';
+      const method = isEditing ? axios.put : axios.post;
+      await method(url, payload);
+      fetchSports();
+      setFormData({ name: '', date: '', location: '', price: 0, available_seats: 0 });
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Error adding/updating sport:', error.response?.data || error.message);
     }
-
-    setLoading(true);
-
-    if (editId !== null) {
-      // Update the sport if editId is set
-      axios
-        .put(`http://localhost:5000/updateSport/${formData.id}`, formData)
-        .then(() => {
-          fetchSports();
-          setEditId(null);
-        })
-        .catch((error) => console.error("Error updating sport:", error))
-        .finally(() => setLoading(false));
-    } else {
-      // Add new sport
-      axios
-        .post("http://localhost:5000/addSport", formData)
-        .then(() => fetchSports())
-        .catch((error) => console.error("Error adding sport:", error))
-        .finally(() => setLoading(false));
-    }
-
-    // Clear form after submission
-    setFormData({
-      id: 0,
-      name: "",
-      date: "",
-      location: "",
-      price: 0,
-      availableSeats: 0,
-    });
   };
 
   const handleEdit = (sport: SportData) => {
     setFormData(sport);
-    setEditId(sport.id);
+    setIsEditing(true);
   };
 
-  const handleDelete = (id: number) => {
-    setSportToDelete(id);
-    setOpenDeleteDialog(true);
-  };
-
-  const confirmDelete = () => {
-    if (sportToDelete !== null) {
-      axios
-        .delete(`http://localhost:5000/deleteSport/${sportToDelete}`)
-        .then(() => {
-          fetchSports();
-          setOpenDeleteDialog(false);
-        })
-        .catch((error) => console.error("Error deleting sport:", error));
+  const handleDelete = async (id: number) => {
+    try {
+      await axios.delete(`http://localhost:5000/deleteSport/${id}`);
+      fetchSports();
+    } catch (error) {
+      console.error('Error deleting sport:', error);
     }
-  };
-
-  const cancelDelete = () => {
-    setOpenDeleteDialog(false);
   };
 
   return (
     <Container>
-      <Box mt={5} mb={3}>
-        <Typography variant="h4" fontWeight="bold" textAlign="center">
-          Manage Sports
-        </Typography>
-      </Box>
-
-      {/* Form Section */}
-      <Box component="form" mb={4}>
+      <Typography variant="h4" textAlign="center" mt={4} mb={4}>
+        Sports Management
+      </Typography>
+      <Box>
         <TextField
           label="Sport Name"
-          variant="outlined"
-          fullWidth
           name="name"
           value={formData.name}
           onChange={handleFormChange}
+          fullWidth
           margin="normal"
         />
         <TextField
           label="Date"
           type="date"
-          InputLabelProps={{ shrink: true }}
-          fullWidth
           name="date"
-          value={formData.date}
+          value={formData.date} // Formatted date in yyyy-MM-dd
           onChange={handleFormChange}
+          fullWidth
+          InputLabelProps={{ shrink: true }}
           margin="normal"
         />
         <TextField
           label="Location"
-          variant="outlined"
-          fullWidth
           name="location"
           value={formData.location}
           onChange={handleFormChange}
+          fullWidth
           margin="normal"
         />
         <TextField
           label="Price"
           type="number"
-          variant="outlined"
-          fullWidth
           name="price"
           value={formData.price}
           onChange={handleFormChange}
+          fullWidth
           margin="normal"
         />
         <TextField
           label="Available Seats"
           type="number"
-          variant="outlined"
-          fullWidth
-          name="availableSeats"
-          value={formData.availableSeats}
+          name="available_seats"
+          value={formData.available_seats}
           onChange={handleFormChange}
+          fullWidth
           margin="normal"
         />
-        
         <Button
           variant="contained"
           color="primary"
           onClick={handleAddOrUpdate}
           fullWidth
-          disabled={loading}
+          style={{ marginTop: '16px' }}
         >
-          {editId !== null ? "Update Sport" : "Add Sport"}
+          {isEditing ? 'Update Sport' : 'Add Sport'}
         </Button>
       </Box>
-
-      {/* Sports List */}
-      {loading ? (
-        <Typography>Loading sports...</Typography>
-      ) : (
-        <Grid container spacing={2}>
-          {sports.map((sport) => (
-            <Grid item xs={12} key={sport.id}>
-              <Box
-                p={2}
-                border={1}
-                borderColor="grey.300"
-                borderRadius="8px"
-                display="flex"
-                justifyContent="space-between"
-                alignItems="center"
+      <Grid container spacing={2} mt={4}>
+        {sports.map((sport) => (
+          <Grid item xs={12} key={sport.id}>
+            <Box border={1} borderRadius={2} p={2}>
+              <Typography variant="h6">{sport.name}</Typography>
+              <Typography>Date: {sport.date}</Typography>
+              <Typography>Location: {sport.location}</Typography>
+              <Typography>Price: {sport.price}</Typography>
+              <Typography>Available Seats: {sport.available_seats}</Typography>
+              <Button variant="contained" color="secondary" onClick={() => handleEdit(sport)}>
+                Edit
+              </Button>
+              <Button
+                variant="contained"
+                color="error"
+                style={{ marginLeft: '8px' }}
+                onClick={() => handleDelete(sport.id!)}
               >
-                <Typography>
-                  {sport.name} - {sport.date} - {sport.location}
-                </Typography>
-                <Box>
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={() => handleEdit(sport)}
-                    style={{ marginRight: "8px" }}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    color="secondary"
-                    onClick={() => handleDelete(sport.id)}
-                  >
-                    Delete
-                  </Button>
-                </Box>
-              </Box>
-            </Grid>
-          ))}
-        </Grid>
-      )}
-
-      {/* Delete confirmation dialog */}
-      <Dialog
-        open={openDeleteDialog}
-        onClose={cancelDelete}
-        aria-labelledby="delete-sport-dialog"
-      >
-        <DialogTitle id="delete-sport-dialog">Delete Sport</DialogTitle>
-        <DialogContent>
-          <Typography>Are you sure you want to delete this sport?</Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={cancelDelete} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={confirmDelete} color="secondary">
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+                Delete
+              </Button>
+            </Box>
+          </Grid>
+        ))}
+      </Grid>
     </Container>
   );
 };

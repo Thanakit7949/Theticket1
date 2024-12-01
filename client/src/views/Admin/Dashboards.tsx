@@ -25,7 +25,7 @@ const Dashboards: React.FC = () => {
             textTransform: "none",
             "&:hover": { bgcolor: "primary.light" },
           }}
-          onClick={() => setActiveContent("welcome")}
+          onClick={() => setActiveContent("profile")}
         >
           Profile
         </Button>
@@ -58,7 +58,12 @@ const Dashboards: React.FC = () => {
       </Box>
 
       {/* Main Content */}
-      <Box flexGrow={1} p={3} bgcolor="#fff5e6">
+      <Box
+        flexGrow={1}
+        p={3}
+        bgcolor="#fff5e6"
+        overflow="auto" // เพิ่มส่วนนี้
+      >
         {activeContent === "profile" && <Profile />}
         {activeContent === "concerts" && <Dbconcerts />}
         {activeContent === "sports" && <Dbsports />}

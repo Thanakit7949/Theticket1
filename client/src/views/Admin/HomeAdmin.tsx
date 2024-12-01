@@ -13,7 +13,7 @@ const HomeAdmin: React.FC = () => {
         <Button
           variant="contained"
           color="primary"
-          onClick={() => navigate("/dashboard")}
+          onClick={() => navigate("/dashboards")}
           sx={{ mt: 3 }}
         >
           Go to Dashboard

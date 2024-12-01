@@ -9,11 +9,11 @@ import { routesConfig } from "./RounterConfig";
 import { MainRouter } from "../interface/Router.interface";
 import Home from "../views/Home"
 import RegisterPage from "../views/Register";
-import Dashboard from "../views/User/Dashboard";
 import Dashboards from "../views/Admin/Dashboards";
 import Profile from "../views/User/Profile";
 import Dbconcerts from "../views/Admin/Dbconcerts";
 import Dbsports from "../views/Admin/Dbsports";
+import HomeAdmin from "../views/Admin/HomeAdmin";
 
 
 const Router: React.FC = () => {
@@ -149,6 +149,7 @@ const Router: React.FC = () => {
         <Route path="/dashboards" element={<Dashboards />} />
         <Route path="/dbconcerts" element={<Dbconcerts />} />
         <Route path="/dbsports" element={<Dbsports />} />
+        <Route path="/home-admin" element={<HomeAdmin />} />
         
         
         <Route path="/" element={
