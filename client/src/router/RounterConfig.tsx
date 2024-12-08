@@ -25,6 +25,10 @@ import PaymentConcert from "../views/User/PaymentConcert";
 import PaymentSport from "../views/User/PaymentSport";
 import TicketConcert from "../views/User/TicketConcert";
 import TicketSport from "../views/User/TicketSport";
+import Photocard from "../views/User/prodetail/Photocard";
+import AcryliCon from "../views/User/prodetail/AcryliCon";
+import Ballkeychain from "../views/User/prodetail/Ballkeychain";
+import Footballshirt from "../views/User/prodetail/Footballshirt";
 //import Dashboard from "../views/User/Dashboard"
 
 export const routesConfig: {
@@ -231,8 +235,43 @@ export const routesConfig: {
       header: "promotion",
       component: Promotion,
       icon: null,
-      children: [],
+      children: [
+        {
+          path: "photocard",
+          name: "photocard",
+          header: "photocard",
+          component: Photocard,
+          icon: null,
+          children: [],
+        },
+        {
+          path: "acrylicon",
+          name: "acrylicon",
+          header: "acrylicon",
+          component: AcryliCon,
+          icon: null,
+          children: [],
+        },
+        {
+          path: "ballkeychain",
+          name: "ballkeychain",
+          header: "ballkeychain",
+          component: Ballkeychain,
+          icon: null,
+          children: [],
+        },
+        {
+          path: "footballshirt",
+          name: "footballshirt",
+          header: "footballshirt",
+          component: Footballshirt,
+          icon: null,
+          children: [],
+        },
+
+      ],
     },
+    
     // {
     //     path: "/home-test",
     //     name: "llll",
@@ -270,6 +309,8 @@ export const routesConfig: {
         
       ],
     },
+
+   
   
     {
       path: "/product/:id",
@@ -290,6 +331,8 @@ export const routesConfig: {
 
       ],
     },
+  
+
 
     
   ],

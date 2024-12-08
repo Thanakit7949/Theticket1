@@ -1,51 +1,47 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
-import { Box, Button, Stack, Tooltip, Typography } from "@mui/material";
-import { useNavigate } from "react-router-dom"; // นำเข้า useNavigate
+import { Box, Button, Stack,  Tooltip,  Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const StageConcert: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState(5 * 60);
   const [selectedPrice, setSelectedPrice] = useState<string | null>(null);
-  const navigate = useNavigate(); // ประกาศใช้ navigate
+  const [tickets, setTickets] = useState<any[]>([]);
+  const navigate = useNavigate();
 
-  // อัปเดตตัวจับเวลาให้ทำงานทุก ๆ 1 วินาที
   useEffect(() => {
     const interval = setInterval(() => {
-      setTimeLeft((prevTime) => (prevTime > 0 ? prevTime - 1 : 0)); // ลดเวลาลงทีละ 1 วินาที หยุดเมื่อถึง 0
+      setTimeLeft((prevTime) => (prevTime > 0 ? prevTime - 1 : 0));
     }, 1000);
 
-    // ล้าง interval เมื่อคอมโพเนนต์ถูกยกเลิก
     return () => clearInterval(interval);
   }, []);
 
-  // ฟังก์ชันสำหรับฟอร์แมตเวลาเป็นรูปแบบ MM:SS
+  useEffect(() => {
+    const fetchTicket = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/getConcertstage");
+        const data = await response.json();
+        setTickets(data);
+        console.log(data);
+      } catch (error) {
+        console.error("Error fetching events:", error);
+      }
+    };
+
+    fetchTicket();
+  }, []);
+
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
     const seconds = time % 60;
-    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
-      2,
-      "0"
-    )}`;
+    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
   };
 
-  const tickets = [
-    { label: "STD", color: "#2D2DFF", price: "฿2,500", amount: "2500" },
-    { label: "BB1", color: "#4DC0FF", price: "฿3,500", amount: "3500" },
-    { label: "BB2", color: "#4DC0FF", price: "฿3,500", amount: "3500" },
-    { label: "BB3", color: "#4DC0FF", price: "฿3,500", amount: "3500" },
-    { label: "BB4", color: "#4DC0FF", price: "฿3,500", amount: "3500" },
-    { label: "BB5", color: "#4DC0FF", price: "฿3,500", amount: "3500" },
-    { label: "BB6", color: "#4DC0FF", price: "฿3,500", amount: "3500" },
-    { label: "AA4", color: "#FFD96A", price: "฿4,500", amount: "4500" },
-    { label: "AA5", color: "#FFD96A", price: "฿4,500", amount: "4500" },
-    { label: "AA6", color: "#FFD96A", price: "฿4,500", amount: "4500" },
-    { label: "AA1", color: "#FF66A4", price: "฿5,500", amount: "5500" },
-    { label: "AA2", color: "#FF66A4", price: "฿5,500", amount: "5500" },
-    { label: "AA3", color: "#FF66A4", price: "฿5,500", amount: "5500" },
-  ];
-  // กรองบัตรตามราคาที่เลือก
   const filteredTickets = selectedPrice
-    ? tickets.filter((ticket) => ticket.amount === selectedPrice)
-    : tickets;
+  ? tickets.filter((ticket) => String(ticket.amount) === selectedPrice) // ใช้ String เพื่อความแม่นยำ
+  : tickets;
+
 
   const handleBuyTicket = (price: string, label: string) => {
     navigate("/concert/seat-concert", { state: { price, label } });
@@ -53,20 +49,19 @@ const StageConcert: React.FC = () => {
 
   return (
     <Box
-      sx={{
-        display: "flex",
-        flexDirection: "row", // ใช้แสดงคอนเทนต์ในแถว
-        alignItems: "flex-start",
-        background: "linear-gradient(135deg, #EECDA3 0%, #EF629F 100%);",
-        minHeight: "100vh",
-        padding: "20px",
-        width: "1150px", // เพิ่มความยาวของกรอบ
-        height:"1100px",
-        maxHeight:"none",
-        maxWidth: "none", // กำหนดให้ไม่มีขนาดกว้างสุดที่จำกัด
-      }}
+    sx={{
+      display: "flex",
+      flexDirection: "row", // ใช้แสดงคอนเทนต์ในแถว
+      alignItems: "flex-start",
+      background: "linear-gradient(135deg, #EECDA3 0%, #EF629F 100%);",
+      minHeight: "100vh",
+      padding: "20px",
+      width: "1150px", // เพิ่มความยาวของกรอบ
+      height:"1100px",
+      maxHeight:"none",
+      maxWidth: "none", // กำหนดให้ไม่มีขนาดกว้างสุดที่จำกัด
+    }}
     >
-      {/* Sidebar ซ้าย */}
       <Box
         sx={{
           display: "flex",
@@ -127,7 +122,6 @@ const StageConcert: React.FC = () => {
           </Button>
         </Stack>
 
-        {/* Tickets List */}
         <Box
           sx={{
             width: "100%",
@@ -167,9 +161,9 @@ const StageConcert: React.FC = () => {
                   padding: "8px 16px",
                   borderRadius: "30px",
                   fontWeight: "bold",
-                  "&:hover": { backgroundColor: "#b39ddb" ,color:"white"},
+                  "&:hover": { backgroundColor: "#b39ddb", color: "white" },
                 }}
-                onClick={() => handleBuyTicket(ticket.price, ticket.label)} // ส่งทั้งราคาและชื่อโซน
+                onClick={() => handleBuyTicket(ticket.price, ticket.label)}
               >
                 จองโซนที่นั่ง
               </Button>
@@ -177,8 +171,6 @@ const StageConcert: React.FC = () => {
           ))}
         </Box>
       </Box>
-
-      {/* แผนที่ที่นั่ง */}
 
       <Box
         sx={{
@@ -369,6 +361,7 @@ const StageConcert: React.FC = () => {
           {["STD"].map((label) => (
             <Tooltip
             key={label}
+            
             title={
               tickets.find((ticket) => ticket.label === label)?.price || ""
             }

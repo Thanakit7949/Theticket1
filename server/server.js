@@ -423,8 +423,32 @@ app.get('/getpromotionDetail', (req, res) => {
     }
   });
 });
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Add Concert
+
+// promotion สำหรับดึงข้อมูล
+app.get('/getproconsport', (req, res) => {
+  const query = 'SELECT * FROM pro_consport';
+  db.query(query, (err, result) => {
+    if (err) {
+      res.status(500).send('Error fetching data');
+    } else {
+      res.json(result);
+    }
+  });
+});
+
+// API สำหรับดึงข้อมูลจากฐานข้อมูล
+app.get('/getConcertstage', (req, res) => {
+  const query = 'SELECT * FROM concert_stage'; // ตัวอย่าง query เพื่อดึงข้อมูล
+  db.query(query, (err, results) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
+// Add concert
 app.post('/addConcert', (req, res) => {
   const { name, date, location, price, available_seats } = req.body;
   if (!name || !date || !location || price == null || available_seats == null) {
