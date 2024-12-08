@@ -248,15 +248,15 @@ export const routesConfig: {
       component: Information,
       icon: null,
       children: [
-        {
-          path: "page1in",
-          name: "TestPage",
-          header: "TestPage",
-          component: Page1Page,
-          icon: null,
-          subpath: false,
-          children: [],
-        },
+        // {
+        //   path: "page1in",
+        //   name: "TestPage",
+        //   header: "TestPage",
+        //   component: Page1Page,
+        //   icon: null,
+        //   subpath: false,
+        //   children: [],
+        // },
       ],
     },
     {

@@ -40,29 +40,34 @@ const SeatSport: React.FC = () => {
     )}`;
   };
 
-  // ฟังก์ชันสำหรับเปลี่ยนสถานะของที่นั่งเมื่อมีการคลิก
   const toggleSeatStatus = (rowIndex: number, colIndex: number) => {
     const seatPosition = { row: rowIndex + 1, col: colIndex + 1 };
+  
     setSeats((prevSeats) =>
       prevSeats.map((row, rIndex) =>
         row.map((seat: string, cIndex: number) => {
           if (rIndex === rowIndex && cIndex === colIndex) {
             if (seat === "available") {
-              setSelectedSeats((prevSelectedSeats) => [
-                ...prevSelectedSeats,
-                seatPosition,
-              ]); // เพิ่มที่นั่งที่เลือก
+              setSelectedSeats((prevSelectedSeats) =>
+                prevSelectedSeats.some(
+                  (selectedSeat) =>
+                    selectedSeat.row === seatPosition.row &&
+                    selectedSeat.col === seatPosition.col
+                )
+                  ? prevSelectedSeats
+                  : [...prevSelectedSeats, seatPosition]
+              ); // เพิ่มที่นั่งใหม่ ถ้าไม่มีใน `selectedSeats`
               return "selected";
             } else if (seat === "selected") {
               setSelectedSeats((prevSelectedSeats) =>
                 prevSelectedSeats.filter(
                   (selectedSeat) =>
                     !(
-                      selectedSeat.row === rowIndex + 1 &&
-                      selectedSeat.col === colIndex
+                      selectedSeat.row === seatPosition.row &&
+                      selectedSeat.col === seatPosition.col
                     )
                 )
-              ); // ลบที่นั่งที่ยกเลิกการเลือก
+              ); // ลบที่นั่งที่เลือกออกจาก `selectedSeats`
               return "available";
             }
           }
@@ -71,6 +76,7 @@ const SeatSport: React.FC = () => {
       )
     );
   };
+  
   const navigate = useNavigate(); // เรียกใช้ useNavigate
   // ฟังก์ชันสำหรับการไปที่หน้า Payment
   const handleBuyTicket = () => {
@@ -163,43 +169,44 @@ const SeatSport: React.FC = () => {
             </Typography>
           )}
 
-          {/* แสดงที่นั่งที่เลือก */}
-          {selectedSeats.length > 0 && (
-            <Typography
-              variant="h6"
-              sx={{
-                color: "black",
-                mb: 2,
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-                flexWrap: "wrap", // เพิ่ม flexWrap เพื่อทำให้ที่นั่งไหลลงบรรทัดถัดไป
-                width: "100%", // ให้แน่ใจว่า width ใช้งานได้เต็มที่
-              }}
-            >
-              ที่นั่ง:
-              {selectedSeats.map((seat, index) => (
-                <Box
-                  key={index}
-                  sx={{
-                    width: "50px",
-                    height: "50px",
-                    borderRadius: "50%",
-                    backgroundColor: "#00FF00",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    color: "black",
-                    fontWeight: "bold",
-                    fontSize: "14px",
-                    marginBottom: "10px", // เพิ่มระยะห่างระหว่างแถว
-                  }}
-                >
-                  {`${label}${seat.row}-${seat.col}`}
-                </Box>
-              ))}
-            </Typography>
-          )}
+         {/* แสดงที่นั่งที่เลือก */}
+         {selectedSeats.length > 0 && (
+           <Box
+           sx={{
+             display: "flex",
+             flexDirection: "row",
+             flexWrap: "wrap",
+             gap: "10px",
+             maxHeight: "150px", // กำหนดความสูงสูงสุด
+             overflowY: "auto", // เพิ่ม Scrollbar เมื่อรายการเกินพื้นที่
+             padding: "10px",
+             backgroundColor: "#fff",
+             borderRadius: "8px",
+             boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+           }}
+         >
+            ที่นั่ง:
+            {selectedSeats.map((seat, index) => (
+              <Box
+        key={index}
+        sx={{
+          width: "50px",
+          height: "50px",
+          borderRadius: "50%",
+          backgroundColor: "#00FF00",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          color: "black",
+          fontWeight: "bold",
+          fontSize: "14px",
+        }}
+      >
+        {`${label}${seat.row}-${seat.col}`}
+      </Box>
+    ))}
+  </Box>
+)}
 
           {/* แสดงราคา */}
           <Box
