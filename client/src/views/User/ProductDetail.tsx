@@ -8,7 +8,7 @@ const ProductDetail = () => {
   const { selectedProducts } = location.state || { selectedProducts: [] };
 
   const calculateTotalPrice = () => {
-    return selectedProducts.reduce((total, item) => {
+    return selectedProducts.reduce((total:any, item:any) => {
       const price = parseFloat(item.price.replace('฿', '').trim());
       return total + price * item.quantity;
     }, 0);
@@ -26,12 +26,12 @@ const handleGoToPayment = () => {
         รายละเอียดสินค้า
       </Typography>
       <List>
-        {selectedProducts.map((item) => (
+        {selectedProducts.map((item:any) => (
           <Card key={item.id} sx={{ marginBottom: 2, boxShadow: '0 6px 10px rgba(0, 0, 0, 0.1)', borderRadius: 3 }}>
             <CardContent sx={{ display: 'flex', alignItems: 'center' }}>
               {/* แสดงรูปภาพสินค้า */}
               <Avatar
-                src={item.image}
+                 src={`http://localhost/product/${item.folder}/${item.image}`}
                 alt={item.name}
                 sx={{ width: 80, height: 80, marginRight: 2, boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)' }}
               />

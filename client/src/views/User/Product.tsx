@@ -25,9 +25,18 @@ const Product = () => {
   const [cart, setCart] = useState([]);
   const [productsImage, setProducts] = useState<any[]>([]);
   const [flashsale, setFlashsale] = useState<any[]>([]);
+  const [Shirtcon, setShirtcon] = useState<any[]>([]);
+  const [lightstickcon, setlightstickcon] = useState<any[]>([]);
+  const [albumcon , setalbumcon] = useState<any[]>([]);
   const [flashsaleSport, setFlashsaleSport] = useState<any[]>([]);
-  const [Shirt, setShirt] = useState<any[]>([]);
+  const [shirtSport, setshirtSport] = useState<any[]>([]);
+  const [scarfSport, setscarfSport] = useState<any[]>([]);
+  const [shoeSport, setshoeSport] = useState<any[]>([]);
+  
 
+
+
+  // image
   useEffect(() => {
     // ฟังก์ชันดึงข้อมูลรูปภาพจาก Backend
     const fetchProductImages = async () => {
@@ -43,6 +52,9 @@ const Product = () => {
     fetchProductImages();
   }, []);
 
+
+
+// CategoryConcert  
   useEffect(() => {
     // ฟังก์ชันดึงข้อมูลรูปภาพจาก Backend
     const fetchFlashsale = async () => {
@@ -54,6 +66,47 @@ const Product = () => {
         console.error("Error fetching products:", error);
       }
     };
+   
+    const fetchShirtcon = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/getAllshirtcon");
+        const data = await response.json();
+        setShirtcon(data); // กำหนด state สำหรับข้อมูลรูปภาพ
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    const fetchLightstick = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/getAllligthstickcon");
+        const data = await response.json();
+        setlightstickcon(data); // กำหนด state สำหรับข้อมูลรูปภาพ
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    const fetchAlbumcon= async () => {
+      try {
+        const response = await fetch("http://localhost:5000/getAllalbumcon");
+        const data = await response.json();
+        setalbumcon(data); // กำหนด state สำหรับข้อมูลรูปภาพ
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    fetchFlashsale();
+    fetchShirtcon();
+    fetchLightstick();
+    fetchAlbumcon();
+
+  }, []);
+
+
+  //CategorySport
+  useEffect(() => {
     const fetchFlashsaleSport = async () => {
       try {
         const response = await fetch("http://localhost:5000/getAllflashsaleSport");
@@ -63,18 +116,44 @@ const Product = () => {
         console.error("Error fetching products:", error);
       }
     };
-    const fetchShirt = async () => {
+
+    const fetchShirtsport= async () => {
       try {
-        const response = await fetch("http://localhost:5000/getAllShirt");
+        const response = await fetch("http://localhost:5000/getAllshirtsport");
         const data = await response.json();
-        setShirt(data); // กำหนด state สำหรับข้อมูลรูปภาพ
+        setshirtSport(data); // กำหนด state สำหรับข้อมูลรูปภาพ
       } catch (error) {
         console.error("Error fetching products:", error);
       }
     };
 
-    fetchFlashsale();
+    const fetchScarfsport= async () => {
+      try {
+        const response = await fetch("http://localhost:5000/getAllscarfsport");
+        const data = await response.json();
+        setscarfSport(data); // กำหนด state สำหรับข้อมูลรูปภาพ
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    const fetchShoesport= async () => {
+      try {
+        const response = await fetch("http://localhost:5000/getAllshoesport");
+        const data = await response.json();
+        setshoeSport(data); // กำหนด state สำหรับข้อมูลรูปภาพ
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    fetchFlashsaleSport();
+    fetchShirtsport();
+    fetchScarfsport();
+    fetchShoesport();
   }, []);
+
+
 
   const concertCategories = [
     {
@@ -92,7 +171,7 @@ const Product = () => {
     },
     {
       label: "Shirt",
-      products: Shirt,
+      products: Shirtcon,
       // products: [
       //   {
       //     id: 3,
@@ -104,20 +183,22 @@ const Product = () => {
     },
     {
       label: "Light Stick",
-      products: [
-        {
-          id: 4,
-          name: "Light Stick",
-          price: "300 ฿",
-          image: "/images/product4.jpg",
-        },
-      ],
+      products: lightstickcon,
+      // products: [
+      //   {
+      //     id: 4,
+      //     name: "Light Stick",
+      //     price: "300 ฿",
+      //     image: "/images/product4.jpg",
+      //   },
+      // ],
     },
     {
       label: "Album",
-      products: [
-        { id: 5, name: "Got7", price: "1270 ฿", image: "/images/product4.jpg" },
-      ],
+      products: albumcon,
+      // products: [
+      //   { id: 5, name: "Got7", price: "1270 ฿", image: "/images/product4.jpg" },
+      // ],
     },
   ];
 
@@ -136,36 +217,39 @@ const Product = () => {
     },
     {
       label: "Shirt",
-      products: [
-        {
-          id: 7,
-          name: "Sports Shirt",
-          price: "700 ฿",
-          image: "/images/product6.jpg",
-        },
-      ],
+      products:shirtSport,
+      // products: [
+      //   {
+      //     id: 7,
+      //     name: "Sports Shirt",
+      //     price: "700 ฿",
+      //     image: "/images/product6.jpg",
+      //   },
+      // ],
     },
     {
       label: "Scarf",
-      products: [
-        {
-          id: 8,
-          name: "Sports Scarf",
-          price: "250 ฿",
-          image: "/images/product7.jpg",
-        },
-      ],
+      products:scarfSport,
+      // products: [
+      //   {
+      //     id: 8,
+      //     name: "Sports Scarf",
+      //     price: "250 ฿",
+      //     image: "/images/product7.jpg",
+      //   },
+      // ],
     },
     {
       label: "Shoes",
-      products: [
-        {
-          id: 9,
-          name: "Sports Shoes",
-          price: "1500 ฿",
-          image: "/images/product8.jpg",
-        },
-      ],
+      products:shoeSport,
+      // products: [
+      //   {
+      //     id: 9,
+      //     name: "Sports Shoes",
+      //     price: "1500 ฿",
+      //     image: "/images/product8.jpg",
+      //   },
+      // ],
     },
   ];
 
@@ -198,6 +282,8 @@ const Product = () => {
   const handleSubCategoryClick = (subCat: any) => {
     setSubCategory(subCat);
   };
+  
+
 
   useEffect(() => {
     setSubCategory("Flash Sales");
@@ -218,9 +304,7 @@ const Product = () => {
     navigate("productDetail", { state: { selectedProducts: cart } });
   };
 
-  useEffect(() => {
-    setSubCategory("Flash Sales");
-  }, []);
+ 
 
   const getProducts = () => {
     // รีเซ็ตการนับ id ใหม่ให้กับสินค้าของหมวดหมู่ที่เลือก
@@ -294,11 +378,11 @@ const Product = () => {
         boxShadow: "0px 8px 30px rgba(0, 0, 0, 0.15)",
         margin: "auto",
         width: "1090px",
-        height: "3000px",
         border: "2px solid #FFA4A2",
         textAlign: "center",
         position: "relative",
-        overflow: "hidden",
+        overflow: "hidden", // หรือใช้ auto หากต้องการ scroll
+        minHeight: "500px", // กำหนดความสูงเริ่มต้น แต่ปล่อยให้ขยายตามเนื้อหา
       }}
     >
       {/* Title with Icons */}
@@ -388,10 +472,10 @@ const Product = () => {
           {productsImage.map((productsImage, index) => (
             <Box
               key={index}
-              sx={{ width: "100%", height: "400px", overflow: "hidden" }}
+              sx={{ width: "100%", height: "600px", overflow: "hidden", border: "6px solid black",borderRadius: "8px"  }}
             >
               <img
-                src={`http://localhost/sport/${productsImage.image}`} // ใช้ URL จากฐานข้อมูล
+                src={`http://localhost/product/${productsImage.image}`} // ใช้ URL จากฐานข้อมูล
                 alt={`Product ${index + 1}`}
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />
@@ -446,165 +530,7 @@ const Product = () => {
         </Box>
       </Box>
 
-      {/* <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          backgroundColor: "#f8f9fa",
-          padding: "12px 16px",
-          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-          marginTop: "20px",
-          borderRadius: "8px",
-        }}
-      >
-        {category === "Concert" &&
-          concertCategories.map((cat) => (
-            <Box
-              key={cat.label}
-              sx={{
-                margin: "0 20px",
-                cursor: "pointer",
-                color: subCategory === cat.label ? "#1976d2" : "inherit",
-                transition: "color 0.3s, transform 0.2s",
-                "&:hover": {
-                  color: "#1976d2",
-                  transform: "scale(1.05)",
-                },
-              }}
-              onClick={() => handleSubCategoryClick(cat.label)}
-            >
-              <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-                {cat.label}
-              </Typography>
-            </Box>
-          ))}
-
-        {category === "Sports" &&
-          sportsCategories.map((cat) => (
-            <Box
-              key={cat.label}
-              sx={{
-                margin: "0 20px",
-                cursor: "pointer",
-                color: subCategory === cat.label ? "#1976d2" : "inherit",
-                transition: "color 0.3s, transform 0.2s",
-                "&:hover": {
-                  color: "#1976d2",
-                  transform: "scale(1.05)",
-                },
-              }}
-              onClick={() => handleSubCategoryClick(cat.label)}
-            >
-              <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-                {cat.label}
-              </Typography>
-            </Box>
-          ))}
-      </Box>
-
-      <Grid container spacing={4} sx={{ marginTop: 4 }}>
-        {flashsale.map((product) => (
-          <Grid item key={product.id} xs={12} sm={6} md={4} lg={3}>
-            <Box
-              sx={{
-                border: "2px solid #FFB6C1",
-                borderRadius: 2,
-                boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
-                overflow: "hidden",
-                cursor: "pointer",
-                transition: "transform 0.3s ease",
-                "&:hover": {
-                  transform: "scale(1.05)",
-                },
-              }}
-            >
-              <Box
-                sx={{
-                  position: "relative",
-                  width: "100%",
-                  height: 0,
-                  paddingBottom: "100%",
-                  overflow: "hidden",
-                }}
-                onClick={() => handleProductClick(product.id)}
-              >
-                <img
-                  src={`http://localhost/sport/${product.image}`}
-                  alt={product.name}
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                  }}
-                />
-              </Box>
-              <Box sx={{ padding: 2, textAlign: "center" }}>
-                <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                  {product.name}
-                </Typography>
-                <Typography
-                  variant="body1"
-                  sx={{ color: "#888888", marginBottom: 1 }}
-                >
-                  {product.price}
-                </Typography>
-                <IconButton onClick={() => handleFavoriteClick(product.id)}>
-                  <FavoriteBorderIcon
-                    color={favorites.includes(product.id) ? "error" : "inherit"}
-                  />
-                </IconButton>
-                <IconButton
-                  onClick={() => handleCartIconClick(product.id)}
-                  disabled={addedToCart.has(product.id)}
-                >
-                  <ShoppingCartIcon
-                    color={addedToCart.has(product.id) ? "disabled" : "primary"}
-                  />
-                </IconButton>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    gap: 1,
-                  }}
-                >
-                  <Button onClick={() => removeFromCart(product)}>-</Button>
-                  <Typography>
-                    {cart.find((item: any) => item.id === product.id)
-                      ?.quantity || 0}
-                  </Typography>
-                  <Button onClick={() => addToCart(product)}>+</Button>
-                </Box>
-              </Box>
-            </Box>
-          </Grid>
-        ))}
-      </Grid>
-      <Box
-        sx={{ display: "flex", justifyContent: "center", marginTop: "40px" }}
-      >
-        <Button
-          variant="contained"
-          onClick={handleConfirmPayment}
-          color="primary"
-          sx={{
-            padding: "10px 30px",
-            fontWeight: "bold",
-            fontSize: "18px",
-            borderRadius: "8px",
-            boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
-            "&:hover": {
-              backgroundColor: "#1976d2",
-            },
-          }}
-        >
-          Confirm Payment
-        </Button>
-      </Box> */}
+      
       <Box
   sx={{
     display: "flex",
@@ -693,7 +619,7 @@ const Product = () => {
           onClick={() => handleProductClick(product.id)}
         >
           <img
-            src={`http://localhost/${category.toLowerCase()}/${product.image}`}
+            src={`http://localhost/product/${product.folder}/${product.image}`}
             alt={product.name}
             style={{
               width: "100%",
@@ -713,7 +639,7 @@ const Product = () => {
             variant="body1"
             sx={{ color: "#888888", marginBottom: 1 }}
           >
-            {product.price}
+            {product.price} ฿
           </Typography>
           <IconButton onClick={() => handleFavoriteClick(product.id)}>
             <FavoriteBorderIcon

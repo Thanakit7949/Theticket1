@@ -225,6 +225,8 @@ app.get('/getAllProduct', (req, res) => {
 });
 
 
+
+//ProductConcert
 app.get('/getAllflashsale', (req, res) => {
   const query = 'SELECT * FROM flashsalepro'; // ดึงข้อมูลทั้งหมดจาก product
   db.query(query, (err, results) => {
@@ -234,6 +236,89 @@ app.get('/getAllflashsale', (req, res) => {
     return res.json(results); // ส่งผลลัพธ์เป็น JSON
   });
 });
+
+
+app.get('/getAllshirtcon', (req, res) => {
+  const query = 'SELECT * FROM shirtconpro'; // ดึงข้อมูลทั้งหมดจาก product
+  db.query(query, (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: 'Database error', error: err.message });
+    }
+    return res.json(results); // ส่งผลลัพธ์เป็น JSON
+  });
+});
+
+app.get('/getAllligthstickcon', (req, res) => {
+  const query = 'SELECT * FROM lightstickcon'; // ดึงข้อมูลทั้งหมดจาก product
+  db.query(query, (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: 'Database error', error: err.message });
+    }
+    return res.json(results); // ส่งผลลัพธ์เป็น JSON
+  });
+});
+
+app.get('/getAllAlbumcon', (req, res) => {
+  const query = 'SELECT * FROM albumcon'; // ดึงข้อมูลทั้งหมดจาก product
+  db.query(query, (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: 'Database error', error: err.message });
+    }
+    return res.json(results); // ส่งผลลัพธ์เป็น JSON
+  });
+});
+
+
+
+
+
+
+
+
+// ProductSport
+app.get('/getAllflashsaleSport', (req, res) => {
+  const query = 'SELECT * FROM flashsalesport'; // ดึงข้อมูลทั้งหมดจาก product
+  db.query(query, (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: 'Database error', error: err.message });
+    }
+    return res.json(results); // ส่งผลลัพธ์เป็น JSON
+  });
+});
+
+app.get('/getAllshirtsport', (req, res) => {
+  const query = 'SELECT * FROM shirtsport'; // ดึงข้อมูลทั้งหมดจาก product
+  db.query(query, (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: 'Database error', error: err.message });
+    }
+    return res.json(results); // ส่งผลลัพธ์เป็น JSON
+  });
+});
+
+app.get('/getAllscarfsport', (req, res) => {
+  const query = 'SELECT * FROM scarfsport'; // ดึงข้อมูลทั้งหมดจาก product
+  db.query(query, (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: 'Database error', error: err.message });
+    }
+    return res.json(results); // ส่งผลลัพธ์เป็น JSON
+  });
+});
+
+app.get('/getAllshoesport', (req, res) => {
+  const query = 'SELECT * FROM shoesport'; // ดึงข้อมูลทั้งหมดจาก product
+  db.query(query, (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: 'Database error', error: err.message });
+    }
+    return res.json(results); // ส่งผลลัพธ์เป็น JSON
+  });
+});
+
+
+
+
 
 
 
@@ -358,6 +443,33 @@ app.get('/getpromotionDetail', (req, res) => {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Add Concert
 app.post('/addConcert', async (req, res) => {
+
+// promotion สำหรับดึงข้อมูล
+app.get('/getproconsport', (req, res) => {
+  const query = 'SELECT * FROM pro_consport';
+  db.query(query, (err, result) => {
+    if (err) {
+      res.status(500).send('Error fetching data');
+    } else {
+      res.json(result);
+    }
+  });
+});
+
+// API สำหรับดึงข้อมูลจากฐานข้อมูล
+app.get('/getConcertstage', (req, res) => {
+  const query = 'SELECT * FROM concert_stage'; // ตัวอย่าง query เพื่อดึงข้อมูล
+  db.query(query, (err, results) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
+// Add concert
+app.post('/addConcert', (req, res) => {
   const { name, date, location, price, available_seats } = req.body;
   if (!name || !date || !location || price == null || available_seats == null) {
     return res.status(400).json({ message: 'Missing required fields.' });

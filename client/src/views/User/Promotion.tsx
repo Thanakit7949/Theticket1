@@ -3,16 +3,16 @@ import React, { useEffect, useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import Slider from "react-slick";
 import Pro9Image from "/src/assets/promotion/promo.webp";
-import Pro10Image from "/src/assets/promotion/proo.png";
 import cat from "/src/assets/promotion/cat.png";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Promotion = () => {
   const navigate = useNavigate();
   const [datapromotion, setPromotion] = useState<any[]>([]);
   const [datapromotiondetail, setPromotionDetail] = useState<any[]>([]);
+  const [dataproconsport, setProconSport] = useState<any[]>([]);
 
   useEffect(() => {
     // ฟังก์ชันดึงข้อมูลรูปภาพจาก Backend
@@ -27,16 +27,32 @@ const Promotion = () => {
     };
     const fetchPromotionDetail = async () => {
       try {
-        const response = await fetch('http://localhost:5000/getpromotionDetail');
+        const response = await fetch(
+          "http://localhost:5000/getpromotionDetail"
+        );
         const data = await response.json();
         setPromotionDetail(data); // บันทึกข้อมูลใน State
       } catch (error) {
-        console.error('Error fetching promotions:', error);
+        console.error("Error fetching promotions:", error);
       }
     };
 
+    const fetchProConSport = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:5000/getproconsport"
+        );
+        const data = await response.json();
+        setProconSport(data); // บันทึกข้อมูลใน State
+      } catch (error) {
+        console.error("Error fetching promotions:", error);
+      }
+    };
+
+
     fetchPromotionDetail();
     fetchPromotionImages();
+    fetchProConSport();
   }, []);
 
   const handleCButtonClick = () => {
@@ -46,19 +62,9 @@ const Promotion = () => {
 
   const [isUsed, setIsUsed] = useState(false);
   const [buttonText, setButtonText] = useState("เก็บคูปอง");
-  const handleButtonPouClick = () => {
-    navigate("/coupon-conditions"); // ไปยังหน้าเงื่อนไขคูปอง
-  };
-
-  const [usedCoupons, setUsedCoupons] = useState({});
-
-  // ฟังก์ชันที่เปลี่ยนข้อความและสีเมื่อคลิกปุ่ม
-  const handleButtonClick = (id: any) => {
-    // อัพเดทสถานะการใช้คูปอง
-    setUsedCoupons((prev) => ({
-      ...prev,
-      [id]: true, // ตั้งค่าคูปองว่าใช้แล้ว
-    }));
+  
+  const handleNavigation = (link:any) => {
+    navigate(link); // นำไปยังหน้าแต่ละไอเท็ม
   };
 
   //นับถอยหลัง
@@ -99,38 +105,6 @@ const Promotion = () => {
     autoplay: true,
     autoplaySpeed: 3000,
   };
-
-  const items = [
-    {
-      id: 1,
-      price: "฿220",
-      description: "สั่งซื้อตั้งแต่ ฿1600",
-      imgSrc: Pro10Image,
-      expiryDate: "2024.10.31",
-    },
-    {
-      id: 2,
-      price: "฿220",
-      description: "สั่งซื้อตั้งแต่ ฿1600",
-      imgSrc: Pro10Image,
-      expiryDate: "2024.10.31",
-    },
-    {
-      id: 3,
-      price: "฿220",
-      description: "สั่งซื้อตั้งแต่ ฿1600",
-      imgSrc: Pro10Image,
-      expiryDate: "2024.10.31",
-    },
-    {
-      id: 4,
-      price: "฿220",
-      description: "สั่งซื้อตั้งแต่ ฿1600",
-      imgSrc: Pro10Image,
-      expiryDate: "2024.10.31",
-    },
-  ];
-
   return (
     <Box
       sx={{
@@ -401,22 +375,22 @@ const Promotion = () => {
         >
           {datapromotiondetail.map((promotion) => (
             <Box
-            sx={{
-              flex: "0 0 auto", // ป้องกัน Card ยืดเกินไป
-              maxWidth: "300px", // กำหนดความกว้างสูงสุดของ Card
-              backgroundColor: "#fff",
-              borderRadius: "8px",
-              boxShadow: 2,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              position: "relative",
-              transition: "transform 0.3s ease, box-shadow 0.3s ease",
-              "&:hover": {
-                transform: "translateY(-10px)",
-                boxShadow: "0 8px 16px rgba(0, 0, 0, 0.2)",
-              },
-            }}
+              sx={{
+                flex: "0 0 auto", // ป้องกัน Card ยืดเกินไป
+                maxWidth: "300px", // กำหนดความกว้างสูงสุดของ Card
+                backgroundColor: "#fff",
+                borderRadius: "8px",
+                boxShadow: 2,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                position: "relative",
+                transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                "&:hover": {
+                  transform: "translateY(-10px)",
+                  boxShadow: "0 8px 16px rgba(0, 0, 0, 0.2)",
+                },
+              }}
             >
               {/* กรอบป้ายลดราคา */}
               <Box
@@ -475,7 +449,8 @@ const Promotion = () => {
                   ฿{promotion.newPrice}
                 </Typography>
                 <Typography variant="h6" sx={{ color: "#888" }}>
-                  🛒 เริ่มโปรตั้งแต่ <br></br>{promotion.date}
+                  🛒 เริ่มโปรตั้งแต่ <br></br>
+                  {promotion.date}
                 </Typography>
               </Box>
             </Box>
@@ -532,23 +507,10 @@ const Promotion = () => {
               marginTop: "30px",
             }}
           >
-            เติมคูปอง ทุกเที่ยงคืน 00.00 น.
+            โปรโมชันสำหรับลูกค้า INTERGETHER
           </Box>
         </Box>
-        <Button
-          onClick={handleButtonPouClick}
-          sx={{
-            backgroundColor: "#fc0e71",
-            color: "white",
-            padding: "12px 55px",
-            cursor: "pointer",
-            fontSize: "18px",
-            alignSelf: "flex-start",
-            marginLeft: "400px",
-          }}
-        >
-          เงื่อนไขคูปอง
-        </Button>
+        
       </Box>
 
       <Box
@@ -560,7 +522,7 @@ const Promotion = () => {
           marginTop: "20px",
         }}
       >
-        {items.map((item) => (
+        {dataproconsport.map((item) => (
           <Box
             key={item.id}
             sx={{
@@ -576,10 +538,10 @@ const Promotion = () => {
           >
             <Box
               component="img"
-              src={item.imgSrc}
-              alt="cat"
+              src={`http://localhost/promotion/${item.image}`} 
+              alt={item.name}
               sx={{
-                width: "150px",
+                width: "170px",
                 height: "auto",
                 marginRight: "20px",
               }}
@@ -591,17 +553,18 @@ const Promotion = () => {
                 fontWeight="bold"
                 color="#ad054b"
                 sx={{
-                  fontSize: "35px",
+                  fontSize: "20px",
                   textShadow: "2px 2px 5px rgb(255, 255, 255)",
                   margin: 0,
                   borderRadius: "10px",
                   padding: "5px",
                   marginBottom: "-10px",
                   textAlign: "left",
-                  marginTop: "-50px",
+                  marginTop: "-60px",
+                  marginLeft:"-5px"
                 }}
               >
-                {item.price}
+                {item.name}
               </Typography>
 
               <Box
@@ -620,12 +583,12 @@ const Promotion = () => {
                   }}
                 >
                   <Typography
-                    variant="h6"
+                  
                     fontWeight="bold"
                     color="black"
                     sx={{
                       fontSize: "20px",
-                      marginBottom: "5px",
+                      marginTop: "8px",
                     }}
                   >
                     {item.description}
@@ -642,11 +605,10 @@ const Promotion = () => {
                   />
 
                   <Typography
-                    variant="h6"
                     fontWeight="bold"
                     color="#bdbdbd"
                     sx={{
-                      fontSize: "20px",
+                      fontSize: "15px",
                     }}
                   >
                     วันหมดอายุ: {item.expiryDate} {/* เพิ่มข้อความวันหมดอายุ */}
@@ -654,30 +616,20 @@ const Promotion = () => {
                 </Box>
 
                 <Button
-                  className={`buys-customer ${
-                    usedCoupons[item.id] ? "used" : ""
-                  }`}
-                  onClick={() => handleButtonClick(item.id)}
+                     onClick={() => handleNavigation(item.link)}
                   sx={{
-                    backgroundColor: usedCoupons[item.id]
-                      ? "#4aabc3"
-                      : "#fc0e71",
+                    backgroundColor: "#fc0e71",
                     color: "white",
                     padding: "5px 30px",
-                    borderRadius: "35px",
+                    borderRadius: "30px",
                     cursor: "pointer",
                     fontSize: "18px",
                     alignSelf: "flex-start",
-                    marginTop: "-100px",
-                    marginLeft: "200px",
-                    "&:hover": {
-                      backgroundColor: usedCoupons[item.id]
-                        ? "#4aabc3"
-                        : "#ad054b",
-                    },
+                    marginTop: "-90px",
+                    marginLeft: "190px",
                   }}
                 >
-                  {usedCoupons[item.id] ? "ใช้แล้ว" : "ใช้คูปอง"}
+                  เพิ่มเติม
                 </Button>
               </Box>
             </Box>
@@ -737,7 +689,6 @@ const Promotion = () => {
         </Box>
       </Box>
 
-
       <Box
         sx={{
           border: "2px solid #ad054b",
@@ -752,12 +703,12 @@ const Promotion = () => {
           position: "relative",
         }}
       >
-       <Box
+        <Box
           display="flex"
           justifyContent="flex-start"
           alignItems="center"
           flexDirection="row"
-          mt={4}
+          mt={2}
           sx={{
             overflowX: "auto", // อนุญาตให้เลื่อนในแนวนอน
             overflowY: "hidden", // ซ่อนการล้นในแนวตั้ง
@@ -769,70 +720,75 @@ const Promotion = () => {
         >
           {datapromotiondetail.map((flashslse) => (
             <Box
-            sx={{
-              flex: "0 0 auto", // ป้องกัน Card ยืดเกินไป
-              maxWidth: "300px", // กำหนดความกว้างสูงสุดของ Card
-              backgroundColor: "#fce4ec",
-              borderRadius: "8px",
-              boxShadow: 2,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              position: "relative",
-              transition: "transform 0.3s ease, box-shadow 0.3s ease",
-              "&:hover": {
-                transform: "translateY(-10px)",
-                boxShadow: "0 8px 16px #fc0e71",
-                border: "2px solid #fc0e71",
-                "& .addToCartButton": {
-                  opacity: 1, // แสดงปุ่มเมื่อวางเมาส์เหนือการ์ด,
+              sx={{
+                flex: "0 0 auto", // ป้องกัน Card ยืดเกินไป
+                maxWidth: "300px", // กำหนดความกว้างสูงสุดของ Card
+                backgroundColor: "#fce4ec",
+                borderRadius: "8px",
+                boxShadow: 2,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                position: "relative",
+                transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                "&:hover": {
+                  transform: "translateY(-10px)",
+                  boxShadow: "0 8px 16px #fc0e71",
+                  border: "2px solid #fc0e71",
+                  "& .addToCartButton": {
+                    opacity: 1, // แสดงปุ่มเมื่อวางเมาส์เหนือการ์ด,
+                  },
                 },
-              },
-            }}
-          >
-            <img
-              src={`http://localhost/promotion/${flashslse.image}`}
-              alt={flashslse.name}
-              style={{
-                width: "100%", // รักษาขนาดภาพให้เต็มกรอบ
-                height: "auto", // ปรับความสูงให้เป็นอัตโนมัติเพื่อรักษาสัดส่วน
-                maxHeight: "300px", // กำหนดความสูงสูงสุดสำหรับรูปภาพ
-                objectFit: "cover",
-                borderRadius: "8px 8px 0 0",
               }}
-            />
-            <Box sx={{ padding: "10px", textAlign: "center" }}>
-              <Typography fontSize={25} sx={{ fontWeight: "bold", color: "#ad054b" }}>
-                {flashslse.name}
-              </Typography>
-              <Box
-                sx={{
-                  height: "1px",
-                  backgroundColor: "#ad054b",
-                  margin: "5px 0",
-                  width: "100%",
+            >
+              <img
+                src={`http://localhost/promotion/${flashslse.image}`}
+                alt={flashslse.name}
+                style={{
+                  width: "100%", // รักษาขนาดภาพให้เต็มกรอบ
+                  height: "auto", // ปรับความสูงให้เป็นอัตโนมัติเพื่อรักษาสัดส่วน
+                  maxHeight: "300px", // กำหนดความสูงสูงสุดสำหรับรูปภาพ
+                  objectFit: "cover",
+                  borderRadius: "8px 8px 0 0",
                 }}
               />
-              <Typography
-                variant="h6"
-                sx={{ textDecoration: "line-through", color: "gray" }}
-              >
-                💰฿{flashslse.oldPrice}
-              </Typography>
-              <Typography variant="h6" sx={{ fontWeight: "bold", color: "#fc0e71" }}>
-                ฿{flashslse.newPrice}
-              </Typography>
-              <Typography variant="h5" sx={{ color: "red" }}>
-                🚨รีบกดก่อนหมดโปร🚨
-              </Typography>
-            </Box>
-            
-            {/* ปุ่มหยิบใส่ตะกร้า */}
+              <Box sx={{ padding: "10px", textAlign: "center" }}>
+                <Typography
+                  fontSize={25}
+                  sx={{ fontWeight: "bold", color: "#ad054b" }}
+                >
+                  {flashslse.name}
+                </Typography>
+                <Box
+                  sx={{
+                    height: "1px",
+                    backgroundColor: "#ad054b",
+                    margin: "5px 0",
+                    width: "100%",
+                  }}
+                />
+                <Typography
+                  variant="h6"
+                  sx={{ textDecoration: "line-through", color: "gray" }}
+                >
+                  💰฿{flashslse.oldPrice}
+                </Typography>
+                <Typography
+                  variant="h6"
+                  sx={{ fontWeight: "bold", color: "#fc0e71" }}
+                >
+                  ฿{flashslse.newPrice}
+                </Typography>
+                <Typography variant="h5" sx={{ color: "red" }}>
+                  🚨รีบกดก่อนหมดโปร🚨
+                </Typography>
+              </Box>
+               {/* ไปหน้าproduct */}
             <Box
             className="addToCartButton"
             sx={{
               position: "absolute",
-              bottom: "-10px", // ปรับค่าเพื่อเลื่อนปุ่มลงมา
+              bottom: "-25px", // ปรับค่าเพื่อเลื่อนปุ่มลงมา
               opacity: 0,
               transition: "opacity 0.3s ease",
             }}
@@ -848,14 +804,16 @@ const Promotion = () => {
                   backgroundColor: "#ad054b",
                 },
               }}
+              component={Link}
+            to="/product"
             >
-              หยิบใส่ตะกร้า
+              GO PRODUCT
             </Button>
           </Box>
-          
-          </Box>
+            </Box>
           ))}
         </Box>
+        
       </Box>
     </Box>
   );
