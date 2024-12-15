@@ -11,44 +11,19 @@ const LoginPage: React.FunctionComponent = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-  
     try {
-      const response = await axios.post('http://localhost:5000/login', {
-        email,
-        password,
-      });
-  
+      const response = await axios.post('http://localhost:5000/login', { email, password });
       const data = response.data;
-  
-      // Save user info in localStorage as an array
-      const userData = {
-        id: data.id,
-        first_name: data.first_name,
-        last_name: data.last_name,
-        email: data.email,
-        role: data.role,
-      };
-      let users = JSON.parse(localStorage.getItem('users') || '[]');
-      users.push(userData);
-      localStorage.setItem('users', JSON.stringify(users));
-  
-      // Save token as usual
-      localStorage.setItem('token', data.token);
-  
-      // Redirect based on role
-      if (data.role === 'admin') {
-        navigate('/home-admin');
-      } else if (data.role === 'user') {
-        navigate('/home-test');
-      } else {
-        setMessage('Unknown role');
-      }
+
+      localStorage.setItem('user', JSON.stringify(data.user)); // เก็บข้อมูลผู้ใช้
+      localStorage.setItem('token', data.token); // เก็บ Token
+
+      navigate(data.user.role === 'admin' ? '/home-admin' : '/home-test');
     } catch (error: any) {
-      console.error('Login error:', error.response?.data || error.message);
       setMessage(error.response?.data?.message || 'Login failed');
     }
   };
-  
+
   return (
     <Box
       sx={{

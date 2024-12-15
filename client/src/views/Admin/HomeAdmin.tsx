@@ -18,6 +18,14 @@ const HomeAdmin: React.FC = () => {
         >
           Go to Dashboard
         </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => navigate("/home-test")}
+          sx={{ mt: 3 }}
+        >
+          Go to Website
+        </Button>
       </Box>
     </Container>
   );

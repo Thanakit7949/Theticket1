@@ -1,24 +1,21 @@
 const express = require('express');
 const cors = require('cors');
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
+const jwt = require('jsonwebtoken');
+
 const app = express();
 const port = 5000;
-const jwt = require('jsonwebtoken');
 const secretKey = 'your-secret-key';
 
 app.use(cors());
 app.use(express.json());
 
-const db = mysql.createConnection({
+// สร้างการเชื่อมต่อฐานข้อมูล
+const db = mysql.createPool({
   host: 'localhost',
   user: 'root',
   password: '',
   database: 'ticket_db',
-});
-
-db.connect((err) => {
-  if (err) throw err;
-  console.log('Connected to MySQL');
 });
 
 // Middleware สำหรับตรวจสอบ token
@@ -37,85 +34,104 @@ const authenticate = (req, res, next) => {
   });
 };
 
-
-
-app.post('/login', (req, res) => {
+// Login และส่ง JWT กลับ
+app.post('/login', async (req, res) => {
   const { email, password } = req.body;
-
-  console.log("Received Email:", email);
-  console.log("Received Password:", password);
 
   if (!email || !password) {
     return res.status(400).json({ message: 'Email and password are required' });
   }
 
-  const query = 'SELECT * FROM users WHERE email = ? AND password = ?';
+  try {
+    const [rows] = await db.query('SELECT * FROM users WHERE email = ? AND password = ?', [email, password]);
+    if (rows.length > 0) {
+      const user = rows[0];
+      const token = jwt.sign({ id: user.id, email: user.email }, secretKey, { expiresIn: '1h' });
 
-  db.query(query, [email, password], (err, result) => {
-    if (err) {
-      return res.status(500).json({ message: 'Database error', error: err.message });
-    }
-    // console.log(result)
-    if (result.length > 0) {
-      const { password, ...userData } = result[0]; // ลบ password ออกจากข้อมูลผู้ใช้
-      return res.json({ ...userData, role: userData.role });
+      const { password, ...userData } = user;
+      return res.json({ token, user: userData });
     } else {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
-  });
-});
-
-app.get('/users/:id', async (req, res) => {
-  const userId = req.params.id;
-  try {
-    const user = await db.getUserById(userId); // Fetch user from the database
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-    res.json(user);
   } catch (error) {
-    console.error('Error fetching user:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error('Error during login:', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 });
 
+// ดึงข้อมูลผู้ใช้ตาม ID
+app.get('/users/:id', authenticate, async (req, res) => {
+  const userId = req.params.id;
 
-app.post('/register', (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT id, first_name, last_name, email, phone, birth_date, gender, profile_image FROM users WHERE id = ?', [userId]);
+    if (rows.length > 0) {
+      return res.json(rows[0]);
+    } else {
+      return res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// อัพเดทข้อมูลผู้ใช้
+app.put('/users/:id', authenticate, async (req, res) => {
+  const userId = req.params.id;
+  const { first_name, last_name, email, phone, birth_date, gender, profile_image } = req.body;
+
+  try {
+    const [result] = await db.query(
+      'UPDATE users SET first_name = ?, last_name = ?, email = ?, phone = ?, birth_date = ?, gender = ?, profile_image = ? WHERE id = ?',
+      [first_name, last_name, email, phone, birth_date, gender, profile_image, userId]
+    );
+
+    if (result.affectedRows > 0) {
+      return res.json({ message: 'Profile updated successfully' });
+    } else {
+      return res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    console.error('Error updating user:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Register
+app.post('/register', async (req, res) => {
   const { email, password, phone, firstName, lastName, birthdate, gender } = req.body;
 
-  // ตรวจสอบว่าฟิลด์ทั้งหมดไม่เป็นค่าว่าง
   if (!email || !password || !phone || !firstName || !lastName || !birthdate || !gender) {
     return res.status(400).json({ message: 'All fields are required' });
   }
 
-  // ตรวจสอบอีเมลซ้ำและบันทึกข้อมูล
-  const checkUserQuery = 'SELECT * FROM users WHERE email = ?';
-  db.query(checkUserQuery, [email], (err, result) => {
-    if (err) {
-      return res.status(500).json({ message: 'Database error', error: err.message });
-    }
-    if (result.length > 0) {
+  try {
+    const [existingUser] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
+    if (existingUser.length > 0) {
       return res.status(409).json({ message: 'Email already exists' });
     }
 
-    const query = 'INSERT INTO users (email, password, phone, first_name, last_name, birth_date, gender) VALUES (?, ?, ?, ?, ?, ?, ?)';
-    db.query(query, [email, password, phone, firstName, lastName, birthdate, gender], (err, result) => {
-      if (err) {
-        return res.status(500).json({ message: 'Database error', error: err.message });
-      }
-      return res.status(201).json({ message: 'User registered successfully' });
-    });
-  });
+    await db.query(
+      'INSERT INTO users (email, password, phone, first_name, last_name, birth_date, gender) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [email, password, phone, firstName, lastName, birthdate, gender]
+    );
+    return res.status(201).json({ message: 'User registered successfully' });
+  } catch (error) {
+    console.error('Error registering user:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
 });
 
-app.get('/getAllConcerts', (req, res) => {
-  const query = 'SELECT * FROM concerts'; // ดึงข้อมูลทั้งหมดจาก concerts
-  db.query(query, (err, results) => {
-    if (err) {
-      return res.status(500).json({ message: 'Database error', error: err.message });
-    }
-    return res.json(results); // ส่งผลลัพธ์เป็น JSON
-  });
+// ดึงข้อมูล Concerts
+app.get('/getAllConcerts', authenticate, async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM concerts');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching concerts:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 });
 
 app.get('/getAllConcertsthaiMass', (req, res) => {
@@ -176,14 +192,15 @@ app.get('/concertsDetail', (req, res) => {
   });
 });
 
-app.get('/getAllSports', (req, res) => {
-  const query = 'SELECT * FROM sports'; // ดึงข้อมูลทั้งหมดจาก concerts
-  db.query(query, (err, results) => {
-    if (err) {
-      return res.status(500).json({ message: 'Database error', error: err.message });
-    }
-    return res.json(results); // ส่งผลลัพธ์เป็น JSON
-  });
+// ดึงข้อมูล Sports
+app.get('/getAllSports', authenticate, async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM sports');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching sports:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 });
 
 app.get('/getAllSportsBoxing', (req, res) => {
@@ -340,24 +357,21 @@ app.get('/getpromotionDetail', (req, res) => {
 });
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Add Concert
-app.post('/addConcert', (req, res) => {
+app.post('/addConcert', async (req, res) => {
   const { name, date, location, price, available_seats } = req.body;
   if (!name || !date || !location || price == null || available_seats == null) {
     return res.status(400).json({ message: 'Missing required fields.' });
   }
 
-  const query = `
-    INSERT INTO concerts (name, date, location, price, available_seats)
-    VALUES (?, ?, ?, ?, ?)
-  `;
-  db.query(query, [name, date, location, price, available_seats], (err) => {
-    if (err) {
-      console.error('Database Error:', err.message);
-      return res.status(500).json({ message: 'Database error' });
-    }
-    res.status(201).json({ message: 'Concert added successfully' });
-  });
+  try {
+    await db.query('INSERT INTO concerts (name, date, location, price, available_seats) VALUES (?, ?, ?, ?, ?)', [name, date, location, price, available_seats]);
+    return res.status(201).json({ message: 'Concert added successfully' });
+  } catch (error) {
+    console.error('Error adding concert:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
 });
+
 
 // Update Concert
 app.put('/updateConcert/:id', (req, res) => {

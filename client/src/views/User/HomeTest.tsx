@@ -24,19 +24,6 @@ import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
 import "swiper/swiper-bundle.css";
 
 
-// // Sample Data for Sports Events
-// const sportsMock = [
-//     { id: 1, name: 'Football Match', date: '2024-11-10T17:00:00.000Z', location: 'Stadium A', image: 'https://via.placeholder.com/350x150' },
-//     { id: 2, name: 'Basketball Game', date: '2024-11-20T17:00:00.000Z', location: 'Arena B', image: 'https://via.placeholder.com/350x150' },
-//     { id: 3, name: 'Tennis Tournament', date: '2024-12-05T17:00:00.000Z', location: 'Court C', image: 'https://via.placeholder.com/350x150' }
-// ];
-
-// const upcomingSportsEvents = [
-//     { id: 1, name: 'Football Match', image: 'https://via.placeholder.com/800x300?text=Football+Match' },
-//     { id: 2, name: 'Basketball Game', image: 'https://via.placeholder.com/800x300?text=Basketball+Game' },
-//     { id: 3, name: 'Tennis Tournament', image: 'https://via.placeholder.com/800x300?text=Tennis+Tournament' },
-// ];
-
 export interface IConcert {
   id: number;
   name: string;
@@ -67,7 +54,17 @@ const HomeTest: React.FunctionComponent = () => {
 
   const fetchConcerts = async () => {
     try {
-      const response = await fetch("http://localhost:5000/getAllConcerts");
+      const response = await fetch("http://localhost:5000/getAllConcerts", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`, // Replace with your auth mechanism
+          "Content-Type": "application/json",
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error(`${response.status}: ${response.statusText}`);
+      }
+  
       const dataCon = await response.json();
       setDataconcerts(dataCon);
       console.log(dataCon);
@@ -75,6 +72,7 @@ const HomeTest: React.FunctionComponent = () => {
       console.error("Error fetching concerts:", error);
     }
   };
+  
 
   useEffect(() => {
     fetchConcerts();
@@ -86,14 +84,22 @@ const HomeTest: React.FunctionComponent = () => {
 
   const fetchSports = async () => {
     try {
-      const response = await fetch(
-        "http://localhost:5000/getAllSportsFootball"
-      );
+      const response = await fetch("http://localhost:5000/getAllSportsFootball", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`, // Replace with your auth mechanism
+          "Content-Type": "application/json",
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error(`${response.status}: ${response.statusText}`);
+      }
+  
       const data: ISports[] = await response.json();
       setDataSports(data);
       console.log(data);
     } catch (error) {
-      console.error("Error fetching events:", error);
+      console.error("Error fetching sports events:", error);
     }
   };
 

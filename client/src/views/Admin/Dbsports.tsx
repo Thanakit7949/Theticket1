@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios'; // เพิ่ม AxiosError
 import {
   Box,
   Typography,
@@ -28,35 +28,29 @@ const Dbsports: React.FC = () => {
     available_seats: 0,
   });
   const [isEditing, setIsEditing] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  // Function to format the date to yyyy-MM-dd format
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchSports();
+    const fetchData = async () => {
+      await fetchSports();
+      setLoading(false);
+    };
+    fetchData();
   }, []);
 
   const fetchSports = async () => {
-    setLoading(true);
     try {
-      const response = await axios.get('http://localhost:5000/getAllSports');
-      // Format the date before storing in the state
-      const formattedSports = response.data.map((sport: SportData) => ({
-        ...sport,
-        date: formatDate(sport.date),
-      }));
-      setSports(formattedSports);
-    } catch (error) {
-      console.error('Error fetching sports:', error);
-    } finally {
-      setLoading(false);
+      const response = await axios.get('http://localhost:5000/getAllSports', {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      });
+      setSports(response.data);
+      console.log(response.data);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        console.error('Error fetching sports:', error.response?.data || error.message);
+      } else {
+        console.error('Unexpected error:', error);
+      }
     }
   };
 
@@ -72,7 +66,7 @@ const Dbsports: React.FC = () => {
     try {
       const payload = {
         ...formData,
-        date: new Date(formData.date).toISOString(), // Convert back to ISO before sending to backend
+        date: new Date(formData.date).toISOString(),
       };
       const url = isEditing
         ? `http://localhost:5000/updateSport/${formData.id}`
@@ -82,13 +76,20 @@ const Dbsports: React.FC = () => {
       fetchSports();
       setFormData({ name: '', date: '', location: '', price: 0, available_seats: 0 });
       setIsEditing(false);
-    } catch (error) {
-      console.error('Error adding/updating sport:', error.response?.data || error.message);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        console.error('Error adding/updating sport:', error.response?.data || error.message);
+      } else {
+        console.error('Unexpected error:', error);
+      }
     }
   };
 
   const handleEdit = (sport: SportData) => {
-    setFormData(sport);
+    setFormData({
+      ...sport,
+      date: sport.date.split('T')[0], // แปลงวันที่ให้แสดงผลเป็น yyyy-MM-dd
+    });
     setIsEditing(true);
   };
 
@@ -96,10 +97,18 @@ const Dbsports: React.FC = () => {
     try {
       await axios.delete(`http://localhost:5000/deleteSport/${id}`);
       fetchSports();
-    } catch (error) {
-      console.error('Error deleting sport:', error);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        console.error('Error deleting sport:', error.response?.data || error.message);
+      } else {
+        console.error('Unexpected error:', error);
+      }
     }
   };
+
+  if (loading) {
+    return <Typography>Loading sports...</Typography>;
+  }
 
   return (
     <Container>
@@ -119,7 +128,7 @@ const Dbsports: React.FC = () => {
           label="Date"
           type="date"
           name="date"
-          value={formData.date} // Formatted date in yyyy-MM-dd
+          value={formData.date}
           onChange={handleFormChange}
           fullWidth
           InputLabelProps={{ shrink: true }}
@@ -166,7 +175,7 @@ const Dbsports: React.FC = () => {
           <Grid item xs={12} key={sport.id}>
             <Box border={1} borderRadius={2} p={2}>
               <Typography variant="h6">{sport.name}</Typography>
-              <Typography>Date: {sport.date}</Typography>
+              <Typography>Date: {new Date(sport.date).toLocaleDateString()}</Typography>
               <Typography>Location: {sport.location}</Typography>
               <Typography>Price: {sport.price}</Typography>
               <Typography>Available Seats: {sport.available_seats}</Typography>
@@ -177,7 +186,7 @@ const Dbsports: React.FC = () => {
                 variant="contained"
                 color="error"
                 style={{ marginLeft: '8px' }}
-                onClick={() => handleDelete(sport.id!)}
+                onClick={() => sport.id && handleDelete(sport.id)}
               >
                 Delete
               </Button>

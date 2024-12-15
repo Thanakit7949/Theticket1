@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios'; // เพิ่ม AxiosError
 import {
   Box,
   Typography,
@@ -28,38 +28,32 @@ const Dbconcerts: React.FC = () => {
     available_seats: 0,
   });
   const [isEditing, setIsEditing] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  // ฟังก์ชันแปลงวันที่ให้เป็นรูปแบบ yyyy-MM-dd
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
-
-  useEffect(() => {
-    fetchConcerts();
-  }, []);
-
+  // ฟังก์ชันดึงข้อมูลจาก API
   const fetchConcerts = async () => {
-    setLoading(true);
     try {
-      const response = await axios.get('http://localhost:5000/getAllConcerts');
-      // แปลงวันที่ก่อนเก็บใน state
-      const formattedConcerts = response.data.map((concert: ConcertData) => ({
-        ...concert,
-        date: formatDate(concert.date),
-      }));
-      setConcerts(formattedConcerts);
-    } catch (error) {
-      console.error('Error fetching concerts:', error);
+      const response = await axios.get('http://localhost:5000/getAllConcerts', {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      });
+      setConcerts(response.data);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        console.error('Error fetching sports:', error.response?.data || error.message);
+      } else {
+        console.error('Unexpected error:', error);
+      }
     } finally {
       setLoading(false);
     }
   };
 
+  // โหลดข้อมูลครั้งแรก
+  useEffect(() => {
+    fetchConcerts();
+  }, []);
+
+  // ฟังก์ชันจัดการฟอร์ม
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -68,38 +62,51 @@ const Dbconcerts: React.FC = () => {
     }));
   };
 
+  // ฟังก์ชันเพิ่มหรืออัปเดตข้อมูล
   const handleAddOrUpdate = async () => {
     try {
       const payload = {
         ...formData,
-        date: new Date(formData.date).toISOString(), // แปลงกลับเป็น ISO ก่อนส่งไป Backend
+        date: new Date(formData.date).toISOString(),
       };
       const url = isEditing
         ? `http://localhost:5000/updateConcert/${formData.id}`
         : 'http://localhost:5000/addConcert';
       const method = isEditing ? axios.put : axios.post;
       await method(url, payload);
-      fetchConcerts();
+      fetchConcerts(); // โหลดข้อมูลใหม่หลังอัปเดต
       setFormData({ name: '', date: '', location: '', price: 0, available_seats: 0 });
       setIsEditing(false);
     } catch (error) {
-      console.error('Error adding/updating concert:', error.response?.data || error.message);
+      console.error(
+        'Error adding/updating concert:',
+        error.response?.data?.message || error.message
+      );
     }
   };
 
+  // ฟังก์ชันตั้งค่าแก้ไขข้อมูล
   const handleEdit = (concert: ConcertData) => {
-    setFormData(concert);
+    setFormData({
+      ...concert,
+      date: concert.date.split('T')[0], // แปลงวันที่ให้เป็น yyyy-MM-dd
+    });
     setIsEditing(true);
   };
 
+  // ฟังก์ชันลบข้อมูล
   const handleDelete = async (id: number) => {
     try {
       await axios.delete(`http://localhost:5000/deleteConcert/${id}`);
       fetchConcerts();
     } catch (error) {
-      console.error('Error deleting concert:', error);
+      console.error('Error deleting concert:', error.response?.data?.message || error.message);
     }
   };
+
+  if (loading) {
+    return <Typography>Loading concerts...</Typography>;
+  }
 
   return (
     <Container>
@@ -119,7 +126,7 @@ const Dbconcerts: React.FC = () => {
           label="Date"
           type="date"
           name="date"
-          value={formData.date} // วันที่ที่ถูกแปลงเป็น yyyy-MM-dd
+          value={formData.date}
           onChange={handleFormChange}
           fullWidth
           InputLabelProps={{ shrink: true }}
@@ -166,7 +173,7 @@ const Dbconcerts: React.FC = () => {
           <Grid item xs={12} key={concert.id}>
             <Box border={1} borderRadius={2} p={2}>
               <Typography variant="h6">{concert.name}</Typography>
-              <Typography>Date: {concert.date}</Typography>
+              <Typography>Date: {new Date(concert.date).toLocaleDateString()}</Typography>
               <Typography>Location: {concert.location}</Typography>
               <Typography>Price: {concert.price}</Typography>
               <Typography>Available Seats: {concert.available_seats}</Typography>
@@ -177,7 +184,7 @@ const Dbconcerts: React.FC = () => {
                 variant="contained"
                 color="error"
                 style={{ marginLeft: '8px' }}
-                onClick={() => handleDelete(concert.id!)}
+                onClick={() => concert.id && handleDelete(concert.id)}
               >
                 Delete
               </Button>
