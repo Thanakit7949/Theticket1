@@ -305,7 +305,7 @@ app.get('/getAllshoesport', (req, res) => {
 
 
 
-
+//Information
 app.get('/getInformationbook', (req, res) => {
   const query = 'SELECT * FROM informationbook'; // ดึงข้อมูลทั้งหมดจาก product
   db.query(query, (err, results) => {
@@ -316,6 +316,16 @@ app.get('/getInformationbook', (req, res) => {
   });
 });
 
+
+app.get('/getInformationdetail', (req, res) => {
+  const query = 'SELECT * FROM informationdetail'; // ดึงข้อมูลทั้งหมดจาก product
+  db.query(query, (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: 'Database error', error: err.message });
+    }
+    return res.json(results); // ส่งผลลัพธ์เป็น JSON
+  });
+});
 
 app.get('/getAdditionalInformation', (req, res) => {
   const query = 'SELECT * FROM additionalinformation'; // ดึงข้อมูลทั้งหมดจาก product
