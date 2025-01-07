@@ -275,6 +275,7 @@ app.get('/getAllAlbumcon', (req, res) => {
 
 
 
+
 // ProductSport
 app.get('/getAllflashsaleSport', (req, res) => {
   const query = 'SELECT * FROM flashsalesport'; // ดึงข้อมูลทั้งหมดจาก product
@@ -323,6 +324,7 @@ app.get('/getAllshoesport', (req, res) => {
 
 
 
+
 app.get('/getInformationbook', (req, res) => {
   const query = 'SELECT * FROM informationbook'; // ดึงข้อมูลทั้งหมดจาก product
   db.query(query, (err, results) => {
@@ -354,7 +356,6 @@ app.get('/getEventPoster', (req, res) => {
     return res.json(results); // ส่งผลลัพธ์เป็น JSON
   });
 });
-
 
 
 
@@ -443,6 +444,19 @@ app.get('/getpromotionDetail', (req, res) => {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Add Concert
 app.post('/addConcert', async (req, res) => {
+  const { name, date, location, price, available_seats, type } = req.body;
+  if (!name || !date || !location || price == null || available_seats == null || !type) {
+    return res.status(400).json({ message: 'Missing required fields.' });
+  }
+
+  try {
+    await db.query('INSERT INTO concerts (name, date, location, price, available_seats, type) VALUES (?, ?, ?, ?, ?, ?)', [name, date, location, price, available_seats, type]);
+    return res.status(201).json({ message: 'Concert added successfully' });
+  } catch (error) {
+    console.error('Error adding concert:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
 // promotion สำหรับดึงข้อมูล
 app.get('/getproconsport', (req, res) => {
@@ -469,14 +483,14 @@ app.get('/getConcertstage', (req, res) => {
 });
 
 // Add concert
-app.post('/addConcert', (req, res) => {
-  const { name, date, location, price, available_seats } = req.body;
-  if (!name || !date || !location || price == null || available_seats == null) {
+app.post('/addConcert', async (req, res) => {
+  const { name, date, location, price, available_seats, type } = req.body;
+  if (!name || !date || !location || price == null || available_seats == null || !type) {
     return res.status(400).json({ message: 'Missing required fields.' });
   }
 
   try {
-    await db.query('INSERT INTO concerts (name, date, location, price, available_seats) VALUES (?, ?, ?, ?, ?)', [name, date, location, price, available_seats]);
+    await db.query('INSERT INTO concerts (name, date, location, price, available_seats, type) VALUES (?, ?, ?, ?, ?, ?)', [name, date, location, price, available_seats, type]);
     return res.status(201).json({ message: 'Concert added successfully' });
   } catch (error) {
     console.error('Error adding concert:', error);
@@ -488,16 +502,16 @@ app.post('/addConcert', (req, res) => {
 // Update Concert
 app.put('/updateConcert/:id', (req, res) => {
   const { id } = req.params;
-  const { name, date, location, price, available_seats } = req.body;
-  if (!name || !date || !location || price == null || available_seats == null) {
+  const { name, date, location, price, available_seats, type } = req.body;
+  if (!name || !date || !location || price == null || available_seats == null || !type) {
     return res.status(400).json({ message: 'All fields are required.' });
   }
 
   const query = `
-    UPDATE concerts SET name = ?, date = ?, location = ?, price = ?, available_seats = ?
+    UPDATE concerts SET name = ?, date = ?, location = ?, price = ?, available_seats = ?, type = ?
     WHERE id = ?
   `;
-  db.query(query, [name, date, location, price, available_seats, id], (err, result) => {
+  db.query(query, [name, date, location, price, available_seats, type, id], (err, result) => {
     if (err) {
       console.error('Database Error:', err.message);
       return res.status(500).json({ message: 'Database error' });
@@ -529,16 +543,16 @@ app.delete('/deleteConcert/:id', (req, res) => {
 
 // Add sport
 app.post('/addSport', async (req, res) => {
-  const { name, date, location, price, availableSeats } = req.body;
+  const { name, date, location, price, availableSeats, type } = req.body;
 
   // Validate input
-  if (!name || !date || !location || !price || !availableSeats) {
+  if (!name || !date || !location || price == null || availableSeats == null || !type) {
     return res.status(400).json({ error: 'All fields are required' });
   }
 
   try {
-    const sql = `INSERT INTO sports (name, date, location, price, available_seats) VALUES (?, ?, ?, ?, ?)`;
-    const values = [name, date, location, price, availableSeats];
+    const sql = `INSERT INTO sports (name, date, location, price, available_seats, type) VALUES (?, ?, ?, ?, ?, ?)`;
+    const values = [name, date, location, price, availableSeats, type];
     
     // Using promise-based query
     await db.promise().query(sql, values);  // This ensures it returns a promise.
@@ -549,16 +563,27 @@ app.post('/addSport', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 // Update sport
 app.put('/updateSport/:id', (req, res) => {
   const { id } = req.params;
-  const { name, date, location, price, availableSeats } = req.body;
+  const { name, date, location, price, availableSeats, type } = req.body;
 
-  const query =
-    'UPDATE sports SET sport_name = ?, date = ?, location = ?, price = ?, available_seats = ? WHERE id = ?';
-  db.query(query, [sportName, date, location, price, availableSeats, id], (err, result) => {
+  if (!name || !date || !location || price == null || availableSeats == null || !type) {
+    return res.status(400).json({ message: 'All fields are required.' });
+  }
+
+  const query = `
+    UPDATE sports SET name = ?, date = ?, location = ?, price = ?, available_seats = ?, type = ?
+    WHERE id = ?
+  `;
+  db.query(query, [name, date, location, price, availableSeats, type, id], (err, result) => {
     if (err) {
-      return res.status(500).json({ message: 'Database error', error: err.message });
+      console.error('Database Error:', err.message);
+      return res.status(500).json({ message: 'Database error' });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Sport not found.' });
     }
     res.status(200).json({ message: 'Sport updated successfully' });
   });
@@ -581,6 +606,136 @@ app.delete('/deleteSport/:id', (req, res) => {
 
     res.status(200).json({ message: 'Sport deleted successfully' });
   });
+});
+
+// Fetch all users
+app.get('/getAllUsers', authenticate, async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT id, email, password, phone, first_name, last_name, birth_date, address, gender, role, created_at, profile_image FROM users');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Add User
+app.post('/addUser', authenticate, async (req, res) => {
+  const { email, password, phone, first_name, last_name, birth_date, address, gender, role, profile_image } = req.body;
+  if (!email || !password || !phone || !first_name || !last_name || !birth_date || !address || !gender || !role || !profile_image) {
+    return res.status(400).json({ message: 'Missing required fields.' });
+  }
+
+  try {
+    const [result] = await db.query('INSERT INTO users (email, password, phone, first_name, last_name, birth_date, address, gender, role, profile_image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [email, password, phone, first_name, last_name, birth_date, address, gender, role, profile_image]);
+    const [user] = await db.query('SELECT * FROM users WHERE id = ?', [result.insertId]);
+    return res.status(201).json(user[0]);
+  } catch (error) {
+    console.error('Error adding user:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Update User
+app.put('/updateUser/:id', authenticate, async (req, res) => {
+  const { id } = req.params;
+  const { email, password, phone, first_name, last_name, birth_date, address, gender, role, profile_image } = req.body;
+  if (!email || !phone || !first_name || !last_name || !birth_date || !address || !gender || !role || !profile_image) {
+    return res.status(400).json({ message: 'Missing required fields.' });
+  }
+
+  try {
+    const [result] = await db.query('UPDATE users SET email = ?, password = ?, phone = ?, first_name = ?, last_name = ?, birth_date = ?, address = ?, gender = ?, role = ?, profile_image = ? WHERE id = ?', [email, password, phone, first_name, last_name, birth_date, address, gender, role, profile_image, id]);
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+    const [user] = await db.query('SELECT * FROM users WHERE id = ?', [id]);
+    return res.status(200).json(user[0]);
+  } catch (error) {
+    console.error('Error updating user:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Delete User
+app.delete('/deleteUser/:id', authenticate, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const [result] = await db.query('DELETE FROM users WHERE id = ?', [id]);
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+    return res.status(200).json({ message: 'User deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Fetch all orders
+app.get('/getAllOrders', authenticate, async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM orders');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Add Order
+app.post('/addOrder', authenticate, async (req, res) => {
+  const { user_id, concert_id, sport_id, product_id, quantity, total_price, status } = req.body;
+  if (!user_id || !quantity || !total_price || !status) {
+    return res.status(400).json({ message: 'Missing required fields.' });
+  }
+
+  try {
+    const [result] = await db.query('INSERT INTO orders (user_id, concert_id, sport_id, product_id, quantity, total_price, status) VALUES (?, ?, ?, ?, ?, ?, ?)', [user_id, concert_id, sport_id, product_id, quantity, total_price, status]);
+    const [order] = await db.query('SELECT * FROM orders WHERE id = ?', [result.insertId]);
+    return res.status(201).json(order[0]);
+  } catch (error) {
+    console.error('Error adding order:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Update Order
+app.put('/updateOrder/:id', authenticate, async (req, res) => {
+  const { id } = req.params;
+  const { user_id, concert_id, sport_id, product_id, quantity, total_price, status } = req.body;
+  if (!user_id || !quantity || !total_price || !status) {
+    return res.status(400).json({ message: 'Missing required fields.' });
+  }
+
+  try {
+    const [result] = await db.query('UPDATE orders SET user_id = ?, concert_id = ?, sport_id = ?, product_id = ?, quantity = ?, total_price = ?, status = ? WHERE id = ?', [user_id, concert_id, sport_id, product_id, quantity, total_price, status, id]);
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Order not found.' });
+    }
+    const [order] = await db.query('SELECT * FROM orders WHERE id = ?', [id]);
+    return res.status(200).json(order[0]);
+  } catch (error) {
+    console.error('Error updating order:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Delete Order
+app.delete('/deleteOrder/:id', authenticate, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const [result] = await db.query('DELETE FROM orders WHERE id = ?', [id]);
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Order not found.' });
+    }
+    return res.status(200).json({ message: 'Order deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting order:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
 });
 
 app.listen(port, () => {
