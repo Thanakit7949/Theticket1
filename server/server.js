@@ -134,44 +134,22 @@ app.get('/getAllConcerts', authenticate, async (req, res) => {
   }
 });
 
-app.get('/getAllConcertsthaiMass', (req, res) => {
-  const query = 'SELECT * FROM conthaiMass'; // ดึงข้อมูลทั้งหมดจาก concerts
-  db.query(query, (err, results) => {
-    if (err) {
-      return res.status(500).json({ message: 'Database error', error: err.message });
+// ดึงข้อมูล Concerts ตามประเภท
+app.get('/getConcertsByType/:type', async (req, res) => {
+  const { type } = req.params;
+  try {
+    let query = 'SELECT * FROM concerts';
+    const params = [];
+    if (type !== 'ALL') {
+      query += ' WHERE type = ?';
+      params.push(type);
     }
-    return res.json(results); // ส่งผลลัพธ์เป็น JSON
-  });
-});
-
-app.get('/getAllConcertstpop', (req, res) => {
-  const query = 'SELECT * FROM contpop'; // ดึงข้อมูลทั้งหมดจาก concerts
-  db.query(query, (err, results) => {
-    if (err) {
-      return res.status(500).json({ message: 'Database error', error: err.message });
-    }
-    return res.json(results); // ส่งผลลัพธ์เป็น JSON
-  });
-});
-
-app.get('/getAllConcertskpop', (req, res) => {
-  const query = 'SELECT * FROM conkpop'; // ดึงข้อมูลทั้งหมดจาก concerts
-  db.query(query, (err, results) => {
-    if (err) {
-      return res.status(500).json({ message: 'Database error', error: err.message });
-    }
-    return res.json(results); // ส่งผลลัพธ์เป็น JSON
-  });
-});
-
-app.get('/getAllConcertsinter', (req, res) => {
-  const query = 'SELECT * FROM coninter'; // ดึงข้อมูลทั้งหมดจาก concerts
-  db.query(query, (err, results) => {
-    if (err) {
-      return res.status(500).json({ message: 'Database error', error: err.message });
-    }
-    return res.json(results); // ส่งผลลัพธ์เป็น JSON
-  });
+    const [rows] = await db.query(query, params);
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching concerts by type:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 });
 
 app.get('/concertsImage', (req, res) => {
@@ -193,13 +171,82 @@ app.get('/concertsDetail', (req, res) => {
 });
 
 // ดึงข้อมูล Sports
-app.get('/getAllSports', authenticate, async (req, res) => {
+app.get('/getAllSports', async (req, res) => {
   try {
     const [rows] = await db.query('SELECT * FROM sports');
     res.json(rows);
   } catch (error) {
     console.error('Error fetching sports:', error);
     res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// ดึงข้อมูล Sports ตามประเภท
+app.get('/getSportsByType/:type', async (req, res) => {
+  const { type } = req.params;
+  try {
+    let query = 'SELECT * FROM sports';
+    const params = [];
+    if (type !== 'ALL') {
+      query += ' WHERE type = ?';
+      params.push(type);
+    }
+    const [rows] = await db.query(query, params);
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching sports by type:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+app.get('/getAllSportsBoxing', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM sports WHERE type = "boxing"');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching sports:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+app.get('/getAllSportsFootball', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM sports WHERE type = "football"');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching sports:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+app.get('/getAllSportsOther', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM sports WHERE type = "other"');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching sports:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Route สำหรับดึงข้อมูลกีฬาและภาพ
+app.get('/sportsImage', async (req, res) => {
+  try {
+    const [result] = await db.query('SELECT * FROM sport_images');
+    res.json(result);
+  } catch (err) {
+    res.status(500).send('Error fetching data');
+  }
+});
+
+//  สำหรับดึงข้อมูลรูปภาพของsport
+app.get("/getImages", async (req, res) => {
+  try {
+    const [results] = await db.query("SELECT image FROM images");
+    res.json(results); // ส่งข้อมูลภาพในรูปแบบ JSON
+  } catch (err) {
+    console.error("Error fetching images:", err);
+    res.status(500).send("Error fetching images");
   }
 });
 

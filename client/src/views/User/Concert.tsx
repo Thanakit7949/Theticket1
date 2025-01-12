@@ -39,146 +39,52 @@ const Concert: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [selected, setSelected] = useState("ทั้งหมด");
   const [dataConcert, setDataConcert] = useState<any[]>([]); // Mock data for sports events
-  const [dataConcertthaimass, setDataConcertThaimass] = useState<any[]>([]);
-  const [dataConcerttpop, setDataConcertTpop] = useState<any[]>([]);
-  const [dataConcertkpop, setDataConcertKpop] = useState<any[]>([]);
-  const [dataConcertinter, setDataConcertInter] = useState<any[]>([]);
   const [images, setImages] = useState<any[]>([]);
   const [concerts, setConcerts] = useState<any[]>([]);
-  
+
+  const fetchImages = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/concertsImage");
+      const data = await response.json();
+      setImages(data);
+      console.log(data);
+    } catch (error) {
+      console.error("Error fetching images:", error);
+    }
+  };
+
+  const fetchConcertsByType = async (type: string) => {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/getConcertsByType/${type}`
+      );
+      const data: IConcert[] = await response.json();
+      const formattedConcert = data.map((item) => ({
+        id: item.id,
+        img: `http://localhost/concert/all/${item.image}`,
+        title: item.name,
+        date: `🗓️: ${item.date}`,
+        time: `⏰: ${item.time}`,
+        location: `📌: ${item.location}`,
+        price: item.price,
+      }));
+      setDataConcert(formattedConcert);
+    } catch (error) {
+      console.error(`Error fetching ${type} concert data:`, error);
+    }
+  };
 
   useEffect(() => {
-    const fetchConcert = async () => {
-      try {
-        const response = await fetch("http://localhost:5000/getAllConcerts");
-        const data: IConcert[] = await response.json();
-        const formattedConcert = data.map((item) => ({
-          id: item.id,
-          img: `http://localhost/concert/all/${item.image}`,
-          title: item.name,
-          date: `🗓️: ${item.date}`,
-          time: `⏰: ${item.time}`,
-          location: `📌: ${item.location}`,
-          price: item.price,
-        }));
-
-        setDataConcert(formattedConcert);
-      } catch (error) {
-        console.error("Error fetching concert data:", error);
-      }
+    const typeMap = {
+      ทั้งหมด: "ALL",
+      "THAI MASS": "thaimass",
+      "T-POP": "tpop",
+      "K-POP": "kpop",
+      INTERNATIONAL: "inter",
     };
-    const fetchConcertThaimass = async () => {
-      try {
-        const response = await fetch(
-          "http://localhost:5000/getAllConcertsthaiMass"
-        );
-        const data: IConcert[] = await response.json();
-        const formattedConcert = data.map((item) => ({
-          id: item.id,
-          img: `http://localhost/concert/all/${item.image}`, // ใช้ฟิลด์ `img` จาก API
-          title: item.name, // ใช้ฟิลด์ `name` จาก API
-          date: `🗓️: ${item.date}`, // เพิ่มไอคอนหรือฟอร์แมตข้อความ
-          time: `⏰: ${item.time}`, // ฟิลด์ `time` (ถ้ามี)
-          location: `📌: ${item.location}`, // ใช้ฟิลด์ `location`
-          price: item.price, // ใช้ฟิลด์ `price`
-        }));
-
-        setDataConcertThaimass(formattedConcert);
-      } catch (error) {
-        console.error("Error fetching concert data:", error);
-      }
-    };
-    const fetchConcertTpop = async () => {
-      try {
-        const response = await fetch(
-          "http://localhost:5000/getAllConcertstpop"
-        );
-        const data: IConcert[] = await response.json();
-        const formattedConcert = data.map((item) => ({
-          id: item.id,
-          img: `http://localhost/concert/all/${item.image}`, 
-          title: item.name, 
-          date: `🗓️: ${item.date}`, 
-          time: `⏰: ${item.time}`, 
-          location: `📌: ${item.location}`, 
-          price: item.price, 
-        }));
-
-        setDataConcertTpop(formattedConcert);
-      } catch (error) {
-        console.error("Error fetching concert data:", error);
-      }
-    };
-    const fetchConcertkpop = async () => {
-      try {
-        const response = await fetch(
-          "http://localhost:5000/getAllConcertskpop"
-        );
-        const data: IConcert[] = await response.json();
-        const formattedConcert = data.map((item) => ({
-          id: item.id,
-          img: `http://localhost/concert/all/${item.image}`, 
-          title: item.name, 
-          date: `🗓️: ${item.date}`, 
-          time: `⏰: ${item.time}`, 
-          location: `📌: ${item.location}`,
-          price: item.price, 
-        }));
-
-        setDataConcertKpop(formattedConcert);
-      } catch (error) {
-        console.error("Error fetching concert data:", error);
-      }
-    };
-    const fetchConcertinter = async () => {
-      try {
-        const response = await fetch(
-          "http://localhost:5000/getAllConcertsinter"
-        );
-        const data: IConcert[] = await response.json();
-        const formattedConcert = data.map((item) => ({
-          id: item.id,
-          img: `http://localhost/concert/all/${item.image}`, 
-          title: item.name, 
-          date: `🗓️: ${item.date}`, 
-          time: `⏰: ${item.time}`, 
-          location: `📌: ${item.location}`, 
-          price: item.price, 
-        }));
-
-        setDataConcertInter(formattedConcert);
-      } catch (error) {
-        console.error("Error fetching concert data:", error);
-      }
-    };
-
-    const fetchImages = async () => {
-      try {
-        const response = await fetch("http://localhost:5000/concertsImage");
-        const data = await response.json();
-        setImages(data);
-        console.log(data);
-      } catch (error) {
-        console.error("Error fetching images:", error);
-      }
-    };
-
-    axios
-    .get("http://localhost:5000/concertsDetail")
-    .then((response) => {
-      setConcerts(response.data);
-    })
-    .catch((error) => {
-      console.error("There was an error fetching the concerts!", error);
-    });
-
-    fetchConcert();
-    fetchConcertThaimass();
-    fetchConcertTpop();
-    fetchConcertkpop();
-    fetchConcertinter();
+    fetchConcertsByType(typeMap[selected]);
     fetchImages();
-  }, []);
+  }, [selected]);
 
   const categories = [
     { label: "ทั้งหมด", color: "#FF4081" }, // Highlighted button color
@@ -188,35 +94,9 @@ const Concert: React.FC = () => {
     { label: "INTERNATIONAL", color: "#FF4081" },
   ];
 
-  const filteredEvents =
-    selected === "ทั้งหมด"
-      ? dataConcert
-      : selected === "THAI MASS"
-      ? dataConcertthaimass
-      : selected === "T-POP"
-      ? dataConcerttpop
-      : selected === "K-POP"
-      ? dataConcertkpop
-      : selected === "INTERNATIONAL"
-      ? dataConcertinter
-      : [];
-
   return (
     <>
-      <Box
-      // p={2}
-      // mb={8}
-      // bgcolor="gray.800"
-      // color="white"
-      // borderRadius={2}
-      // boxShadow={3}
-      // border={1}
-      // borderColor="gray.700"
-      // width={1140}
-      // sx={{
-      //   background: "linear-gradient(135deg, #EECDA3 0%, #EF629F 100%);",
-      // }}
-      >
+      <Box>
         {/* ส่วนที่ 1 */}
         <Typography
           variant="h2"
@@ -319,33 +199,39 @@ const Concert: React.FC = () => {
           ᴇɴᴊᴏʏ ᴛʜɪꜱ ᴀᴍᴀᴢɪɴɢ ᴄᴏɴᴄᴇʀᴛ ᴘᴇʀꜰᴏʀᴍᴀɴᴄᴇ!
         </Typography>
         {/* รูปภาพเรียงกันแนวนอน */}
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} mt={5}>
-      {concerts.map((concert) => (
-        <Link to={concert.link} key={concert.id}>
-          <Box textAlign="center">
-            <Box
-              component="img"
-              src={`http://localhost/concert/${concert.image}`} 
-              alt={concert.name}
-              sx={{
-                width: "110%",
-                maxHeight: "170px",
-                objectFit: "cover",
-                borderRadius: 2,
-                mr: 1,
-                transition: "transform 0.3s ease",
-                "&:hover": {
-                  transform: "scale(1.1)",
-                },
-              }}
-            />
-            <Typography mt={1} color="black" fontWeight="bold">
-              {concert.name}
-            </Typography>
-          </Box>
-        </Link>
-      ))}
-    </Box>
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          mb={2}
+          mt={5}
+        >
+          {concerts.map((concert) => (
+            <Link to={concert.link} key={concert.id}>
+              <Box textAlign="center">
+                <Box
+                  component="img"
+                  src={`http://localhost/concert/${concert.image}`}
+                  alt={concert.name}
+                  sx={{
+                    width: "110%",
+                    maxHeight: "170px",
+                    objectFit: "cover",
+                    borderRadius: 2,
+                    mr: 1,
+                    transition: "transform 0.3s ease",
+                    "&:hover": {
+                      transform: "scale(1.1)",
+                    },
+                  }}
+                />
+                <Typography mt={1} color="black" fontWeight="bold">
+                  {concert.name}
+                </Typography>
+              </Box>
+            </Link>
+          ))}
+        </Box>
 
         {/* ส่วนที่ 3 */}
         <Typography
@@ -453,7 +339,7 @@ const Concert: React.FC = () => {
           gap={2}
           p={5}
         >
-          {filteredEvents.map((event, index) => (
+          {dataConcert.map((event, index) => (
             <Box
               key={index}
               display="flex"
@@ -492,7 +378,6 @@ const Concert: React.FC = () => {
                   {event.location}
                 </Typography>
                 <Button
-                  // onClick={() => handleBuyTicket(event)}
                   onClick={() =>
                     handleBuyTicket({
                       id: event.id,
