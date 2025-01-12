@@ -1,13 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import {
-  Box,
-  Typography,
-  TextField,
-  Button,
-  Grid,
-  Container,
-} from '@mui/material';
+import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Modal, TextField, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
 
 interface ConcertData {
   id?: number;
@@ -16,6 +9,7 @@ interface ConcertData {
   location: string;
   price: number;
   available_seats: number;
+  type: string;
 }
 
 const Dbconcerts: React.FC = () => {
@@ -26,33 +20,18 @@ const Dbconcerts: React.FC = () => {
     location: '',
     price: 0,
     available_seats: 0,
+    type: '',
   });
   const [isEditing, setIsEditing] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  // ฟังก์ชันแปลงวันที่ให้เป็นรูปแบบ yyyy-MM-dd
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
-
-  useEffect(() => {
-    fetchConcerts();
-  }, []);
+  const [loading, setLoading] = useState(true);
+  const [open, setOpen] = useState(false);
 
   const fetchConcerts = async () => {
-    setLoading(true);
     try {
-      const response = await axios.get('http://localhost:5000/getAllConcerts');
-      // แปลงวันที่ก่อนเก็บใน state
-      const formattedConcerts = response.data.map((concert: ConcertData) => ({
-        ...concert,
-        date: formatDate(concert.date),
-      }));
-      setConcerts(formattedConcerts);
+      const response = await axios.get('http://localhost:5000/getAllConcerts', {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      });
+      setConcerts(response.data);
     } catch (error) {
       console.error('Error fetching concerts:', error);
     } finally {
@@ -60,11 +39,15 @@ const Dbconcerts: React.FC = () => {
     }
   };
 
-  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  useEffect(() => {
+    fetchConcerts();
+  }, []);
+
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === 'price' || name === 'available_seats' ? parseInt(value) : value,
+      [name as string]: name === 'price' || name === 'available_seats' ? parseInt(value as string) : value,
     }));
   };
 
@@ -72,121 +55,181 @@ const Dbconcerts: React.FC = () => {
     try {
       const payload = {
         ...formData,
-        date: new Date(formData.date).toISOString(), // แปลงกลับเป็น ISO ก่อนส่งไป Backend
+        date: new Date(formData.date).toISOString(),
       };
       const url = isEditing
         ? `http://localhost:5000/updateConcert/${formData.id}`
         : 'http://localhost:5000/addConcert';
       const method = isEditing ? axios.put : axios.post;
-      await method(url, payload);
-      fetchConcerts();
-      setFormData({ name: '', date: '', location: '', price: 0, available_seats: 0 });
+      const response = await method(url, payload, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      });
+
+      if (isEditing) {
+        setConcerts((prev) => prev.map((concert) => (concert.id === formData.id ? response.data : concert)));
+      } else {
+        setConcerts((prev) => [...prev, response.data]);
+      }
+
+      setFormData({ name: '', date: '', location: '', price: 0, available_seats: 0, type: '' });
       setIsEditing(false);
+      setOpen(false);
     } catch (error) {
-      console.error('Error adding/updating concert:', error.response?.data || error.message);
+      console.error('Error adding/updating concert:', error);
     }
   };
 
   const handleEdit = (concert: ConcertData) => {
-    setFormData(concert);
+    setFormData({
+      ...concert,
+      date: concert.date.split('T')[0],
+    });
     setIsEditing(true);
+    setOpen(true);
   };
 
   const handleDelete = async (id: number) => {
     try {
-      await axios.delete(`http://localhost:5000/deleteConcert/${id}`);
-      fetchConcerts();
+      await axios.delete(`http://localhost:5000/deleteConcert/${id}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      });
+      setConcerts((prev) => prev.filter((concert) => concert.id !== id));
     } catch (error) {
       console.error('Error deleting concert:', error);
     }
   };
 
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  if (loading) {
+    return <Typography>Loading concerts...</Typography>;
+  }
+
   return (
-    <Container>
+    <Box sx={{ p: 4 }}>
       <Typography variant="h4" textAlign="center" mt={4} mb={4}>
         Concert Management
       </Typography>
-      <Box>
-        <TextField
-          label="Concert Name"
-          name="name"
-          value={formData.name}
-          onChange={handleFormChange}
-          fullWidth
-          margin="normal"
-        />
-        <TextField
-          label="Date"
-          type="date"
-          name="date"
-          value={formData.date} // วันที่ที่ถูกแปลงเป็น yyyy-MM-dd
-          onChange={handleFormChange}
-          fullWidth
-          InputLabelProps={{ shrink: true }}
-          margin="normal"
-        />
-        <TextField
-          label="Location"
-          name="location"
-          value={formData.location}
-          onChange={handleFormChange}
-          fullWidth
-          margin="normal"
-        />
-        <TextField
-          label="Price"
-          type="number"
-          name="price"
-          value={formData.price}
-          onChange={handleFormChange}
-          fullWidth
-          margin="normal"
-        />
-        <TextField
-          label="Available Seats"
-          type="number"
-          name="available_seats"
-          value={formData.available_seats}
-          onChange={handleFormChange}
-          fullWidth
-          margin="normal"
-        />
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleAddOrUpdate}
-          fullWidth
-          style={{ marginTop: '16px' }}
-        >
-          {isEditing ? 'Update Concert' : 'Add Concert'}
-        </Button>
-      </Box>
-      <Grid container spacing={2} mt={4}>
-        {concerts.map((concert) => (
-          <Grid item xs={12} key={concert.id}>
-            <Box border={1} borderRadius={2} p={2}>
-              <Typography variant="h6">{concert.name}</Typography>
-              <Typography>Date: {concert.date}</Typography>
-              <Typography>Location: {concert.location}</Typography>
-              <Typography>Price: {concert.price}</Typography>
-              <Typography>Available Seats: {concert.available_seats}</Typography>
-              <Button variant="contained" color="secondary" onClick={() => handleEdit(concert)}>
-                Edit
-              </Button>
-              <Button
-                variant="contained"
-                color="error"
-                style={{ marginLeft: '8px' }}
-                onClick={() => handleDelete(concert.id!)}
-              >
-                Delete
-              </Button>
-            </Box>
-          </Grid>
-        ))}
-      </Grid>
-    </Container>
+      <Button variant="contained" color="primary" onClick={handleOpen} sx={{ mb: 4 }}>
+        Add Concert
+      </Button>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>ID</TableCell>
+              <TableCell>Name</TableCell>
+              <TableCell>Date</TableCell>
+              <TableCell>Location</TableCell>
+              <TableCell>Price</TableCell>
+              <TableCell>Available Seats</TableCell>
+              <TableCell>Type</TableCell>
+              <TableCell>Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {concerts.map((concert) => (
+              <TableRow key={concert.id}>
+                <TableCell>{concert.id}</TableCell>
+                <TableCell>{concert.name}</TableCell>
+                <TableCell>{new Date(concert.date).toLocaleDateString()}</TableCell>
+                <TableCell>{concert.location}</TableCell>
+                <TableCell>{concert.price}</TableCell>
+                <TableCell>{concert.available_seats}</TableCell>
+                <TableCell>{concert.type}</TableCell>
+                <TableCell>
+                  <Button variant="contained" color="primary" size="small" sx={{ mr: 1 }} onClick={() => handleEdit(concert)}>
+                    Edit
+                  </Button>
+                  <Button variant="contained" color="error" size="small" onClick={() => concert.id && handleDelete(concert.id)}>
+                    Delete
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <Modal open={open} onClose={handleClose}>
+        <Box sx={{ ...modalStyle, width: 400 }}>
+          <Typography variant="h6" component="h2">
+            {isEditing ? 'Edit Concert' : 'Add Concert'}
+          </Typography>
+          <TextField
+            label="Name"
+            name="name"
+            value={formData.name}
+            onChange={handleFormChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Date"
+            name="date"
+            type="date"
+            value={formData.date}
+            onChange={handleFormChange}
+            fullWidth
+            margin="normal"
+            InputLabelProps={{ shrink: true }}
+          />
+          <TextField
+            label="Location"
+            name="location"
+            value={formData.location}
+            onChange={handleFormChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Price"
+            name="price"
+            type="number"
+            value={formData.price}
+            onChange={handleFormChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Available Seats"
+            name="available_seats"
+            type="number"
+            value={formData.available_seats}
+            onChange={handleFormChange}
+            fullWidth
+            margin="normal"
+          />
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Type</InputLabel>
+            <Select
+              name="type"
+              value={formData.type}
+              onChange={handleFormChange}
+            >
+              <MenuItem value="kpop">Kpop</MenuItem>
+              <MenuItem value="tpop">Tpop</MenuItem>
+              <MenuItem value="inter">Inter</MenuItem>
+              <MenuItem value="thaimass">Thaimass</MenuItem>
+            </Select>
+          </FormControl>
+          <Button variant="contained" color="primary" onClick={handleAddOrUpdate} sx={{ mt: 2 }}>
+            {isEditing ? 'Update' : 'Add'}
+          </Button>
+        </Box>
+      </Modal>
+    </Box>
   );
+};
+
+const modalStyle = {
+  position: 'absolute' as 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  p: 4,
 };
 
 export default Dbconcerts;
