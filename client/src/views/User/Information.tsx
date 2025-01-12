@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Paper, Typography, Grid, Box, Button } from '@mui/material';
 import HTMLFlipBook from 'react-pageflip';
-import pop3 from '/src/assets/product/pop3.jpg'
+import { useNavigate } from 'react-router-dom';
+import { blue } from '@mui/material/colors';
+
+
+
 
 const Information = () => {
   const [InformationBook, setinformationbook] = useState<any[]>([]);
@@ -9,8 +13,17 @@ const Information = () => {
   const [EventPoster, seteventposter] = useState<any[]>([]);
 
 
+  const navigate = useNavigate();
+
+    const handleViewMore = (book) => {
+        navigate(`information/${book.id}`); // เปลี่ยนไปยัง URL ใหม่
+    };
+  
+
+
   const defaultIcons = ['🎉', '🚀', '🌍', '💡'];
 
+  
   useEffect(() => {
     
 const fetchInformationBook = async () => {
@@ -158,47 +171,102 @@ fetchEventposter();
                 </Paper>
 
                 {/* หน้า 2-3 (เลย์เอาต์แบบหน้าซ้าย-ขวา) */}
-                
-                {InformationBook.map((InformationBook, index) => (
-        <Paper
-            key={index}
-            elevation={3}
-            style={{ padding: 16, width: '100%', height: '100%' }}
-        >
-            <Grid container spacing={2}>
-                <Grid item xs={6}>
-                    <img
-                        src={`http://localhost/product/${InformationBook.image}`} // ใช้ URL จาก API
-                       
-                        style={{
-                            width: '100%',
-                            height: '400px',
-                            marginLeft: '6px',
-                            marginTop: '50px',
-                            borderRadius: 8,
-                        }}
-                    />
-                </Grid>
-                <Grid item xs={6}>
-                    <Typography
-                        variant="h4"
-                        style={{ fontWeight: 'bold', marginTop: 20 }}
-                    >
-                        {InformationBook.title} {/* หัวข้อจาก API */}
-                    </Typography>
-                    <Typography
-                        variant="body1"
-                        style={{ lineHeight: 1.6 , marginTop: 20  }}
-                    >
-                        {InformationBook.detail} {/* รายละเอียดจาก API */}
-                    </Typography>
-                </Grid>
+      
+ {InformationBook.map((InformationBook, index) => (
+    <Paper
+        key={index}
+        elevation={4}
+        style={{
+            padding: 24,
+            marginBottom: 24,
+            backgroundColor: '#f9f9f9', // สีพื้นหลังอ่อน
+            borderRadius: 12,
+        }}
+    >
+        <Grid container spacing={4} alignItems="center">
+            {/* รูปภาพ */}
+            <Grid item xs={12} md={6}>
+                <img
+                    src={`http://localhost/information/${InformationBook.image}`}
+                    alt={InformationBook.title}
+                    style={{
+                      width: '100%',
+                      height: '450px',
+                      maxHeight: '800px', // จำกัดความสูง
+                      objectFit: 'contain', // แสดงภาพทั้งหมดโดยไม่ตัด
+                      marginTop: 40,
+                      marginLeft: 10,
+                      borderRadius: 12,
+                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
+                    }}
+                />
             </Grid>
-        </Paper>
-    ))}
+            {/* ข้อความ */}
+            <Grid item xs={12} md={6}>
+                <Typography
+                    variant="h4"
+                    style={{
+                        fontWeight: 'bold',
+                        color: '#333',
+                        marginBottom: 16,
+                        position: 'relative', // ใช้ตำแหน่งแบบ relative
+                        top: '20px', // ขยับขึ้น 20px
+                    }}
+                >
+                    {InformationBook.title}
+                </Typography>
+                <Typography
+                    variant="body1"
+                    style={{
+                        lineHeight: 1.8,
+                        color: '#555',
+                        fontSize: '1.1rem',
+                        marginTop: '35px'
+                    }}
+                >
+                    {InformationBook.detail}
+                </Typography>
+              <Grid
+            container
+           justifyContent="center" // จัดแนวนอนให้อยู่กลาง
+           alignItems="center"     // จัดแนวตั้งให้อยู่กลาง
+    style={{
+        textAlign: 'center',  // จัดเนื้อหาให้อยู่ตรงกลาง
+        marginTop: 24,        // เพิ่มระยะห่างจากด้านบน
+        
+    }}
+>
+    <button
+        style={{
+            display: 'flex', // จัดให้เนื้อหาในปุ่มเรียงในแนวนอน
+            alignItems: 'center', // จัดไอคอนและข้อความให้อยู่กลาง
+            justifyContent: 'center',
+            padding: '14px 24px',
+            background: 'linear-gradient(90deg, #4CAF50, #3a9d40)', // เพิ่ม Gradient
+            color: '#fff',
+            border: 'none',
+            borderRadius: '12px', // เพิ่มความโค้งมน
+            cursor: 'pointer',
+            fontSize: '1rem',
+            fontWeight: 'bold',
+            marginTop: 24,
+            boxShadow: '0 6px 12px rgba(0, 0, 0, 0.15)', // เพิ่มเงาให้ดูชัดขึ้น
+            transition: 'all 0.3s ease-in-out',
+        }}
+        onClick={() => handleViewMore(InformationBook)}
+    >
+        <span style={{ marginRight: '10px', fontSize: '1.2rem' }}>📖</span> {/* ไอคอน */}
+        ดูเพิ่มเติม
+    </button>
+</Grid>
 
-   
-    
+
+            </Grid>
+        </Grid>
+    </Paper>
+))}
+
+
                
             </HTMLFlipBook>
        
@@ -416,7 +484,7 @@ fetchEventposter();
         </Typography>
 
         <img
-          src={`http://localhost/sport/${EventPoster.image}`}
+          src={`http://localhost/information/${EventPoster.image}`}
           className="poster-subtitle-img"
           style={{ maxWidth: "100%", height: "480px" }}
         />
@@ -496,7 +564,7 @@ fetchEventposter();
   {/* Poster Box Code Here */}
 
   {/* Navigation Buttons */}
-  <Box
+  {/* <Box
     display="flex"
     justifyContent="center"
     alignItems="center"
@@ -524,7 +592,7 @@ fetchEventposter();
       Page 3
     </Button>
 
-  </Box>
+  </Box> */}
 </Box>
 
     </Box>

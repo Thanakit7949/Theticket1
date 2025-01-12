@@ -255,9 +255,6 @@ const Product = () => {
 
   const navigate = useNavigate();
 
-  const handleProductClick = (productId: any) => {
-    navigate(`product/${productId}`);
-  };
 
   const sliderSettings = {
     dots: true,
@@ -356,6 +353,9 @@ const Product = () => {
         .filter((item: any) => item.quantity > 0);
     });
   };
+
+
+
 
   const [cartCount, setCartCount] = useState(0);
   const [addedToCart, setAddedToCart] = useState(new Set());
@@ -616,7 +616,6 @@ const Product = () => {
             paddingBottom: "100%",
             overflow: "hidden",
           }}
-          onClick={() => handleProductClick(product.id)}
         >
           <img
             src={`http://localhost/product/${product.folder}/${product.image}`}
@@ -699,3 +698,5 @@ const Product = () => {
 };
 
 export default Product;
+
+

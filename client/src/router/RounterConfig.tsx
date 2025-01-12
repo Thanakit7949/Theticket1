@@ -10,7 +10,6 @@ import ConcertPixxie from "../views/User/detailconcert/ConcertPixxie";
 import HomeTest from "../views/User/HomeTest";
 //import HomeUser from "../views/User/HomeUser"
 import Information from "../views/User/Information";
-import Page1Page from "../views/User/Page1";
 import Sport from "../views/User/Sport";
 import Promotion from "../views/User/Promotion";
 import SportDetail from "../views/User/SportDetail";
@@ -29,6 +28,7 @@ import Photocard from "../views/User/prodetail/Photocard";
 import AcryliCon from "../views/User/prodetail/AcryliCon";
 import Ballkeychain from "../views/User/prodetail/Ballkeychain";
 import Footballshirt from "../views/User/prodetail/Footballshirt";
+import InformationDetail from "../views/User/InformationDetail";
 //import Dashboard from "../views/User/Dashboard"
 
 export const routesConfig: {
@@ -287,6 +287,18 @@ export const routesConfig: {
       component: Information,
       icon: null,
       children: [
+        
+        {
+          path: "information/:id", // เส้นทางที่มีพารามิเตอร์ id
+          element: <InformationDetail />, // แสดงหน้า InformationDetail
+          component: InformationDetail,
+          icon: null,
+          subpath: false,
+          children: [],
+        },
+
+
+
         // {
         //   path: "page1in",
         //   name: "TestPage",
@@ -297,7 +309,13 @@ export const routesConfig: {
         //   children: [],
         // },
       ],
+
+
+       
     },
+
+   
+
     {
       path: "/product",
       name: "product",
@@ -305,35 +323,42 @@ export const routesConfig: {
       component: Product,
       icon: null,
       children: [
+        {
+          path: "productdetail",
+          name: "productdetail",
+          header: "productdetail",
+          component: ProductDetail,
+          icon: null,
+          children: [
+            {
+                path: "payment",
+                name: "payment",
+                header: "payment",
+                component: PaymentPage,
+                icon: null,
+                children: [],
+              },
+    
     
         
       ],
     },
+        
+    
+          ],
+        },
+
+       
 
    
   
-    {
-      path: "/product/:id",
-      name: "",
-      header: "",
-      component: ProductDetail,
-      icon: null,
-      children: [
-        {
-            path: "payment",
-            name: "",
-            header: "",
-            component: PaymentPage,
-            icon: null,
-            children: [],
-          },
+   
 
-
-      ],
-    },
   
 
 
     
   ],
+
+  
 };
