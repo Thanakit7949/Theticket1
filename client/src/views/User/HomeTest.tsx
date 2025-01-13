@@ -84,7 +84,7 @@ const HomeTest: React.FunctionComponent = () => {
 
   const fetchSports = async () => {
     try {
-      const response = await fetch("http://localhost:5000/getAllSportsFootball", {
+      const response = await fetch("http://localhost:5000/getAllSports", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`, // Replace with your auth mechanism
           "Content-Type": "application/json",
