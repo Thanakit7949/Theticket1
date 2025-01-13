@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Box, Typography, Button } from "@mui/material";
 import Gif from "/src/assets/concert/con5.gif";
+import dayjs from "dayjs";
 import Gif1 from "/src/assets/concert/gif2.gif";
 import Gif2 from "/src/assets/concert/_on.gif";
 import Gif3 from "/src/assets/concert/gif4.gif";
@@ -45,7 +46,6 @@ const Concert: React.FC = () => {
   const [dataConcertinter, setDataConcertInter] = useState<any[]>([]);
   const [images, setImages] = useState<any[]>([]);
   const [concerts, setConcerts] = useState<any[]>([]);
-  
 
   useEffect(() => {
     const fetchConcert = async () => {
@@ -56,7 +56,7 @@ const Concert: React.FC = () => {
           id: item.id,
           img: `http://localhost/concert/all/${item.image}`,
           title: item.name,
-          date: `🗓️: ${item.date}`,
+          date: `🗓️: ${dayjs(item.date).format("DD/MM/YY")}`,
           time: `⏰: ${item.time}`,
           location: `📌: ${item.location}`,
           price: item.price,
@@ -77,7 +77,7 @@ const Concert: React.FC = () => {
           id: item.id,
           img: `http://localhost/concert/all/${item.image}`, // ใช้ฟิลด์ `img` จาก API
           title: item.name, // ใช้ฟิลด์ `name` จาก API
-          date: `🗓️: ${item.date}`, // เพิ่มไอคอนหรือฟอร์แมตข้อความ
+          date: `🗓️: ${dayjs(item.date).format("DD/MM/YY")}`, // เพิ่มไอคอนหรือฟอร์แมตข้อความ
           time: `⏰: ${item.time}`, // ฟิลด์ `time` (ถ้ามี)
           location: `📌: ${item.location}`, // ใช้ฟิลด์ `location`
           price: item.price, // ใช้ฟิลด์ `price`
@@ -96,12 +96,12 @@ const Concert: React.FC = () => {
         const data: IConcert[] = await response.json();
         const formattedConcert = data.map((item) => ({
           id: item.id,
-          img: `http://localhost/concert/all/${item.image}`, 
-          title: item.name, 
-          date: `🗓️: ${item.date}`, 
-          time: `⏰: ${item.time}`, 
-          location: `📌: ${item.location}`, 
-          price: item.price, 
+          img: `http://localhost/concert/all/${item.image}`,
+          title: item.name,
+          date: `🗓️: $${dayjs(item.date).format("DD/MM/YY")}`,
+          time: `⏰: ${item.time}`,
+          location: `📌: ${item.location}`,
+          price: item.price,
         }));
 
         setDataConcertTpop(formattedConcert);
@@ -117,12 +117,12 @@ const Concert: React.FC = () => {
         const data: IConcert[] = await response.json();
         const formattedConcert = data.map((item) => ({
           id: item.id,
-          img: `http://localhost/concert/all/${item.image}`, 
-          title: item.name, 
-          date: `🗓️: ${item.date}`, 
-          time: `⏰: ${item.time}`, 
+          img: `http://localhost/concert/all/${item.image}`,
+          title: item.name,
+          date: `🗓️: $${dayjs(item.date).format("DD/MM/YY")}`,
+          time: `⏰: ${item.time}`,
           location: `📌: ${item.location}`,
-          price: item.price, 
+          price: item.price,
         }));
 
         setDataConcertKpop(formattedConcert);
@@ -138,12 +138,12 @@ const Concert: React.FC = () => {
         const data: IConcert[] = await response.json();
         const formattedConcert = data.map((item) => ({
           id: item.id,
-          img: `http://localhost/concert/all/${item.image}`, 
-          title: item.name, 
-          date: `🗓️: ${item.date}`, 
-          time: `⏰: ${item.time}`, 
-          location: `📌: ${item.location}`, 
-          price: item.price, 
+          img: `http://localhost/concert/all/${item.image}`,
+          title: item.name,
+          date: `🗓️: $${dayjs(item.date).format("DD/MM/YY")}`,
+          time: `⏰: ${item.time}`,
+          location: `📌: ${item.location}`,
+          price: item.price,
         }));
 
         setDataConcertInter(formattedConcert);
@@ -164,13 +164,13 @@ const Concert: React.FC = () => {
     };
 
     axios
-    .get("http://localhost:5000/concertsDetail")
-    .then((response) => {
-      setConcerts(response.data);
-    })
-    .catch((error) => {
-      console.error("There was an error fetching the concerts!", error);
-    });
+      .get("http://localhost:5000/concertsDetail")
+      .then((response) => {
+        setConcerts(response.data);
+      })
+      .catch((error) => {
+        console.error("There was an error fetching the concerts!", error);
+      });
 
     fetchConcert();
     fetchConcertThaimass();
@@ -192,14 +192,14 @@ const Concert: React.FC = () => {
     selected === "ทั้งหมด"
       ? dataConcert
       : selected === "THAI MASS"
-      ? dataConcertthaimass
-      : selected === "T-POP"
-      ? dataConcerttpop
-      : selected === "K-POP"
-      ? dataConcertkpop
-      : selected === "INTERNATIONAL"
-      ? dataConcertinter
-      : [];
+        ? dataConcertthaimass
+        : selected === "T-POP"
+          ? dataConcerttpop
+          : selected === "K-POP"
+            ? dataConcertkpop
+            : selected === "INTERNATIONAL"
+              ? dataConcertinter
+              : [];
 
   return (
     <>
@@ -319,33 +319,39 @@ const Concert: React.FC = () => {
           ᴇɴᴊᴏʏ ᴛʜɪꜱ ᴀᴍᴀᴢɪɴɢ ᴄᴏɴᴄᴇʀᴛ ᴘᴇʀꜰᴏʀᴍᴀɴᴄᴇ!
         </Typography>
         {/* รูปภาพเรียงกันแนวนอน */}
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} mt={5}>
-      {concerts.map((concert) => (
-        <Link to={concert.link} key={concert.id}>
-          <Box textAlign="center">
-            <Box
-              component="img"
-              src={`http://localhost/concert/${concert.image}`} 
-              alt={concert.name}
-              sx={{
-                width: "110%",
-                maxHeight: "170px",
-                objectFit: "cover",
-                borderRadius: 2,
-                mr: 1,
-                transition: "transform 0.3s ease",
-                "&:hover": {
-                  transform: "scale(1.1)",
-                },
-              }}
-            />
-            <Typography mt={1} color="black" fontWeight="bold">
-              {concert.name}
-            </Typography>
-          </Box>
-        </Link>
-      ))}
-    </Box>
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          mb={2}
+          mt={5}
+        >
+          {concerts.map((concert) => (
+            <Link to={concert.link} key={concert.id}>
+              <Box textAlign="center">
+                <Box
+                  component="img"
+                  src={`http://localhost/concert/${concert.image}`}
+                  alt={concert.name}
+                  sx={{
+                    width: "110%",
+                    maxHeight: "170px",
+                    objectFit: "cover",
+                    borderRadius: 2,
+                    mr: 1,
+                    transition: "transform 0.3s ease",
+                    "&:hover": {
+                      transform: "scale(1.1)",
+                    },
+                  }}
+                />
+                <Typography mt={1} color="black" fontWeight="bold">
+                  {concert.name}
+                </Typography>
+              </Box>
+            </Link>
+          ))}
+        </Box>
 
         {/* ส่วนที่ 3 */}
         <Typography
@@ -373,7 +379,7 @@ const Concert: React.FC = () => {
           <iframe
             width="860"
             height="515"
-            src="https://www.youtube.com/embed/Qh3NVhWXOOE?autoplay=1&mute=1"
+            src="https://www.youtube.com/embed/o4t8YEM5Qco?autoplay=1&mute=1"
             title="YouTube video player"
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -482,8 +488,8 @@ const Concert: React.FC = () => {
                 <Typography fontSize="14px" color="black" fontWeight="bold">
                   {event.title}
                 </Typography>
-                <Typography fontSize="14px" color="#00bc20" fontWeight="bold">
-                  {event.date}
+                <Typography fontSize="14px" color="#00bc20" fontWeight="bold" gutterBottom>
+                {event.date}
                 </Typography>
                 <Typography fontSize="14px" color="#4fc3f7" fontWeight="bold">
                   {event.time}

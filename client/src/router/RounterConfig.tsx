@@ -10,7 +10,7 @@ import ConcertPixxie from "../views/User/detailconcert/ConcertPixxie";
 import HomeTest from "../views/User/HomeTest";
 //import HomeUser from "../views/User/HomeUser"
 import Information from "../views/User/Information";
-import Page1Page from "../views/User/Page1";
+//import Page1Page from "../views/User/Page1";
 import Sport from "../views/User/Sport";
 import Promotion from "../views/User/Promotion";
 import SportDetail from "../views/User/SportDetail";
@@ -65,7 +65,17 @@ export const routesConfig: {
       header: "home",
       component: HomeTest,
       icon: null,
-      children: [],
+      children: [
+        {
+          path: "concert-detail",
+          name: "concert-detail",
+          header: "concert-detail",
+          component: ConcertDetail,
+          icon: null,
+          subpath: false,
+          children: [],
+        },
+      ],
     },
     {
       path: "/concert",

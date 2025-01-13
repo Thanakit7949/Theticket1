@@ -232,7 +232,7 @@ app.get('/getAllshirtcon', (req, res) => {
 });
 
 app.get('/getAllligthstickcon', (req, res) => {
-  const query = 'SELECT * FROM lightstickcon'; // ดึงข้อมูลทั้งหมดจาก product
+  const query = 'SELECT * FROM lightstickcon LIMIT 6'; // ดึงข้อมูลทั้งหมดจาก product
   db.query(query, (err, results) => {
     if (err) {
       return res.status(500).json({ message: 'Database error', error: err.message });
@@ -402,7 +402,7 @@ app.get('/getproductImage', (req, res) => {
 
 // promotion สำหรับดึงข้อมูลภาพ
 app.get('/getpromotionImage', (req, res) => {
-  const query = 'SELECT image FROM promotion_image';
+  const query = 'SELECT * FROM promotion_image';
   db.query(query, (err, result) => {
     if (err) {
       res.status(500).send('Error fetching data');
@@ -509,7 +509,16 @@ app.delete('/deleteConcert/:id', (req, res) => {
 });
 
 
-
+app.get('/getSportstage', (req, res) => {
+  const query = 'SELECT * FROM sport_stage'; // ตัวอย่าง query เพื่อดึงข้อมูล
+  db.query(query, (err, results) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+    } else {
+      res.json(results);
+    }
+  });
+});
 // Add sport
 app.post('/addSport', async (req, res) => {
   const { name, date, location, price, availableSeats } = req.body;
