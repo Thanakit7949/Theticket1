@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Modal, TextField, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
+import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Modal, TextField, MenuItem, Select, InputLabel, FormControl, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 
 interface SportData {
   id?: number;
@@ -25,6 +25,8 @@ const Dbsports: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<() => void>(() => {});
 
   const fetchSports = async () => {
     try {
@@ -67,8 +69,10 @@ const Dbsports: React.FC = () => {
 
       if (isEditing) {
         setSports((prev) => prev.map((sport) => (sport.id === formData.id ? response.data : sport)));
+        alert('Sport updated successfully!');
       } else {
-        setSports((prev) => [...prev, response.data]);
+        setSports((prev) => [...prev, { ...formData, id: response.data.id }]);
+        alert('Sport added successfully!');
       }
 
       setFormData({ name: '', date: '', location: '', price: 0, available_seats: 0, type: '' });
@@ -76,6 +80,7 @@ const Dbsports: React.FC = () => {
       setOpen(false);
     } catch (error) {
       console.error('Error adding/updating sport:', error);
+      alert('Failed to add/update sport.');
     }
   };
 
@@ -94,13 +99,29 @@ const Dbsports: React.FC = () => {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       setSports((prev) => prev.filter((sport) => sport.id !== id));
+      alert('Sport deleted successfully!');
     } catch (error) {
       console.error('Error deleting sport:', error);
+      alert('Failed to delete sport.');
     }
   };
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
+  const handleConfirmOpen = (action: () => void) => {
+    setConfirmAction(() => action);
+    setConfirmOpen(true);
+  };
+
+  const handleConfirmClose = () => {
+    setConfirmOpen(false);
+  };
+
+  const handleConfirm = () => {
+    confirmAction();
+    setConfirmOpen(false);
+  };
 
   if (loading) {
     return <Typography>Loading sports...</Typography>;
@@ -111,7 +132,7 @@ const Dbsports: React.FC = () => {
       <Typography variant="h4" textAlign="center" mt={4} mb={4}>
         Sports Management
       </Typography>
-      <Button variant="contained" color="primary" onClick={handleOpen} sx={{ mb: 4 }}>
+      <Button variant="contained" color="primary" onClick={() => handleConfirmOpen(handleOpen)} sx={{ mb: 4 }}>
         Add Sport
       </Button>
       <TableContainer component={Paper}>
@@ -142,7 +163,7 @@ const Dbsports: React.FC = () => {
                   <Button variant="contained" color="primary" size="small" sx={{ mr: 1 }} onClick={() => handleEdit(sport)}>
                     Edit
                   </Button>
-                  <Button variant="contained" color="error" size="small" onClick={() => sport.id && handleDelete(sport.id)}>
+                  <Button variant="contained" color="error" size="small" onClick={() => handleConfirmOpen(() => handleDelete(sport.id!))}>
                     Delete
                   </Button>
                 </TableCell>
@@ -207,15 +228,35 @@ const Dbsports: React.FC = () => {
               value={formData.type}
               onChange={handleFormChange}
             >
-              <MenuItem value="Indoor">Indoor</MenuItem>
-              <MenuItem value="Outdoor">Outdoor</MenuItem>
+              <MenuItem value="indoor">Indoor</MenuItem>
+              <MenuItem value="outdoor">Outdoor</MenuItem>
+              <MenuItem value="other">Other</MenuItem>
             </Select>
           </FormControl>
-          <Button variant="contained" color="primary" onClick={handleAddOrUpdate} sx={{ mt: 2 }}>
+          <Button variant="contained" color="primary" onClick={() => handleConfirmOpen(handleAddOrUpdate)} sx={{ mt: 2 }}>
             {isEditing ? 'Update' : 'Add'}
+          </Button>
+          <Button variant="contained" color="secondary" onClick={handleClose} sx={{ mt: 2, ml: 2 }}>
+            Cancel
           </Button>
         </Box>
       </Modal>
+      <Dialog open={confirmOpen} onClose={handleConfirmClose}>
+        <DialogTitle>Confirm Action</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to proceed with this action?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleConfirmClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleConfirm} color="primary" autoFocus>
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

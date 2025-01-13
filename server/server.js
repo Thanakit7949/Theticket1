@@ -601,21 +601,21 @@ app.delete('/deleteConcert/:id', (req, res) => {
 
 // Add sport
 app.post('/addSport', async (req, res) => {
-  const { name, date, location, price, availableSeats, type } = req.body;
+  const { name, date, location, price, available_seats, type } = req.body;
 
   // Validate input
-  if (!name || !date || !location || price == null || availableSeats == null || !type) {
+  if (!name || !date || !location || price == null || available_seats == null || !type) {
     return res.status(400).json({ error: 'All fields are required' });
   }
 
   try {
     const sql = `INSERT INTO sports (name, date, location, price, available_seats, type) VALUES (?, ?, ?, ?, ?, ?)`;
-    const values = [name, date, location, price, availableSeats, type];
+    const values = [name, date, location, price, available_seats, type];
     
     // Using promise-based query
-    await db.promise().query(sql, values);  // This ensures it returns a promise.
+    const [result] = await db.query(sql, values);  // This ensures it returns a promise.
     
-    res.status(201).json({ message: 'Sport added successfully' });
+    res.status(201).json({ message: 'Sport added successfully', id: result.insertId });
   } catch (error) {
     console.error('Database error:', error);
     res.status(500).json({ error: 'Internal Server Error' });
@@ -625,9 +625,9 @@ app.post('/addSport', async (req, res) => {
 // Update sport
 app.put('/updateSport/:id', (req, res) => {
   const { id } = req.params;
-  const { name, date, location, price, availableSeats, type } = req.body;
+  const { name, date, location, price, available_seats, type } = req.body;
 
-  if (!name || !date || !location || price == null || availableSeats == null || !type) {
+  if (!name || !date || !location || price == null || available_seats == null || !type) {
     return res.status(400).json({ message: 'All fields are required.' });
   }
 
@@ -635,7 +635,7 @@ app.put('/updateSport/:id', (req, res) => {
     UPDATE sports SET name = ?, date = ?, location = ?, price = ?, available_seats = ?, type = ?
     WHERE id = ?
   `;
-  db.query(query, [name, date, location, price, availableSeats, type, id], (err, result) => {
+  db.query(query, [name, date, location, price, available_seats, type, id], (err, result) => {
     if (err) {
       console.error('Database Error:', err.message);
       return res.status(500).json({ message: 'Database error' });

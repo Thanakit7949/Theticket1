@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Modal, TextField, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
+import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Modal, TextField, MenuItem, Select, InputLabel, FormControl, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 
 interface ConcertData {
   id?: number;
@@ -25,6 +25,8 @@ const Dbconcerts: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<() => void>(() => {});
 
   const fetchConcerts = async () => {
     try {
@@ -67,8 +69,10 @@ const Dbconcerts: React.FC = () => {
 
       if (isEditing) {
         setConcerts((prev) => prev.map((concert) => (concert.id === formData.id ? response.data : concert)));
+        alert('Concert updated successfully!');
       } else {
-        setConcerts((prev) => [...prev, response.data]);
+        setConcerts((prev) => [...prev, { ...formData, id: response.data.id }]);
+        alert('Concert added successfully!');
       }
 
       setFormData({ name: '', date: '', location: '', price: 0, available_seats: 0, type: '' });
@@ -76,6 +80,7 @@ const Dbconcerts: React.FC = () => {
       setOpen(false);
     } catch (error) {
       console.error('Error adding/updating concert:', error);
+      alert('Failed to add/update concert.');
     }
   };
 
@@ -94,13 +99,29 @@ const Dbconcerts: React.FC = () => {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       setConcerts((prev) => prev.filter((concert) => concert.id !== id));
+      alert('Concert deleted successfully!');
     } catch (error) {
       console.error('Error deleting concert:', error);
+      alert('Failed to delete concert.');
     }
   };
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
+  const handleConfirmOpen = (action: () => void) => {
+    setConfirmAction(() => action);
+    setConfirmOpen(true);
+  };
+
+  const handleConfirmClose = () => {
+    setConfirmOpen(false);
+  };
+
+  const handleConfirm = () => {
+    confirmAction();
+    setConfirmOpen(false);
+  };
 
   if (loading) {
     return <Typography>Loading concerts...</Typography>;
@@ -111,7 +132,7 @@ const Dbconcerts: React.FC = () => {
       <Typography variant="h4" textAlign="center" mt={4} mb={4}>
         Concert Management
       </Typography>
-      <Button variant="contained" color="primary" onClick={handleOpen} sx={{ mb: 4 }}>
+      <Button variant="contained" color="primary" onClick={() => handleConfirmOpen(handleOpen)} sx={{ mb: 4 }}>
         Add Concert
       </Button>
       <TableContainer component={Paper}>
@@ -142,7 +163,7 @@ const Dbconcerts: React.FC = () => {
                   <Button variant="contained" color="primary" size="small" sx={{ mr: 1 }} onClick={() => handleEdit(concert)}>
                     Edit
                   </Button>
-                  <Button variant="contained" color="error" size="small" onClick={() => concert.id && handleDelete(concert.id)}>
+                  <Button variant="contained" color="error" size="small" onClick={() => handleConfirmOpen(() => handleDelete(concert.id!))}>
                     Delete
                   </Button>
                 </TableCell>
@@ -213,11 +234,30 @@ const Dbconcerts: React.FC = () => {
               <MenuItem value="thaimass">Thaimass</MenuItem>
             </Select>
           </FormControl>
-          <Button variant="contained" color="primary" onClick={handleAddOrUpdate} sx={{ mt: 2 }}>
+          <Button variant="contained" color="primary" onClick={() => handleConfirmOpen(handleAddOrUpdate)} sx={{ mt: 2 }}>
             {isEditing ? 'Update' : 'Add'}
+          </Button>
+          <Button variant="contained" color="secondary" onClick={handleClose} sx={{ mt: 2, ml: 2 }}>
+            Cancel
           </Button>
         </Box>
       </Modal>
+      <Dialog open={confirmOpen} onClose={handleConfirmClose}>
+        <DialogTitle>Confirm Action</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to proceed with this action?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleConfirmClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleConfirm} color="primary" autoFocus>
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
