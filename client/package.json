@@ -26,6 +26,7 @@
     "react-pageflip": "^2.0.3",
     "react-router-dom": "^6.27.0",
     "react-slick": "^0.30.2",
+    "recharts": "^2.15.0",
     "slick-carousel": "^1.8.1",
     "swiper": "^11.1.15",
     "uuid": "^11.0.3"
@@ -33,6 +34,7 @@
   "devDependencies": {
     "@eslint/js": "^9.13.0",
     "@types/js-cookie": "^3.0.6",
+    "@types/node": "^22.10.1",
     "@types/ramda": "^0.30.2",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.1",

@@ -13,6 +13,7 @@ import {
   Dialog,
   DialogTitle,
   DialogActions,
+  AppBar,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
@@ -39,43 +40,53 @@ const Profile: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
   const [image, setImage] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [logoutDialog, setLogoutDialog] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    if (users.length > 0) {
-      const user = users[users.length - 1];
-      fetchUserProfile(user.id);
+    const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+    if (!token || !user.id) {
+      navigate('/login'); // Redirect ถ้าไม่ได้ล็อกอิน
     } else {
-      setProfile({
-        first_name: '',
-        last_name: '',
-        email: '',
-        phone: '',
-        birth_date: '',
-        gender: '',
-        profile_image: null,
-      });
-      setIsLoading(false);
+      fetchUserProfile(user.id);
     }
+  }, []);
+  
+  useEffect(() => {
+    const fetchUserProfile = async (userId: number) => {
+      try {
+        const res = await axios.get<UserProfile>(`http://localhost:5000/users/${userId}`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        });
+        const userData = res.data;
+        setProfile({
+          ...userData,
+          gender: userData.gender.toLowerCase(), // แปลงเป็น lower case เพื่อให้แสดงในฟอร์มได้ถูกต้อง
+        });
+        setImage(userData.profile_image || null);
+      } catch (err) {
+        alert('Failed to fetch profile.');
+        navigate('/login'); // Redirect เมื่อมีปัญหา
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchUserProfile(JSON.parse(localStorage.getItem('user') || '{}').id);
   }, []);
 
   const fetchUserProfile = async (userId: number) => {
     try {
-      const res = await axios.get<UserProfile>(`http://localhost:3001/users/${userId}`, {
+      const res = await axios.get<UserProfile>(`http://localhost:5000/users/${userId}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       const userData = res.data;
-      if (userData.birth_date) {
-        userData.birth_date = formatDate(userData.birth_date);
-      }
       setProfile(userData);
       setImage(userData.profile_image || null);
     } catch (err) {
-      console.error('Error fetching profile:', err);
-      setError('Failed to connect to the server. Please try again later.');
+      alert('Failed to fetch profile.');
+      navigate('/login'); // Redirect เมื่อมีปัญหา
     } finally {
       setIsLoading(false);
     }
@@ -83,22 +94,19 @@ const Profile: React.FC = () => {
 
   const handleUpdate = async () => {
     setIsUpdating(true);
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    if (users.length === 0) {
-      alert('You must log in first!');
-      return;
-    }
-    const user = users[users.length - 1];
-
     try {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
       await axios.put(
-        `http://localhost:3001/users/${user.id}`,
-        { ...profile, profile_image: image },
+        `http://localhost:5000/users/${user.id}`,
+        {
+          ...profile,
+          gender: profile.gender.toLowerCase(), // แปลงกลับเป็นค่าที่ Backend รองรับ
+          profile_image: image,
+        },
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       );
       alert('Profile updated successfully!');
-    } catch (error) {
-      console.error('Update failed:', error);
+    } catch {
       alert('Failed to update profile.');
     } finally {
       setIsUpdating(false);
@@ -106,29 +114,8 @@ const Profile: React.FC = () => {
   };
 
   const handleLogout = () => {
-    setLogoutDialog(false);
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    users.pop();
-    localStorage.setItem('users', JSON.stringify(users));
-    localStorage.removeItem('token');
-    setProfile({
-      first_name: '',
-      last_name: '',
-      email: '',
-      phone: '',
-      birth_date: '',
-      gender: '',
-      profile_image: null,
-    });
+    localStorage.clear();
     navigate('/login');
-  };
-
-  const formatDate = (isoDate: string): string => {
-    const date = new Date(isoDate);
-    const year = date.getFullYear();
-    const month = (`0${date.getMonth() + 1}`).slice(-2);
-    const day = (`0${date.getDate()}`).slice(-2);
-    return `${year}-${month}-${day}`;
   };
 
   if (isLoading) {
@@ -142,16 +129,11 @@ const Profile: React.FC = () => {
           User Profile
         </Typography>
       </Box>
-      {error && (
-        <Typography color="error" textAlign="center" mb={3}>
-          {error}
-        </Typography>
-      )}
       <Grid container spacing={4}>
         <Grid item xs={12} md={4}>
           <Box display="flex" flexDirection="column" alignItems="center">
             <Avatar
-              src={image || '/path/to/default-profile-pic'}
+              src={image || '/default-profile.png'}
               alt="Profile Picture"
               sx={{ width: 150, height: 150, mb: 2 }}
             />
@@ -178,7 +160,6 @@ const Profile: React.FC = () => {
             <TextField
               fullWidth
               label="First Name"
-              name="first_name"
               value={profile.first_name}
               onChange={(e) => setProfile({ ...profile, first_name: e.target.value })}
               margin="normal"
@@ -186,7 +167,6 @@ const Profile: React.FC = () => {
             <TextField
               fullWidth
               label="Last Name"
-              name="last_name"
               value={profile.last_name}
               onChange={(e) => setProfile({ ...profile, last_name: e.target.value })}
               margin="normal"
@@ -194,7 +174,6 @@ const Profile: React.FC = () => {
             <TextField
               fullWidth
               label="Email"
-              name="email"
               value={profile.email}
               onChange={(e) => setProfile({ ...profile, email: e.target.value })}
               margin="normal"
@@ -202,7 +181,6 @@ const Profile: React.FC = () => {
             <TextField
               fullWidth
               label="Phone"
-              name="phone"
               value={profile.phone}
               onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
               margin="normal"
@@ -210,22 +188,26 @@ const Profile: React.FC = () => {
             <TextField
               fullWidth
               label="Birth Date"
-              name="birth_date"
               type="date"
-              value={profile.birth_date}
+              value={profile.birth_date ? new Date(profile.birth_date).toISOString().split('T')[0] : ''}
               onChange={(e) => setProfile({ ...profile, birth_date: e.target.value })}
-              InputLabelProps={{
-                shrink: true,
-              }}
+              InputLabelProps={{ shrink: true }}
               margin="normal"
             />
             <TextField
               fullWidth
               select
               label="Gender"
-              name="gender"
-              value={profile.gender}
-              onChange={(e) => setProfile({ ...profile, gender: e.target.value })}
+              value={
+                profile.gender.toLowerCase() === 'male'
+                  ? 'Male'
+                  : profile.gender.toLowerCase() === 'female'
+                    ? 'Female'
+                    : 'Other'
+              }
+              onChange={(e) =>
+                setProfile({ ...profile, gender: e.target.value.toLowerCase() })
+              }
               margin="normal"
             >
               <MenuItem value="Male">Male</MenuItem>
@@ -242,23 +224,18 @@ const Profile: React.FC = () => {
               {isUpdating ? <CircularProgress size={24} /> : 'Update Profile'}
             </Button>
           </Box>
-          <Button
-            variant="contained"
-            color="secondary"
-            sx={{ mt: 2 }}
-            onClick={() => setLogoutDialog(true)}
-          >
-            Logout
-          </Button>
         </Grid>
       </Grid>
+      <Box textAlign="center" mt={3}>
+        <Button variant="outlined" color="error" onClick={() => setLogoutDialog(true)}>
+          Logout
+        </Button>
+      </Box>
       <Dialog open={logoutDialog} onClose={() => setLogoutDialog(false)}>
-        <DialogTitle>Are you sure you want to log out?</DialogTitle>
+        <DialogTitle>Are you sure you want to logout?</DialogTitle>
         <DialogActions>
-          <Button onClick={() => setLogoutDialog(false)} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleLogout} color="secondary">
+          <Button onClick={() => setLogoutDialog(false)}>Cancel</Button>
+          <Button color="error" onClick={handleLogout}>
             Logout
           </Button>
         </DialogActions>

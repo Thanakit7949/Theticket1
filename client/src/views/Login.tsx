@@ -39,8 +39,14 @@ const LoginPage: React.FunctionComponent = () => {
       } else {
         setMessage('Unknown role');
       }
+      const response = await axios.post('http://localhost:5000/login', { email, password });
+      const data = response.data;
+
+      localStorage.setItem('user', JSON.stringify(data.user)); // เก็บข้อมูลผู้ใช้
+      localStorage.setItem('token', data.token); // เก็บ Token
+
+      navigate(data.user.role === 'admin' ? '/home-admin' : '/home-test');
     } catch (error: any) {
-      console.error('Login error:', error.response?.data || error.message);
       setMessage(error.response?.data?.message || 'Login failed');
     }
   };
