@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Modal, TextField, MenuItem, Select, InputLabel, FormControl, Grid } from '@mui/material';
+import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Modal, TextField, MenuItem, Select, InputLabel, FormControl, Grid, Avatar, IconButton } from '@mui/material';
+import { Edit, Delete } from '@mui/icons-material';
 import axios from 'axios';
 
 interface UserData {
@@ -131,6 +132,7 @@ const Users: React.FC = () => {
           <TableHead>
             <TableRow>
               <TableCell>ID</TableCell>
+              <TableCell>Profile</TableCell>
               <TableCell>Email</TableCell>
               <TableCell>Phone</TableCell>
               <TableCell>First Name</TableCell>
@@ -146,6 +148,9 @@ const Users: React.FC = () => {
             {users.map((user) => (
               <TableRow key={user.id}>
                 <TableCell>{user.id}</TableCell>
+                <TableCell>
+                  <Avatar src={user.profile_image || '/default-profile.png'} />
+                </TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.phone}</TableCell>
                 <TableCell>{user.first_name}</TableCell>
@@ -155,12 +160,12 @@ const Users: React.FC = () => {
                 <TableCell>{user.gender}</TableCell>
                 <TableCell>{user.role}</TableCell>
                 <TableCell>
-                  <Button variant="contained" color="primary" size="small" sx={{ mr: 1 }} onClick={() => handleEdit(user)}>
-                    Edit
-                  </Button>
-                  <Button variant="contained" color="error" size="small" onClick={() => user.id && handleDelete(user.id)}>
-                    Delete
-                  </Button>
+                  <IconButton color="primary" onClick={() => handleEdit(user)}>
+                    <Edit />
+                  </IconButton>
+                  <IconButton color="error" onClick={() => user.id && handleDelete(user.id)}>
+                    <Delete />
+                  </IconButton>
                 </TableCell>
               </TableRow>
             ))}
@@ -168,88 +173,110 @@ const Users: React.FC = () => {
         </Table>
       </TableContainer>
       <Modal open={open} onClose={handleClose}>
-        <Box sx={{ ...modalStyle, width: 400 }}>
-          <Typography variant="h6" component="h2">
+        <Box sx={{ ...modalStyle, width: '100%', maxWidth: 600, maxHeight: '90vh', overflowY: 'auto' }}>
+          <Typography variant="h6" component="h2" textAlign="center" mb={2}>
             {isEditing ? 'Edit User' : 'Add User'}
           </Typography>
-          <TextField
-            label="Email"
-            name="email"
-            value={formData.email}
-            onChange={handleFormChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Password"
-            name="password"
-            type="password"
-            value={formData.password}
-            onChange={handleFormChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Phone"
-            name="phone"
-            value={formData.phone}
-            onChange={handleFormChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="First Name"
-            name="first_name"
-            value={formData.first_name}
-            onChange={handleFormChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Last Name"
-            name="last_name"
-            value={formData.last_name}
-            onChange={handleFormChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Birth Date"
-            name="birth_date"
-            type="date"
-            value={formData.birth_date}
-            onChange={handleFormChange}
-            fullWidth
-            margin="normal"
-            InputLabelProps={{ shrink: true }}
-          />
-          <TextField
-            label="Address"
-            name="address"
-            value={formData.address}
-            onChange={handleFormChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Gender"
-            name="gender"
-            value={formData.gender}
-            onChange={handleFormChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Role"
-            name="role"
-            value={formData.role}
-            onChange={handleFormChange}
-            fullWidth
-            margin="normal"
-          />
-          <Button variant="contained" color="primary" onClick={handleAddOrUpdate} sx={{ mt: 2 }}>
-            {isEditing ? 'Update' : 'Add'}
-          </Button>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                label="Email"
+                name="email"
+                value={formData.email}
+                onChange={handleFormChange}
+                fullWidth
+                margin="normal"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Password"
+                name="password"
+                type="password"
+                value={formData.password}
+                onChange={handleFormChange}
+                fullWidth
+                margin="normal"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Phone"
+                name="phone"
+                value={formData.phone}
+                onChange={handleFormChange}
+                fullWidth
+                margin="normal"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="First Name"
+                name="first_name"
+                value={formData.first_name}
+                onChange={handleFormChange}
+                fullWidth
+                margin="normal"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Last Name"
+                name="last_name"
+                value={formData.last_name}
+                onChange={handleFormChange}
+                fullWidth
+                margin="normal"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Birth Date"
+                name="birth_date"
+                type="date"
+                value={formData.birth_date}
+                onChange={handleFormChange}
+                fullWidth
+                margin="normal"
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Address"
+                name="address"
+                value={formData.address}
+                onChange={handleFormChange}
+                fullWidth
+                margin="normal"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Gender"
+                name="gender"
+                value={formData.gender}
+                onChange={handleFormChange}
+                fullWidth
+                margin="normal"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Role"
+                name="role"
+                value={formData.role}
+                onChange={handleFormChange}
+                fullWidth
+                margin="normal"
+              />
+            </Grid>
+            <Grid item xs={12} textAlign="center">
+              <Button variant="contained" color="primary" onClick={handleAddOrUpdate} sx={{ mt: 2 }}>
+                {isEditing ? 'Update' : 'Add'}
+              </Button>
+            </Grid>
+          </Grid>
         </Box>
       </Modal>
     </Box>
