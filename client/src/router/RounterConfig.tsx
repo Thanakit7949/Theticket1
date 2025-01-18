@@ -29,6 +29,7 @@ import AcryliCon from "../views/User/prodetail/AcryliCon";
 import Ballkeychain from "../views/User/prodetail/Ballkeychain";
 import Footballshirt from "../views/User/prodetail/Footballshirt";
 import InformationDetail from "../views/User/InformationDetail";
+import Test from "../views/User/Test";
 //import Dashboard from "../views/User/Dashboard"
 
 export const routesConfig: {
@@ -357,7 +358,15 @@ export const routesConfig: {
     
           ],
         },
-
+        {
+          path: "/test",
+          name: "test",
+          header: "test",
+          component: Test,
+          icon: null,
+          children: [ ],
+        },
+        
        
 
    
