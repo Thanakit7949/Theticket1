@@ -23,165 +23,72 @@ const Sport: React.FC = () => {
   };
 
   const [selected, setSelected] = useState("ทั้งหมด");
-  const [dataSports, setDataSports] = useState<any[]>([]); // Mock data for sports events
-  const [databoxingSports, setDataboxingSports] = useState<any[]>([]);
-  const [datafootballSports, setDatafootballSports] = useState<any[]>([]);
-  const [dataotherSports, setDataotherSports] = useState<any[]>([]);
+  const [dataSports, setDataSports] = useState<any[]>([]);
   const [sports, setSports] = useState<any[]>([]);
   const [sportimages, setImages] = useState<any[]>([]);
 
+  const fetchSportsByType = async (type: string) => {
+    try {
+      const response = await fetch(`http://localhost:5000/getSportsByType/${type}`);
+      const data: ISports[] = await response.json();
+      const formattedSports = data.map((item) => ({
+        id: item.id,
+        img: `http://localhost/sport/all/${item.image}`,
+        title: item.name,
+        date: `🗓️: ${item.date}`,
+        time: `⏰: ${item.time}`,
+        location: `📌: ${item.location}`,
+        price: item.price,
+      }));
+      setDataSports(formattedSports);
+    } catch (error) {
+      console.error(`Error fetching ${type} sports data:`, error);
+    }
+  };
+
+  const fetchSportsImage = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/sportsImage");
+      const data: ISports[] = await response.json();
+      setSports(data);
+      console.log(data);
+    } catch (error) {
+      console.error("Error fetching events:", error);
+    }
+  };
+
+  const fetchImages = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/getImages");
+      const data: ISports[] = await response.json();
+      setImages(data);
+      console.log(data);
+    } catch (error) {
+      console.error("Error fetching events:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchSports = async () => {
-      try {
-        const response = await fetch("http://localhost:5000/getAllSports");
-        const data: ISports[] = await response.json();
-        // http://localhost:5000/src/assets/sport/sport5.jpg
-        // แปลงข้อมูลให้ตรงกับโครงสร้าง allSports
-        const formattedSports = data.map((item) => ({
-          id: item.id,
-          img: `http://localhost/sport/all/${item.image}`, // ใช้ฟิลด์ `img` จาก API
-          title: item.name, // ใช้ฟิลด์ `name` จาก API
-          date: `🗓️: ${dayjs(item.date).format("DD/MM/YY")}`, // เพิ่มไอคอนหรือฟอร์แมตข้อความ
-          time: `⏰: ${item.time}`, // ฟิลด์ `time` (ถ้ามี)
-          location: `📌: ${item.location}`, // ใช้ฟิลด์ `location`
-          price: item.price, // ใช้ฟิลด์ `price`
-        }));
-
-        setDataSports(formattedSports);
-      } catch (error) {
-        console.error("Error fetching sports data:", error);
-      }
+    const typeMap = {
+      "ทั้งหมด": "ALL",
+      "INDOOR": "indoor",
+      "OUTDOOR": "outdoor",
+      "OTHER": "other"
     };
-    const fetchSportsBoxing = async () => {
-      try {
-        const response = await fetch(
-          "http://localhost:5000/getAllSportsBoxing"
-        );
-        const data: ISports[] = await response.json();
-
-        // แปลงข้อมูลให้ตรงกับโครงสร้าง allSports
-        const formattedSports = data.map((item) => ({
-          id: item.id,
-          img: `http://localhost/sport/all/${item.image}`, // ใช้ฟิลด์ `img` จาก API
-          title: item.name, // ใช้ฟิลด์ `name` จาก API
-          date: `🗓️: $${dayjs(item.date).format("DD/MM/YY")}`, // เพิ่มไอคอนหรือฟอร์แมตข้อความ
-          time: `⏰: ${item.time}`, // ฟิลด์ `time` (ถ้ามี)
-          location: `📌: ${item.location}`, // ใช้ฟิลด์ `location`
-          price: item.price, // ใช้ฟิลด์ `price`
-        }));
-
-        setDataboxingSports(formattedSports);
-      } catch (error) {
-        console.error("Error fetching sports data:", error);
-      }
-    };
-
-    const fetchSportsFootball = async () => {
-      try {
-        const response = await fetch(
-          "http://localhost:5000/getAllSportsFootball"
-        );
-        const data: ISports[] = await response.json();
-        const formattedSports = data.map((item) => ({
-          id: item.id,
-          img: `http://localhost/sport/all/${item.image}`, // ใช้ฟิลด์ `img` จาก API
-          title: item.name, // ใช้ฟิลด์ `name` จาก API
-          date: `🗓️: $${dayjs(item.date).format("DD/MM/YY")}`, // เพิ่มไอคอนหรือฟอร์แมตข้อความ
-          time: `⏰: ${item.time}`, // ฟิลด์ `time` (ถ้ามี)
-          location: `📌: ${item.location}`, // ใช้ฟิลด์ `location`
-          price: item.price, // ใช้ฟิลด์ `price`
-        }));
-
-        setDatafootballSports(formattedSports);
-      } catch (error) {
-        console.error("Error fetching sports data:", error);
-      }
-    };
-
-    const fetchSportsOther = async () => {
-      try {
-        const response = await fetch("http://localhost:5000/getAllSportsOther");
-        const data: ISports[] = await response.json();
-        const formattedSports = data.map((item) => ({
-          id: item.id,
-          img: `http://localhost/sport/all/${item.image}`, // ใช้ฟิลด์ `img` จาก API
-          title: item.name, // ใช้ฟิลด์ `name` จาก API
-          date: `🗓️: $${dayjs(item.date).format("DD/MM/YY")}`, // เพิ่มไอคอนหรือฟอร์แมตข้อความ
-          time: `⏰: ${item.time}`, // ฟิลด์ `time` (ถ้ามี)
-          location: `📌: ${item.location}`, // ใช้ฟิลด์ `location`
-          price: item.price, // ใช้ฟิลด์ `price`
-        }));
-
-        setDataotherSports(formattedSports);
-      } catch (error) {
-        console.error("Error fetching sports data:", error);
-      }
-    };
-
-    // ดึงข้อมูลจาก API รูปภาพ แล้วข้อความ
-    const fetchSportsImage = async () => {
-      try {
-        const response = await fetch("http://localhost:5000/sportsImage");
-        const data: ISports[] = await response.json();
-        setSports(data);
-        console.log(data);
-      } catch (error) {
-        console.error("Error fetching events:", error);
-      }
-    };
-
-    const fetchImages = async () => {
-      try {
-        const response = await fetch("http://localhost:5000/getImages");
-       const data: ISports[] = await response.json();
-       setImages(data); 
-        console.log(data);
-      } catch (error) {
-        console.error("Error fetching events:", error);
-      }
-    };
-
-    fetchSports();
-    fetchSportsBoxing();
-    fetchSportsFootball();
-    fetchSportsOther();
+    fetchSportsByType(typeMap[selected]);
     fetchSportsImage();
     fetchImages();
-  }, []);
+  }, [selected]);
 
   const categories = [
-    { label: "ทั้งหมด", color: "#FF4081" }, // Highlighted button color
-    { label: "BOXING", color: "#FF4081" },
-    { label: "FOOTBALL", color: "#FF4081" },
+    { label: "ทั้งหมด", color: "#FF4081" },
+    { label: "INDOOR", color: "#FF4081" },
+    { label: "OUTDOOR", color: "#FF4081" },
     { label: "OTHER", color: "#FF4081" },
   ];
 
-  const filteredEvents =
-    selected === "ทั้งหมด"
-      ? dataSports
-      : selected === "BOXING"
-        ? databoxingSports
-        : selected === "FOOTBALL"
-          ? datafootballSports
-          : selected === "OTHER"
-            ? dataotherSports
-            : [];
-
   return (
-    <Box
-      // p={2}
-      // mb={8}
-      // bgcolor="gray.800"
-      // color="white"
-      // borderRadius={2}
-      // boxShadow={3}
-      // border={1}
-      // borderColor="gray.700"
-      width={1140}
-      // sx={{
-      //   background: "linear-gradient(135deg, #EECDA3 0%, #EF629F 100%);",
-      // }}
-    >
+    <Box width={1140}>
       {/* ส่วนที่ 1 */}
       <Typography
         variant="h2"
@@ -220,9 +127,9 @@ const Sport: React.FC = () => {
         gutterBottom
         sx={{
           position: "relative",
-          transition: "transform 0.3s ease-in-out", // เพิ่มการเคลื่อนไหวเมื่อเอาเมาส์ไปชี้
+          transition: "transform 0.3s ease-in-out",
           "&:hover": {
-            transform: "scale(1.1)", // ขยายขนาดข้อความเมื่อเอาเมาส์ไปชี้
+            transform: "scale(1.1)",
           },
         }}
       >
@@ -239,24 +146,22 @@ const Sport: React.FC = () => {
         ʏᴏᴜʀ ʜᴇᴀʀᴛ.
       </Typography>
       <Box
-        display="flex" 
-        justifyContent="flex-start" 
-        alignItems="center" 
-        flexDirection="row" 
-        mt={4} 
+        display="flex"
+        justifyContent="flex-start"
+        alignItems="center"
+        flexDirection="row"
+        mt={4}
         sx={{
-          overflowX: "auto", 
-          overflowY: "hidden", 
-          whiteSpace: "nowrap", 
-          padding: "10px", 
+          overflowX: "auto",
+          overflowY: "hidden",
+          whiteSpace: "nowrap",
+          padding: "10px",
         }}
       >
-
-      {/*การดึงข้อมูลกีฬาและภาพ ดึงจากdatabaseแล้ว*/}
         {sports.map((item) => (
           <Box position="relative" key={item.id}>
             <img
-              src={`http://localhost/sport/${item.image}`} // ดึง URL ของภาพจาก API
+              src={`http://localhost/sport/${item.image}`}
               alt={item.name}
               style={{
                 margin: "10px",
@@ -279,7 +184,7 @@ const Sport: React.FC = () => {
               sx={{ boxShadow: 1 }}
             >
               <Typography variant="h6" color="black" sx={{ margin: 0 }}>
-                {item.name} {/* แสดงชื่อกีฬา */}
+                {item.name}
               </Typography>
             </Box>
           </Box>
@@ -295,9 +200,9 @@ const Sport: React.FC = () => {
         gutterBottom
         sx={{
           position: "relative",
-          transition: "transform 0.3s ease-in-out", // เพิ่มการเคลื่อนไหวเมื่อเอาเมาส์ไปชี้
+          transition: "transform 0.3s ease-in-out",
           "&:hover": {
-            transform: "scale(1.1)", // ขยายขนาดข้อความเมื่อเอาเมาส์ไปชี้
+            transform: "scale(1.1)",
           },
         }}
       >
@@ -313,48 +218,48 @@ const Sport: React.FC = () => {
         ᴇᴠᴇʀʏ ᴅᴀʏ.
       </Typography>
 
-      <Box display="flex" justifyContent="center" mt={2}>
-     
-    </Box>
-    <Box
-      sx={{
-        display: "flex",
-        flexWrap: "wrap",
-        justifyContent: "space-between",
-        marginTop: 2,
-      }}
-    >
-      {sportimages.map((image, index) => (
-        <Box
-          key={index}
-          sx={{
-            width: "47%",
-            height: "300px",
-            marginBottom: "10px",
-            marginRight: "18px",
-            marginLeft: "15px",
-            transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out, filter 0.3s ease-in-out",
-            "&:hover": {
-              transform: "translateY(-10px) scale(1.05)",
-              boxShadow: "0 8px 16px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 255, 255, 0.6)",
-              filter: "brightness(1.2)",
-            },
-            overflow: "hidden",
-          }}
-        >
-          <img
-            src={`http://localhost/sport/${image.image}`}
-            alt={image.description}
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              borderRadius: "10px",
+      <Box display="flex" justifyContent="center" mt={2}></Box>
+      <Box
+        sx={{
+          display: "flex",
+          flexWrap: "wrap",
+          justifyContent: "space-between",
+          marginTop: 2,
+        }}
+      >
+        {sportimages.map((image, index) => (
+          <Box
+            key={index}
+            sx={{
+              width: "47%",
+              height: "300px",
+              marginBottom: "10px",
+              marginRight: "18px",
+              marginLeft: "15px",
+              transition:
+                "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out, filter 0.3s ease-in-out",
+              "&:hover": {
+                transform: "translateY(-10px) scale(1.05)",
+                boxShadow:
+                  "0 8px 16px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 255, 255, 0.6)",
+                filter: "brightness(1.2)",
+              },
+              overflow: "hidden",
             }}
-          />
-        </Box>
-      ))}
-    </Box>
+          >
+            <img
+              src={`http://localhost/sport/${image.image}`}
+              alt={image.description}
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                borderRadius: "10px",
+              }}
+            />
+          </Box>
+        ))}
+      </Box>
 
       {/* ส่วนที่ 4 คลิกเลือก*/}
       <Box
@@ -399,7 +304,7 @@ const Sport: React.FC = () => {
         gap={2}
         p={5}
       >
-        {filteredEvents.map((event, index) => (
+        {dataSports.map((event, index) => (
           <Box
             key={index}
             display="flex"
@@ -409,8 +314,8 @@ const Sport: React.FC = () => {
               borderRadius: 2,
               padding: 2,
               backgroundColor: "#fce4ec",
-              flexBasis: "calc(36.33% - 50px)", // ใช้ 33.33% ของความกว้างลดด้วยระยะห่าง
-              margin: "10px 0", // เพิ่ม margin เพื่อเว้นระยะห่างระหว่างกรอบ
+              flexBasis: "calc(36.33% - 50px)",
+              margin: "10px 0",
               transition: "transform 0.3s",
               "&:hover": {
                 transform: "scale(1.05)",
@@ -438,7 +343,6 @@ const Sport: React.FC = () => {
                 {event.location}
               </Typography>
               <Button
-                // onClick={() => handleBuyTicket(event)}
                 onClick={() =>
                   handleBuyTicket({
                     id: event.id,

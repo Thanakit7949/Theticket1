@@ -14,6 +14,7 @@ import Profile from "../views/User/Profile";
 import Dbconcerts from "../views/Admin/Dbconcerts";
 import Dbsports from "../views/Admin/Dbsports";
 import HomeAdmin from "../views/Admin/HomeAdmin";
+import HomeTest from "../views/User/HomeTest";
 
 
 const Router: React.FC = () => {
