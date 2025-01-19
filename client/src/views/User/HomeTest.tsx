@@ -21,6 +21,7 @@ import bbrick from "/src/assets/home/bbrick.jpg";
 import labubu from "/src/assets/home/labubu.jpg";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
+import EventPoster from "/src/assets/eventPosterData"; // Ensure the correct path to EventPoster data
 
 import "swiper/swiper-bundle.css";
 
@@ -52,7 +53,10 @@ export interface ISports {
 const HomeTest: React.FunctionComponent = () => {
   const [dataconcerts, setDataconcerts] = useState<IConcert[]>([]);
   const [dataSports, setDataSports] = useState<ISports[]>([]);
+  const [eventPoster, setEventPoster] = useState<any[]>([]);
+  const [lightstickcon, setlightstickcon] = useState<any[]>([]); // Define lightstickcon state
   const navigate = useNavigate(); // เพิ่ม useNavigate
+  const [datapromotion, setPromotion] = useState<any[]>([]); // Define datapromotion state
 
   const fetchConcerts = async () => {
     try {
@@ -110,17 +114,18 @@ const HomeTest: React.FunctionComponent = () => {
     fetchSports();
   }, []);
   useEffect(() => {
-    const fetchEventposter = async () => {
+    const fetchEventPoster = async () => {
       try {
         const response = await fetch("http://localhost:5000/getEventPoster");
         const data = await response.json();
-        seteventposter(data);
+        setEventPoster(Array.isArray(data) ? data : []); // Ensure data is an array
       } catch (error) {
-        console.error("Error fetching products:", error);
+        console.error("Error fetching event posters:", error);
+        setEventPoster([]); // Set to empty array on error
       }
     };
 
-    fetchEventposter();
+    fetchEventPoster();
   }, []);
 
   useEffect(() => {
@@ -646,7 +651,7 @@ const HomeTest: React.FunctionComponent = () => {
           >
             {/* Event Poster */}
             <Grid container spacing={4} justifyContent="space-between">
-              {EventPoster.map((EventPoster, index) => (
+              {eventPoster.map((poster, index) => (
                 <Grid item xs={12} sm={6} key={index}>
                   <Paper
                     sx={{
@@ -662,15 +667,15 @@ const HomeTest: React.FunctionComponent = () => {
                     }}
                   >
                     <Typography variant="h4" color="primary" gutterBottom>
-                      {EventPoster.title}
+                      {poster.title}
                     </Typography>
                     <img
-                      src={`http://localhost/information/${EventPoster.image}`}
+                      src={`http://localhost/information/${poster.image}`}
                       className="poster-subtitle-img"
                       style={{ maxWidth: "100%", height: "200px" }}
                     />
                     <Typography variant="body1" paragraph>
-                      {EventPoster.text}
+                      {poster.text}
                     </Typography>
                   </Paper>
                 </Grid>

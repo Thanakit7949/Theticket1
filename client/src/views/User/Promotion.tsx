@@ -7,7 +7,6 @@ import cat from "/src/assets/promotion/cat.png";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { Link, useNavigate } from "react-router-dom";
-import dayjs from "dayjs";
 
 const Promotion = () => {
   const navigate = useNavigate();
@@ -459,7 +458,8 @@ const Promotion = () => {
                   ฿{promotion.newPrice}
                 </Typography>
                 <Typography variant="h6" sx={{ color: "#888" }}>
-                  🛒 เริ่มโปรตั้งแต่  {dayjs(promotion.date).format("DD/MM/YY")}
+                  🛒 เริ่มโปรตั้งแต่ <br></br>
+                  {promotion.date}
                 </Typography>
               </Box>
             </Box>
@@ -620,8 +620,7 @@ const Promotion = () => {
                       fontSize: "15px",
                     }}
                   >
-                     
-                    วันหมดอายุ: {dayjs(item.expiryDate).format("DD/MM/YY")} {/* เพิ่มข้อความวันหมดอายุ */}
+                    วันหมดอายุ: {item.expiryDate} {/* เพิ่มข้อความวันหมดอายุ */}
                   </Typography>
                 </Box>
 
