@@ -15,6 +15,7 @@ import Dbconcerts from "../views/Admin/Dbconcerts";
 import Dbsports from "../views/Admin/Dbsports";
 import HomeAdmin from "../views/Admin/HomeAdmin";
 import HomeTest from "../views/User/HomeTest";
+import Account from "../views/User/Account";
 
 
 const Router: React.FC = () => {
@@ -151,6 +152,7 @@ const Router: React.FC = () => {
         <Route path="/dbconcerts" element={<Dbconcerts />} />
         <Route path="/dbsports" element={<Dbsports />} />
         <Route path="/home-admin" element={<HomeAdmin />} />
+        <Route path="/account" element={<Account />} />
         
         
         <Route path="/" element={

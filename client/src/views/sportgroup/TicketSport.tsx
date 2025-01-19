@@ -4,14 +4,14 @@ import { useLocation } from "react-router-dom";
 import image from "/src/assets/concert/thang.png";
 import image1 from "/src/assets/concert/thang1.png";
 
-const TicketConcert: React.FC = () => {
+const TicketSport: React.FC = () => {
   const location = useLocation();
   const { price, label, selectedSeats } = location.state || {}; // ดึงข้อมูลจาก state
 
   const numericPrice = price ? parseFloat(price.replace(/[^\d.-]/g, "")) : 0;
-  const totalSeatPrice = numericPrice * selectedSeats.length;
+  const totalSeatPrice = numericPrice * (selectedSeats?.length || 0);
   const vatAmount = totalSeatPrice * 0.07;
-  const serviceFee = totalSeatPrice * 0.07 * 1.07
+  const serviceFee = totalSeatPrice * 0.07 * 1.07;
   const totalPrice = totalSeatPrice + vatAmount + serviceFee;
 
   return (
@@ -97,4 +97,4 @@ const TicketConcert: React.FC = () => {
   );
 };
 
-export default TicketConcert;
+export default TicketSport;

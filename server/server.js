@@ -59,6 +59,31 @@ app.post('/login', async (req, res) => {
   }
 });
 
+// Login ผ่านเบอร์โทรศัพท์และส่ง JWT กลับ
+app.post('/login-phone', async (req, res) => {
+  const { phone } = req.body;
+
+  if (!phone) {
+    return res.status(400).json({ message: 'Phone number is required' });
+  }
+
+  try {
+    const [rows] = await db.query('SELECT * FROM users WHERE phone = ?', [phone]);
+    if (rows.length > 0) {
+      const user = rows[0];
+      const token = jwt.sign({ id: user.id, phone: user.phone }, secretKey, { expiresIn: '1h' });
+
+      const { password, ...userData } = user;
+      return res.json({ token, user: userData });
+    } else {
+      return res.status(401).json({ message: 'Invalid phone number' });
+    }
+  } catch (error) {
+    console.error('Error during phone login:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 // ดึงข้อมูลผู้ใช้ตาม ID
 app.get('/users/:id', authenticate, async (req, res) => {
   const userId = req.params.id;
@@ -261,58 +286,58 @@ app.get('/getAllSportsBoxing', (req, res) => {
 });
 
 
-app.get('/getAllProduct', (req, res) => {
-  const query = 'SELECT * FROM product'; // ดึงข้อมูลทั้งหมดจาก product
-  db.query(query, (err, results) => {
-    if (err) {
-      return res.status(500).json({ message: 'Database error', error: err.message });
-    }
-    return res.json(results); // ส่งผลลัพธ์เป็น JSON
-  });
+app.get('/getAllProduct', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM product');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 });
 
 
 
 //ProductConcert
-app.get('/getAllflashsale', (req, res) => {
-  const query = 'SELECT * FROM flashsalepro'; // ดึงข้อมูลทั้งหมดจาก product
-  db.query(query, (err, results) => {
-    if (err) {
-      return res.status(500).json({ message: 'Database error', error: err.message });
-    }
-    return res.json(results); // ส่งผลลัพธ์เป็น JSON
-  });
+app.get('/getAllflashsale', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM flashsalepro');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching flash sale products:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 });
 
 
-app.get('/getAllshirtcon', (req, res) => {
-  const query = 'SELECT * FROM shirtconpro'; // ดึงข้อมูลทั้งหมดจาก product
-  db.query(query, (err, results) => {
-    if (err) {
-      return res.status(500).json({ message: 'Database error', error: err.message });
-    }
-    return res.json(results); // ส่งผลลัพธ์เป็น JSON
-  });
+app.get('/getAllshirtcon', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM shirtconpro');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching concert shirts:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 });
 
-app.get('/getAllligthstickcon', (req, res) => {
-  const query = 'SELECT * FROM lightstickcon'; // ดึงข้อมูลทั้งหมดจาก product
-  db.query(query, (err, results) => {
-    if (err) {
-      return res.status(500).json({ message: 'Database error', error: err.message });
-    }
-    return res.json(results); // ส่งผลลัพธ์เป็น JSON
-  });
+app.get('/getAllligthstickcon', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM lightstickcon');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching concert lightsticks:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 });
 
-app.get('/getAllAlbumcon', (req, res) => {
-  const query = 'SELECT * FROM albumcon'; // ดึงข้อมูลทั้งหมดจาก product
-  db.query(query, (err, results) => {
-    if (err) {
-      return res.status(500).json({ message: 'Database error', error: err.message });
-    }
-    return res.json(results); // ส่งผลลัพธ์เป็น JSON
-  });
+app.get('/getAllAlbumcon', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM albumcon');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching concert albums:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 });
 
 
@@ -324,44 +349,44 @@ app.get('/getAllAlbumcon', (req, res) => {
 
 
 // ProductSport
-app.get('/getAllflashsaleSport', (req, res) => {
-  const query = 'SELECT * FROM flashsalesport'; // ดึงข้อมูลทั้งหมดจาก product
-  db.query(query, (err, results) => {
-    if (err) {
-      return res.status(500).json({ message: 'Database error', error: err.message });
-    }
-    return res.json(results); // ส่งผลลัพธ์เป็น JSON
-  });
+app.get('/getAllflashsaleSport', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM flashsalesport');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching sports flash sale products:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 });
 
-app.get('/getAllshirtsport', (req, res) => {
-  const query = 'SELECT * FROM shirtsport'; // ดึงข้อมูลทั้งหมดจาก product
-  db.query(query, (err, results) => {
-    if (err) {
-      return res.status(500).json({ message: 'Database error', error: err.message });
-    }
-    return res.json(results); // ส่งผลลัพธ์เป็น JSON
-  });
+app.get('/getAllshirtsport', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM shirtsport');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching sports shirts:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 });
 
-app.get('/getAllscarfsport', (req, res) => {
-  const query = 'SELECT * FROM scarfsport'; // ดึงข้อมูลทั้งหมดจาก product
-  db.query(query, (err, results) => {
-    if (err) {
-      return res.status(500).json({ message: 'Database error', error: err.message });
-    }
-    return res.json(results); // ส่งผลลัพธ์เป็น JSON
-  });
+app.get('/getAllscarfsport', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM scarfsport');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching sports scarves:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 });
 
-app.get('/getAllshoesport', (req, res) => {
-  const query = 'SELECT * FROM shoesport'; // ดึงข้อมูลทั้งหมดจาก product
-  db.query(query, (err, results) => {
-    if (err) {
-      return res.status(500).json({ message: 'Database error', error: err.message });
-    }
-    return res.json(results); // ส่งผลลัพธ์เป็น JSON
-  });
+app.get('/getAllshoesport', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM shoesport');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching sports shoes:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 });
 
 
@@ -373,46 +398,46 @@ app.get('/getAllshoesport', (req, res) => {
 //Information
 
 
-app.get('/getInformationbook', (req, res) => {
-  const query = 'SELECT * FROM informationbook'; // ดึงข้อมูลทั้งหมดจาก product
-  db.query(query, (err, results) => {
-    if (err) {
-      return res.status(500).json({ message: 'Database error', error: err.message });
-    }
-    return res.json(results); // ส่งผลลัพธ์เป็น JSON
-  });
+app.get('/getInformationbook', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM informationbook');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching information books:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 });
 
 
-app.get('/getInformationdetail', (req, res) => {
-  const query = 'SELECT * FROM informationdetail'; // ดึงข้อมูลทั้งหมดจาก product
-  db.query(query, (err, results) => {
-    if (err) {
-      return res.status(500).json({ message: 'Database error', error: err.message });
-    }
-    return res.json(results); // ส่งผลลัพธ์เป็น JSON
-  });
+app.get('/getInformationdetail', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM informationdetail');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching information details:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 });
 
-app.get('/getAdditionalInformation', (req, res) => {
-  const query = 'SELECT * FROM additionalinformation'; // ดึงข้อมูลทั้งหมดจาก product
-  db.query(query, (err, results) => {
-    if (err) {
-      return res.status(500).json({ message: 'Database error', error: err.message });
-    }
-    return res.json(results); // ส่งผลลัพธ์เป็น JSON
-  });
+app.get('/getAdditionalInformation', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM additionalinformation');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching additional information:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 });
 
 
-app.get('/getEventPoster', (req, res) => {
-  const query = 'SELECT * FROM eventposter'; // ดึงข้อมูลทั้งหมดจาก product
-  db.query(query, (err, results) => {
-    if (err) {
-      return res.status(500).json({ message: 'Database error', error: err.message });
-    }
-    return res.json(results); // ส่งผลลัพธ์เป็น JSON
-  });
+app.get('/getEventPoster', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM eventposter');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching event posters:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 });
 
 

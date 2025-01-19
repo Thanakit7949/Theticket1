@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { TextField, Button, Typography, Box, Paper, Stack } from '@mui/material';
+import { TextField, Button, Typography, Box, Paper, Stack, Tabs, Tab } from '@mui/material';
 import logo from '../assets/logo/pillars.png';
 
 const LoginPage: React.FunctionComponent = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [phone, setPhone] = useState('');
   const [message, setMessage] = useState('');
+  const [tabIndex, setTabIndex] = useState(0);
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -46,6 +48,55 @@ const LoginPage: React.FunctionComponent = () => {
     } catch (error: any) {
       setMessage(error.response?.data?.message || 'Login failed');
     }
+  };
+
+  const handlePhoneLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post('http://localhost:5000/login-phone', {
+        phone,
+      });
+      const data = response.data;
+
+      const userData = {
+        id: data.id,
+        first_name: data.first_name,
+        last_name: data.last_name,
+        email: data.email,
+        role: data.role,
+      };
+      let users = JSON.parse(localStorage.getItem('users') || '[]');
+      users.push(userData);
+      localStorage.setItem('users', JSON.stringify(users));
+
+      localStorage.setItem('token', data.token);
+
+      if (data.role === 'admin') {
+        navigate('/home-admin');
+      } else if (data.role === 'user') {
+        navigate('/home-test');
+      } else {
+        setMessage('Unknown role');
+      }
+      localStorage.setItem('user', JSON.stringify(data.user)); // เก็บข้อมูลผู้ใช้
+      localStorage.setItem('token', data.token); // เก็บ Token
+
+      navigate(data.user.role === 'admin' ? '/home-admin' : '/home-test');
+    } catch (error: any) {
+      setMessage(error.response?.data?.message || 'Login failed');
+    }
+  };
+
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setTabIndex(newValue);
+  };
+
+  const handleGoogleLogin = () => {
+    // Implement Google login logic here
+  };
+
+  const handleFacebookLogin = () => {
+    // Implement Facebook login logic here
   };
 
   return (
@@ -107,70 +158,150 @@ const LoginPage: React.FunctionComponent = () => {
           Please login to access your account
         </Typography>
 
-        <form onSubmit={handleLogin}>
-          <Stack spacing={3}>
-            <TextField
-              label="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              fullWidth
-              variant="outlined"
-              sx={{
-                '& .MuiOutlinedInput-root': {
+        <Tabs value={tabIndex} onChange={handleTabChange} centered>
+          <Tab label="Email" />
+          <Tab label="Phone" />
+        </Tabs>
+
+        {tabIndex === 0 && (
+          <form onSubmit={handleLogin}>
+            <Stack spacing={3}>
+              <TextField
+                label="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                fullWidth
+                variant="outlined"
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '10px',
+                  },
+                }}
+              />
+              <TextField
+                label="Password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                fullWidth
+                variant="outlined"
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '10px',
+                  },
+                }}
+              />
+              <Button
+                type="submit"
+                variant="contained"
+                fullWidth
+                sx={{
+                  padding: '12px',
+                  fontWeight: 'bold',
+                  fontSize: '16px',
+                  backgroundColor: '#50E3C2', // ใช้สีเขียวฟ้า
+                  '&:hover': {
+                    backgroundColor: '#34B6A6', // ใช้สีเขียวฟ้าเข้มขึ้นตอน hover
+                  },
                   borderRadius: '10px',
-                },
-              }}
-            />
-            <TextField
-              label="Password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              fullWidth
-              variant="outlined"
-              sx={{
-                '& .MuiOutlinedInput-root': {
+                }}
+              >
+                Login
+              </Button>
+            </Stack>
+          </form>
+        )}
+
+        {tabIndex === 1 && (
+          <form onSubmit={handlePhoneLogin}>
+            <Stack spacing={3}>
+              <TextField
+                label="Phone"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                fullWidth
+                variant="outlined"
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '10px',
+                  },
+                }}
+              />
+              <Button
+                type="submit"
+                variant="contained"
+                fullWidth
+                sx={{
+                  padding: '12px',
+                  fontWeight: 'bold',
+                  fontSize: '16px',
+                  backgroundColor: '#50E3C2', // ใช้สีเขียวฟ้า
+                  '&:hover': {
+                    backgroundColor: '#34B6A6', // ใช้สีเขียวฟ้าเข้มขึ้นตอน hover
+                  },
                   borderRadius: '10px',
-                },
-              }}
-            />
-            <Button
-              type="submit"
-              variant="contained"
-              fullWidth
-              sx={{
-                padding: '12px',
-                fontWeight: 'bold',
-                fontSize: '16px',
-                backgroundColor: '#50E3C2', // ใช้สีเขียวฟ้า
-                '&:hover': {
-                  backgroundColor: '#34B6A6', // ใช้สีเขียวฟ้าเข้มขึ้นตอน hover
-                },
-                borderRadius: '10px',
-              }}
-            >
-              Login
-            </Button>
-            <Button
-              variant="outlined"
-              fullWidth
-              sx={{
-                padding: '12px',
-                fontWeight: 'bold',
-                fontSize: '16px',
-                color: '#4A90E2',
-                borderColor: '#4A90E2',
-                '&:hover': {
-                  backgroundColor: '#E3F2FD',
-                },
-                borderRadius: '10px',
-              }}
-              onClick={() => navigate('/register')}
-            >
-              Register
-            </Button>
-          </Stack>
-        </form>
+                }}
+              >
+                Login
+              </Button>
+            </Stack>
+          </form>
+        )}
+
+        <Stack spacing={2} mt={3}>
+          <Button
+            variant="contained"
+            fullWidth
+            onClick={handleGoogleLogin}
+            sx={{
+              padding: '12px',
+              fontWeight: 'bold',
+              fontSize: '16px',
+              backgroundColor: '#DB4437', // สีแดงของ Google
+              '&:hover': {
+                backgroundColor: '#C23321', // สีแดงเข้มขึ้นตอน hover
+              },
+              borderRadius: '10px',
+            }}
+          >
+            Login with Google
+          </Button>
+          <Button
+            variant="contained"
+            fullWidth
+            onClick={handleFacebookLogin}
+            sx={{
+              padding: '12px',
+              fontWeight: 'bold',
+              fontSize: '16px',
+              backgroundColor: '#4267B2', // สีฟ้าของ Facebook
+              '&:hover': {
+                backgroundColor: '#365899', // สีฟ้าเข้มขึ้นตอน hover
+              },
+              borderRadius: '10px',
+            }}
+          >
+            Login with Facebook
+          </Button>
+          <Button
+            variant="outlined"
+            fullWidth
+            sx={{
+              padding: '12px',
+              fontWeight: 'bold',
+              fontSize: '16px',
+              color: '#4A90E2',
+              borderColor: '#4A90E2',
+              '&:hover': {
+                backgroundColor: '#E3F2FD',
+              },
+              borderRadius: '10px',
+            }}
+            onClick={() => navigate('/register')}
+          >
+            Register
+          </Button>
+        </Stack>
 
         {/* Message Section */}
         {message && (

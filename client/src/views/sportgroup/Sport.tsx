@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { ISports } from "./HomeTest";
+import { ISports } from "../User/HomeTest";
 
 const Sport: React.FC = () => {
   const navigate = useNavigate();
@@ -29,6 +29,9 @@ const Sport: React.FC = () => {
   const fetchSportsByType = async (type: string) => {
     try {
       const response = await fetch(`http://localhost:5000/getSportsByType/${type}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       const data: ISports[] = await response.json();
       const formattedSports = data.map((item) => ({
         id: item.id,
@@ -48,6 +51,9 @@ const Sport: React.FC = () => {
   const fetchSportsImage = async () => {
     try {
       const response = await fetch("http://localhost:5000/sportsImage");
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       const data: ISports[] = await response.json();
       setSports(data);
       console.log(data);
@@ -59,6 +65,9 @@ const Sport: React.FC = () => {
   const fetchImages = async () => {
     try {
       const response = await fetch("http://localhost:5000/getImages");
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       const data: ISports[] = await response.json();
       setImages(data);
       console.log(data);

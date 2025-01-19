@@ -6,7 +6,7 @@ import Gif from "/src/assets/concert/con5.gif";
 import Gif1 from "/src/assets/concert/gif2.gif";
 import Gif2 from "/src/assets/concert/_on.gif";
 import Gif3 from "/src/assets/concert/gif4.gif";
-import { IConcert } from "./HomeTest";
+import { IConcert } from "../User/HomeTest";
 import axios from "axios";
 
 const Concert: React.FC = () => {
@@ -45,6 +45,9 @@ const Concert: React.FC = () => {
   const fetchImages = async () => {
     try {
       const response = await fetch("http://localhost:5000/concertsImage");
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       const data = await response.json();
       setImages(data);
       console.log(data);
@@ -55,9 +58,10 @@ const Concert: React.FC = () => {
 
   const fetchConcertsByType = async (type: string) => {
     try {
-      const response = await fetch(
-        `http://localhost:5000/getConcertsByType/${type}`
-      );
+      const response = await fetch(`http://localhost:5000/getConcertsByType/${type}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       const data: IConcert[] = await response.json();
       const formattedConcert = data.map((item) => ({
         id: item.id,
@@ -196,7 +200,7 @@ const Concert: React.FC = () => {
           gutterBottom
           sx={{ position: "relative", mt: 4 }} // เพิ่ม margin-top ตามต้องการ
         >
-          ᴇɴᴊᴏʏ ᴛʜɪꜱ ᴀᴍᴀᴢɪɴɢ ᴄᴏɴᴄᴇʀᴛ ᴘᴇʀꜰᴏʀᴍᴀɴᴄᴇ!
+             ᴇɴᴊᴏʏ ᴛʜɪꜱ ᴀᴍᴀᴢɪɴɢ ᴄᴏɴᴄᴇʀᴛ ᴘᴇʀꜰᴏʀᴍᴀɴᴄᴇ!
         </Typography>
         {/* รูปภาพเรียงกันแนวนอน */}
         <Box
@@ -241,7 +245,7 @@ const Concert: React.FC = () => {
           gutterBottom
           sx={{ position: "relative", mt: 4 }} // เพิ่ม margin-top ตามต้องการ
         >
-          ᴍᴏᴍᴇɴᴛ ᴄᴏɴᴄᴇʀᴛ
+            ᴍᴏᴍᴇɴᴛ ᴄᴏɴᴄᴇʀᴛ
         </Typography>
         <Box
           display="flex"

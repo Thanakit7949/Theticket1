@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom"; // สำหรับการใช้งาน Link
+import { Link, useNavigate } from "react-router-dom"; // เพิ่ม useNavigate
 import bas from "/src/assets/home/bas.jpg";
 import molly from "/src/assets/home/molly.jpg";
 import pop from "/src/assets/home/pop.jpg";
@@ -50,7 +50,8 @@ export interface ISports {
 
 const HomeTest: React.FunctionComponent = () => {
   const [dataconcerts, setDataconcerts] = useState<IConcert[]>([]);
-  const [dataSports, setDataSports] = useState<ISports[]>([]); // Mock data for sports events
+  const [dataSports, setDataSports] = useState<ISports[]>([]);
+  const navigate = useNavigate(); // เพิ่ม useNavigate
 
   const fetchConcerts = async () => {
     try {
@@ -107,6 +108,21 @@ const HomeTest: React.FunctionComponent = () => {
     fetchSports();
   }, []);
 
+  const handleBuyTicket = (item: {
+    id: number;
+    name: string;
+    img: string;
+    date: string;
+    time: string;
+    location: string;
+    price: number;
+    availableSeats: number;
+  }) => {
+    // setDataconcert(item)
+    console.log("Item data:", item); // ตรวจสอบค่าที่ส่งมา
+    navigate("concert-detail", { state: item });
+  };
+  
   return (
     <>
       <Box>
@@ -249,7 +265,21 @@ const HomeTest: React.FunctionComponent = () => {
                   minWidth: 350,
                   height: 450,
                 }}
-                onClick={() => openModal(concert)}
+                onClick={() =>
+                  handleBuyTicket(
+                    {
+                      id: concert.id,
+                      name: concert.name,
+                      img: `http://localhost/concert/all/${concert.image}`,
+                      date: concert.date,
+                      time: concert.time,
+                      location: concert.location,
+                      price: concert.price,
+                      availableSeats: concert.available_seats,
+                    },
+                    'concert'
+                  )
+                }
               >
                 <CardMedia
                   component="img"
@@ -284,8 +314,6 @@ const HomeTest: React.FunctionComponent = () => {
                 </Box>
 
                 <Button
-                  component={Link}
-                  to={`/booking/${concert.id}`}
                   variant="contained"
                   color="secondary"
                   sx={{
@@ -404,7 +432,21 @@ const HomeTest: React.FunctionComponent = () => {
                   minWidth: 350,
                   height: 430,
                 }}
-                onClick={() => openModal(sport)}
+                onClick={() =>
+                  handleBuyTicket(
+                    {
+                      id: sport.id,
+                      name: sport.name,
+                      img: `http://localhost/sport/all/${sport.image}`,
+                      date: sport.date,
+                      time: sport.time,
+                      location: sport.location,
+                      price: sport.price,
+                      availableSeats: sport.available_seats,
+                    },
+                    'sport'
+                  )
+                }
               >
                 <CardMedia
                   component="img"
@@ -434,8 +476,6 @@ const HomeTest: React.FunctionComponent = () => {
                 </Box>
 
                 <Button
-                  component={Link}
-                  to={`/booking/${sport.id}`}
                   variant="contained"
                   color="primary"
                   sx={{

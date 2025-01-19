@@ -21,6 +21,9 @@ const StageConcert: React.FC = () => {
     const fetchTicket = async () => {
       try {
         const response = await fetch("http://localhost:5000/getConcertstage");
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const data = await response.json();
         setTickets(data);
         console.log(data);

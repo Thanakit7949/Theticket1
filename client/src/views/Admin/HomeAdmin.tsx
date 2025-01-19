@@ -4,10 +4,10 @@ import { Home, People, Dashboard, ShoppingCart, Event, SportsSoccer, Settings, E
 import { useNavigate } from 'react-router-dom';
 import Dbconcerts from './Dbconcerts';
 import Dbsports from './Dbsports';
-import Profile from '../User/Profile';
 import Users from './Users';
 import Interface from './Interface';
 import Orders from './Orders';
+import Profiles from './Profiles';
 
 const drawerWidth = 240;
 
@@ -31,7 +31,7 @@ const HomeAdmin: React.FC = () => {
   const handleMenuClick = (option: string) => {
     handleMenuClose();
     if (option === 'Profile') {
-      setActiveContent('profile');
+      setActiveContent('profiles');
     } else if (option === 'Theticket') {
       navigate('/home-test');
     } else if (option === 'Settings') {
@@ -148,7 +148,7 @@ const HomeAdmin: React.FC = () => {
 
           <Box display="flex" flexDirection="column" gap={2} p={2}>
             {activeContent === 'interface' && <Interface />}
-            {activeContent === 'profile' && <Profile />}
+            {activeContent === 'profile' && <Profiles />}
             {activeContent === 'users' && <Users />}
             {activeContent === 'orders' && <Orders />}
             {activeContent === 'concerts' && <Dbconcerts />}

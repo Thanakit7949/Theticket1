@@ -6,7 +6,7 @@ import CloseIcon from "@mui/icons-material/Close";
 
 const SeatConcert: React.FC = () => {
   const location = useLocation();
-  const { price, label } = location.state || {}; // รับข้อมูลทั้งราคาและชื่อโซน (label)
+  const { price, label, concertId } = location.state || {}; // รับข้อมูลทั้งราคาและชื่อโซน (label)
   const [selectedSeats, setSelectedSeats] = useState<
     { row: number; col: number }[]
   >([]); // เปลี่ยนให้เป็น array เพื่อเก็บหลายที่นั่ง
@@ -14,7 +14,7 @@ const SeatConcert: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState(5 * 60); // ตัวแปรเวลาที่เหลือในการทำรายการ 5 นาที (5 * 60 วินาที)
 
   // แปลง price จาก string เช่น "฿2,500" ให้เป็นตัวเลข
-  const numericPrice = parseFloat(price.replace(/[^\d.-]/g, "")); //จะลบอักขระที่ไม่ใช่ตัวเลขหรือเครื่องหมายจุดทศนิยมออก (เช่น "฿", ",", เป็นต้น)
+  const numericPrice = price ? parseFloat(price.replace(/[^\d.-]/g, "")) : 0; //จะลบอักขระที่ไม่ใช่ตัวเลขหรือเครื่องหมายจุดทศนิยมออก (เช่น "฿", ",", เป็นต้น)
 
   // สถานะที่นั่ง
   const [seats, setSeats] = useState(
@@ -40,8 +40,46 @@ const SeatConcert: React.FC = () => {
     )}`;
   };
 
-  // ฟังก์ชันสำหรับเปลี่ยนสถานะของที่นั่งเมื่อมีการคลิก
+  useEffect(() => {
+    const fetchSeats = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/getConcertSeats/${concertId}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setSeats(data);
+      } catch (error) {
+        console.error("Error fetching seats:", error);
+      }
+    };
+  
+    fetchSeats();
+  }, [concertId]);
+  
+  const updateSeatStatus = async (seatId: number, status: string) => {
+    try {
+      const response = await fetch(`http://localhost:5000/updateConcertSeat/${seatId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status }),
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.error("Error updating seat status:", error);
+    }
+  };
+  
   const toggleSeatStatus = (rowIndex: number, colIndex: number) => {
+    const seat = seats[rowIndex][colIndex];
+    const newStatus = seat.status === "available" ? "selected" : "available";
+    updateSeatStatus(seat.id, newStatus);
     const seatPosition = { row: rowIndex + 1, col: colIndex + 1 };
   
     setSeats((prevSeats) =>

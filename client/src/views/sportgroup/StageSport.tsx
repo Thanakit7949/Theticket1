@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom"; // นำเข้า useNavigat
 const StageSport: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState(5 * 60);
   const [selectedPrice,] = useState<string | null>(null);
+  const [tickets, setTickets] = useState([]);
   const navigate = useNavigate(); // ประกาศใช้ navigate
 
   // อัปเดตตัวจับเวลาให้ทำงานทุก ๆ 1 วินาที
@@ -17,6 +18,24 @@ const StageSport: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    const fetchTicket = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/getSportstage"); // ตรวจสอบ URL ให้ถูกต้อง
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setTickets(data);
+        console.log(data);
+      } catch (error) {
+        console.error("Error fetching events:", error);
+      }
+    };
+
+    fetchTicket();
+  }, []);
+
   // ฟังก์ชันสำหรับฟอร์แมตเวลาเป็นรูปแบบ MM:SS
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
@@ -27,18 +46,6 @@ const StageSport: React.FC = () => {
     )}`;
   };
 
-  const tickets = [
-    { label: "AA1", color: "#7986cb", price: "฿2,500", amount: "2500" },
-    { label: "AA2", color: "#7986cb", price: "฿2,500", amount: "2500" },
-    { label: "AA3", color: "#7986cb", price: "฿2,500", amount: "2500" },
-    { label: "AA4", color: "#7986cb", price: "฿2,500", amount: "2500" },
-    { label: "AA5", color: "#7986cb", price: "฿2,500", amount: "2500" },
-    { label: "AA6", color: "#7986cb", price: "฿2,500", amount: "2500" },
-    { label: "AA7", color: "#7986cb", price: "฿2,500", amount: "2500" },
-    { label: "AA8", color: "#7986cb", price: "฿2,500", amount: "2500" },
-    { label: "AA9", color: "#7986cb", price: "฿2,500", amount: "2500" },
-    { label: "AA10", color: "#7986cb", price: "฿2,500", amount: "2500" },
-  ];
   // กรองบัตรตามราคาที่เลือก
   const filteredTickets = selectedPrice
     ? tickets.filter((ticket) => ticket.amount === selectedPrice)
