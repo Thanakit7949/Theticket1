@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
 import { Box, Button, Tooltip, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom"; // นำเข้า useNavigate
@@ -40,16 +41,13 @@ const StageSport: React.FC = () => {
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
     const seconds = time % 60;
-    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
-      2,
-      "0"
-    )}`;
+    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
   };
 
   // กรองบัตรตามราคาที่เลือก
-  const filteredTickets = selectedPrice
-    ? tickets.filter((ticket) => ticket.amount === selectedPrice)
-    : tickets;
+const filteredTickets = selectedPrice
+  ? tickets.filter((ticket) => String(ticket.amount) === selectedPrice) // ใช้ String เพื่อความแม่นยำ
+  : tickets;
 
   const handleBuyTicket = (price: string, label: string) => {
     navigate("/sport/seat-sport", { state: { price, label } });
@@ -120,7 +118,7 @@ const StageSport: React.FC = () => {
                   padding: "8px 16px",
                   borderRadius: "30px",
                   fontWeight: "bold",
-                  "&:hover": { backgroundColor: "#5e35b1", color: "white" },
+                  "&:hover": { backgroundColor: "#b39ddb", color: "white" },
                 }}
                 onClick={() => handleBuyTicket(ticket.price, ticket.label)} // ส่งทั้งราคาและชื่อโซน
               >
@@ -153,6 +151,7 @@ const StageSport: React.FC = () => {
             {formatTime(timeLeft)}
           </span>
         </Typography>
+
         {/* Stage Label */}
         <Box
           sx={{
@@ -160,7 +159,7 @@ const StageSport: React.FC = () => {
             top: "54.5%", // วางตรงกลางในแนวตั้ง
             left: "50%", // วางตรงกลางในแนวนอน
             transform: "translate(-50%, -50%)", // เพื่อปรับให้จุดศูนย์กลางตรง
-            backgroundColor: "#80cbc4",
+            backgroundColor: "#26a69a",
             width: "250px", // ขนาดวงกลม
             height: "250px", // ขนาดวงกลม
             borderRadius: "50%", // ทำให้เป็นวงกลม
@@ -212,7 +211,7 @@ const StageSport: React.FC = () => {
             });
           }}
           sx={{
-            backgroundColor: "#7986cb",
+            backgroundColor: "#5e35b1",
             color: "white",
             padding: "25px 35px",
             borderRadius: "10px",

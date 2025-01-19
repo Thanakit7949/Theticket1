@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Box,
@@ -105,7 +106,52 @@ const HomeTest: React.FunctionComponent = () => {
   };
 
   useEffect(() => {
+    fetchConcerts();
     fetchSports();
+  }, []);
+  useEffect(() => {
+    const fetchEventposter = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/getEventPoster");
+        const data = await response.json();
+        seteventposter(data);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    fetchEventposter();
+  }, []);
+
+  useEffect(() => {
+    const fetchLightstick = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/getAllligthstickcon");
+        const data = await response.json();
+  
+        // ตัดข้อมูลให้เหลือ 6 รายการ
+        const slicedData = data.slice(0, 6);
+        setlightstickcon(slicedData);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+  
+    fetchLightstick();
+  }, []);
+
+  useEffect(() => {
+    const fetchPromotionImages = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/getpromotionImage");
+        const data = await response.json();
+        setPromotion(data); // กำหนด state สำหรับข้อมูลรูปภาพ
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    fetchPromotionImages();
   }, []);
 
   const handleBuyTicket = (item: {
@@ -263,7 +309,7 @@ const HomeTest: React.FunctionComponent = () => {
                   "&:hover": { transform: "scale(1.05)", boxShadow: 6 },
                   cursor: "pointer",
                   minWidth: 350,
-                  height: 450,
+                  height: 420,
                 }}
                 onClick={() =>
                   handleBuyTicket(
@@ -332,26 +378,28 @@ const HomeTest: React.FunctionComponent = () => {
           <Box textAlign="center" mt={3}>
             <Button
               component={Link}
-              to="" // เปลี่ยนเป็น URL ของหน้าที่จะแสดงคอนเสิร์ตทั้งหมด
-              variant="outlined"
-              color="secondary"
+              to="/concert"
+              variant="contained" // ใช้แบบ contained
               sx={{
-                bgcolor: "#FFFFE0", // เปลี่ยนเป็นสีสดใสขึ้น
-                color: "#CD853F", // เปลี่ยนสีตัวอักษรเป็นสีขาวเพื่อให้ตัดกับพื้นหลัง
-                fontSize: "1.2rem", // ขยายขนาดตัวอักษร
-                fontWeight: "bold",
+                bgcolor: "#FFFFE0",
+                color: "#CD853F",
+                borderRadius: "30px", // มุมของปุ่มโค้งมน
+                padding: "12px 28px", // เพิ่ม padding ให้ปุ่มใหญ่ขึ้น
+                fontSize: "1.2rem", // ขนาดฟอนต์
+                fontWeight: "bold", // ตัวหนา
                 border: "2px solid #F4A460",
-                px: 6, // เพิ่ม padding แนวนอน
-                py: 2, // เพิ่ม padding แนวตั้ง
-                borderRadius: 3, // เพิ่มความโค้งมนให้ปุ่มมากขึ้น
-                boxShadow: "0 6px 15px rgba(0, 0, 0, 0.2)", // เพิ่มเงาให้ชัดเจนขึ้น
-                transition: "all 0.4s ease", // เพิ่มเวลาและการเปลี่ยนแปลงนุ่มนวลยิ่งขึ้น
-                transform: "scale(1.1)", // ขยายปุ่มให้ดูเด่นขึ้น
+                textTransform: "uppercase", // ตัวพิมพ์ใหญ่ทั้งหมด
+                letterSpacing: "1px", // ช่องว่างระหว่างตัวอักษร
+                boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.15)", // เงาที่นุ่มนวล
+                transition: "background-color 0.3s, transform 0.2s", // เพิ่ม transition
                 "&:hover": {
                   bgcolor: "linear-gradient(45deg, #FF8C00, #FFA500)", // เปลี่ยนสีเมื่อ hover
                   boxShadow: "0 10px 30px rgba(0, 0, 0, 0.4)", // เพิ่มเงาตอน hover
                   transform: "scale(1.15)", // ขยายปุ่มเล็กน้อยตอน hover
                   border: "2px solid #12cad6",
+                },
+                "&:active": {
+                  bgcolor: "#f48fb1", // สีเมื่อกดปุ่ม
                 },
               }}
             >
@@ -430,7 +478,7 @@ const HomeTest: React.FunctionComponent = () => {
                   "&:hover": { transform: "scale(1.05)", boxShadow: 6 },
                   cursor: "pointer",
                   minWidth: 350,
-                  height: 430,
+                  height: 410,
                 }}
                 onClick={() =>
                   handleBuyTicket(
@@ -463,7 +511,12 @@ const HomeTest: React.FunctionComponent = () => {
                 >
                   {sport.name}
                 </Typography>
-                <Typography variant="body1" color="text.secondary" gutterBottom>
+                <Typography
+                  variant="h6"
+                  fontWeight="bold"
+                  color="pink.500"
+                  gutterBottom
+                >
                   {dayjs(sport.date).format("DD/MM/YY")}
                 </Typography>
                 <Box display="flex" justifyContent="space-between" mb={2}>
@@ -492,7 +545,7 @@ const HomeTest: React.FunctionComponent = () => {
           <Box textAlign="center" mt={3}>
             <Button
               component={Link}
-              to="" // Change to the URL of the page showing all sports events
+              to="/sport" // Change to the URL of the page showing all sports events
               variant="contained" // ใช้แบบ contained
               sx={{
                 bgcolor: "#f8bbd0", // สีพื้นหลังพาสเทล (ชมพูอ่อน)
@@ -519,7 +572,6 @@ const HomeTest: React.FunctionComponent = () => {
               View All Sports Events
             </Button>
           </Box>
-          
         </Box>
         <Box
           p={4}
@@ -581,7 +633,7 @@ const HomeTest: React.FunctionComponent = () => {
           <Box
             sx={{
               width: "100%",
-              maxWidth: "1000px",
+              maxWidth: "1500px",
               height: "auto",
               margin: "0 auto",
               border: "10px solid #e3e3e3",
@@ -592,130 +644,38 @@ const HomeTest: React.FunctionComponent = () => {
               p: 4,
             }}
           >
-            {/* Header (Optional for enhancing appearance) */}
-            <Typography
-              variant="h3"
-              align="center"
-              color="primary"
-              sx={{
-                fontWeight: "bold",
-                textTransform: "uppercase",
-                letterSpacing: "2px",
-                mb: 4,
-                background: "linear-gradient(to right, #3f51b5, #1e88e5)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            ></Typography>
-
-            {/* Row for Page 1 and Page 2 */}
-            <Box
-              sx={{ display: "flex", justifyContent: "space-between", mb: 4 }}
-            >
-              {/* Left Page - Page 1 */}
-              <Paper
-                sx={{
-                  p: 4,
-                  width: "48%",
-                  borderRadius: "15px",
-                  transition: "transform 0.3s ease, box-shadow 0.3s ease",
-                  "&:hover": {
-                    transform: "translateY(-10px)",
-                    boxShadow: "0px 15px 40px rgba(0, 0, 0, 0.3)",
-                  },
-                  background:
-                    "linear-gradient(to bottom right, #f3f3f3, #e0e0e0)",
-                }}
-              >
-                <Typography variant="h4" color="primary" gutterBottom>
-                  Page 1: Introduction
-                </Typography>
-                <Typography variant="body1" paragraph>
-                  Welcome to the Virtual Book for Sports Events! Explore all the
-                  exciting sports events happening around the world on the
-                  following pages.
-                </Typography>
-              </Paper>
-
-              {/* Right Page - Page 2 */}
-              <Paper
-                sx={{
-                  p: 4,
-                  width: "48%",
-                  borderRadius: "15px",
-                  transition: "transform 0.3s ease, box-shadow 0.3s ease",
-                  "&:hover": {
-                    transform: "translateY(-10px)",
-                    boxShadow: "0px 15px 40px rgba(0, 0, 0, 0.3)",
-                  },
-                  background:
-                    "linear-gradient(to bottom right, #f3f3f3, #e0e0e0)",
-                  ml: "40px",
-                }}
-              >
-                <Typography variant="h4" color="primary" gutterBottom>
-                  Page 2: Sports Event 1
-                </Typography>
-                <Typography variant="body1" paragraph>
-                  Details about the first sports event. Discover more about it
-                  and dive into the experience.
-                </Typography>
-              </Paper>
-            </Box>
-
-            {/* Row for Page 3 and Page 4 */}
-            <Box
-              sx={{ display: "flex", justifyContent: "space-between", mb: 8 }}
-            >
-              {/* Left Page - Page 3 */}
-              <Paper
-                sx={{
-                  p: 4,
-                  width: "48%",
-                  borderRadius: "15px",
-                  transition: "transform 0.3s ease, box-shadow 0.3s ease",
-                  "&:hover": {
-                    transform: "translateY(-10px)",
-                    boxShadow: "0px 15px 40px rgba(0, 0, 0, 0.3)",
-                  },
-                  background:
-                    "linear-gradient(to bottom right, #f3f3f3, #e0e0e0)",
-                }}
-              >
-                <Typography variant="h4" color="primary" gutterBottom>
-                  Page 3: Sports Event 2
-                </Typography>
-                <Typography variant="body1" paragraph>
-                  Learn about the second exciting sports event that will take
-                  place. Find out more about the event.
-                </Typography>
-              </Paper>
-
-              {/* Right Page - Page 4 */}
-              <Paper
-                sx={{
-                  p: 4,
-                  width: "48%",
-                  borderRadius: "15px",
-                  transition: "transform 0.3s ease, box-shadow 0.3s ease",
-                  "&:hover": {
-                    transform: "translateY(-10px)",
-                    boxShadow: "0px 15px 40px rgba(0, 0, 0, 0.3)",
-                  },
-                  background:
-                    "linear-gradient(to bottom right, #f3f3f3, #e0e0e0)",
-                  ml: "40px",
-                }}
-              >
-                <Typography variant="h4" color="primary" gutterBottom>
-                  Page 4: Sports Event 3
-                </Typography>
-                <Typography variant="body1" paragraph>
-                  Get ready for the third major sports event. This is one you
-                  don’t want to miss!
-                </Typography>
-              </Paper>
-            </Box>
+            {/* Event Poster */}
+            <Grid container spacing={4} justifyContent="space-between">
+              {EventPoster.map((EventPoster, index) => (
+                <Grid item xs={12} sm={6} key={index}>
+                  <Paper
+                    sx={{
+                      p: 4,
+                      borderRadius: "15px",
+                      transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                      "&:hover": {
+                        transform: "translateY(-10px)",
+                        boxShadow: "0px 15px 40px rgba(131, 0, 0, 0.3)",
+                      },
+                      background:
+                        "linear-gradient(to bottom right, #f3f3f3, #e0e0e0)",
+                    }}
+                  >
+                    <Typography variant="h4" color="primary" gutterBottom>
+                      {EventPoster.title}
+                    </Typography>
+                    <img
+                      src={`http://localhost/information/${EventPoster.image}`}
+                      className="poster-subtitle-img"
+                      style={{ maxWidth: "100%", height: "200px" }}
+                    />
+                    <Typography variant="body1" paragraph>
+                      {EventPoster.text}
+                    </Typography>
+                  </Paper>
+                </Grid>
+              ))}
+            </Grid>
 
             {/* Pagination or next page button */}
             <Box sx={{ display: "flex", justifyContent: "center", mt: 6 }}>
@@ -743,13 +703,14 @@ const HomeTest: React.FunctionComponent = () => {
                   },
                 }}
                 component={Link}
-                to=""
+                to="/information"
               >
                 Go to Next Page
               </Button>
             </Box>
           </Box>
         </Box>
+
         <Box
           p={4}
           sx={{
@@ -786,389 +747,69 @@ const HomeTest: React.FunctionComponent = () => {
               👜 Our Exclusive Products🧸
             </Typography>
             <Grid container spacing={4}>
-              {/* Product Card 1 */}
-              <Grid item xs={12} sm={6} lg={4}>
-                <Box
-                  sx={{
-                    bgcolor: "#EBECE7",
-                    p: 3,
-                    borderRadius: 2,
-                    boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.2)",
-                    transition: "transform 0.3s, box-shadow 0.3s",
-                    "&:hover": {
-                      transform: "scale(1.05)",
-                      boxShadow: "0px 12px 24px rgba(0, 0, 0, 0.3)",
-                    },
-                  }}
-                >
+              {lightstickcon.map((product, index) => (
+                <Grid item xs={12} sm={4} md={4} lg={4} key={index}>
                   <Box
                     sx={{
-                      height: 192,
-                      bgcolor: "#e0f7fa",
+                      bgcolor: "#EBECE7",
+                      p: 3,
                       borderRadius: 2,
-                      mb: 2,
-                      overflow: "hidden",
+                      boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.2)",
+                      transition: "transform 0.3s, box-shadow 0.3s",
+                      "&:hover": {
+                        transform: "scale(1.05)",
+                        boxShadow: "0px 12px 24px rgba(0, 0, 0, 0.3)",
+                      },
                     }}
                   >
-                    <img
-                      src={pur}
-                      alt="Product 1"
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
+                    <Box
+                      sx={{
+                        height: 192,
+                        bgcolor: " #e0f7fa",
+                        borderRadius: 2,
+                        mb: 2,
+                        overflow: "hidden",
                       }}
-                    />
-                  </Box>
-                  <Typography
-                    variant="h6"
-                    gutterBottom
-                    sx={{ fontWeight: "bold", color: "#4A4A4A" }}
-                  >
-                    Product 1
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    color="textSecondary"
-                    gutterBottom
-                  >
-                    This is a premium product offering high quality and
-                    excellent performance.
-                  </Typography>
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    sx={{
-                      bgcolor: "#ffccbc",
-                      color: "#fff",
-                      "&:hover": { bgcolor: "#ffab91" },
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Buy Now
-                  </Button>
-                </Box>
-              </Grid>
-
-              {/* Product Card 2 */}
-              <Grid item xs={12} sm={6} lg={4}>
-                <Box
-                  sx={{
-                    bgcolor: "#EBECE7",
-                    p: 3,
-                    borderRadius: 2,
-                    boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.2)",
-                    transition: "transform 0.3s, box-shadow 0.3s",
-                    "&:hover": {
-                      transform: "scale(1.05)",
-                      boxShadow: "0px 12px 24px rgba(0, 0, 0, 0.3)",
-                    },
-                  }}
-                >
-                  <Box
-                    sx={{
-                      height: 192,
-                      bgcolor: "#e0f7fa",
-                      borderRadius: 2,
-                      mb: 2,
-                      overflow: "hidden",
-                    }}
-                  >
-                    <img
-                      src={toy}
-                      alt="Product 2"
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
+                    >
+                      <img
+                        src={`http://localhost/product/${product.folder}/${product.image}`}
+                        alt={product.name}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                        }}
+                      />
+                    </Box>
+                    <Typography
+                      variant="h6"
+                      gutterBottom
+                      sx={{ fontWeight: "bold", color: "#4A4A4A" }}
+                    >
+                      {product.name}
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      color="textSecondary"
+                      gutterBottom
+                    >
+                      ราคา {product.price} ฿
+                    </Typography>
+                    <Button
+                      fullWidth
+                      variant="contained"
+                      sx={{
+                        bgcolor: "#ffccbc",
+                        color: "#fff",
+                        "&:hover": { bgcolor: "#ffab91" },
+                        fontWeight: "bold",
                       }}
-                    />
+                    >
+                      Buy Now
+                    </Button>
                   </Box>
-                  <Typography
-                    variant="h6"
-                    gutterBottom
-                    sx={{ fontWeight: "bold", color: "#4A4A4A" }}
-                  >
-                    Product 2
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    color="textSecondary"
-                    gutterBottom
-                  >
-                    Experience the best with our top-rated product that
-                    guarantees satisfaction.
-                  </Typography>
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    sx={{
-                      bgcolor: "#ffccbc",
-                      color: "#fff",
-                      "&:hover": { bgcolor: "#ffab91" },
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Buy Now
-                  </Button>
-                </Box>
-              </Grid>
-
-              {/* Product Card 3 */}
-              <Grid item xs={12} sm={6} lg={4}>
-                <Box
-                  sx={{
-                    bgcolor: "#EBECE7",
-                    p: 3,
-                    borderRadius: 2,
-                    boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.2)",
-                    transition: "transform 0.3s, box-shadow 0.3s",
-                    "&:hover": {
-                      transform: "scale(1.05)",
-                      boxShadow: "0px 12px 24px rgba(0, 0, 0, 0.3)",
-                    },
-                  }}
-                >
-                  <Box
-                    sx={{
-                      height: 192,
-                      bgcolor: "#e0f7fa",
-                      borderRadius: 2,
-                      mb: 2,
-                      overflow: "hidden",
-                    }}
-                  >
-                    <img
-                      src={molly}
-                      alt="Product 3"
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                      }}
-                    />
-                  </Box>
-                  <Typography
-                    variant="h6"
-                    gutterBottom
-                    sx={{ fontWeight: "bold", color: "#4A4A4A" }}
-                  >
-                    Product 3
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    color="textSecondary"
-                    gutterBottom
-                  >
-                    Crafted to perfection, this product provides durability and
-                    superior quality.
-                  </Typography>
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    sx={{
-                      bgcolor: "#ffccbc",
-                      color: "#fff",
-                      "&:hover": { bgcolor: "#ffab91" },
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Buy Now
-                  </Button>
-                </Box>
-              </Grid>
-
-              {/* Product Card 4 */}
-              <Grid item xs={12} sm={6} lg={4}>
-                <Box
-                  sx={{
-                    bgcolor: "#EBECE7",
-                    p: 3,
-                    borderRadius: 2,
-                    boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.2)",
-                    transition: "transform 0.3s, box-shadow 0.3s",
-                    "&:hover": {
-                      transform: "scale(1.05)",
-                      boxShadow: "0px 12px 24px rgba(0, 0, 0, 0.3)",
-                    },
-                  }}
-                >
-                  <Box
-                    sx={{
-                      height: 192,
-                      bgcolor: "#e0f7fa",
-                      borderRadius: 2,
-                      mb: 2,
-                      overflow: "hidden",
-                    }}
-                  >
-                    <img
-                      src={labubu}
-                      alt="Product 4"
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                      }}
-                    />
-                  </Box>
-                  <Typography
-                    variant="h6"
-                    gutterBottom
-                    sx={{ fontWeight: "bold", color: "#4A4A4A" }}
-                  >
-                    Product 4
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    color="textSecondary"
-                    gutterBottom
-                  >
-                    This is a premium product offering high quality and
-                    excellent performance.
-                  </Typography>
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    sx={{
-                      bgcolor: "#ffccbc",
-                      color: "#fff",
-                      "&:hover": { bgcolor: "#ffab91" },
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Buy Now
-                  </Button>
-                </Box>
-              </Grid>
-
-              {/* Product Card 5 */}
-              <Grid item xs={12} sm={6} lg={4}>
-                <Box
-                  sx={{
-                    bgcolor: "#EBECE7",
-                    p: 3,
-                    borderRadius: 2,
-                    boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.2)",
-                    transition: "transform 0.3s, box-shadow 0.3s",
-                    "&:hover": {
-                      transform: "scale(1.05)",
-                      boxShadow: "0px 12px 24px rgba(0, 0, 0, 0.3)",
-                    },
-                  }}
-                >
-                  <Box
-                    sx={{
-                      height: 192,
-                      bgcolor: "#e0f7fa",
-                      borderRadius: 2,
-                      mb: 2,
-                      overflow: "hidden",
-                    }}
-                  >
-                    <img
-                      src={bbrick}
-                      alt="Product 5"
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                      }}
-                    />
-                  </Box>
-                  <Typography
-                    variant="h6"
-                    gutterBottom
-                    sx={{ fontWeight: "bold", color: "#4A4A4A" }}
-                  >
-                    Product 5
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    color="textSecondary"
-                    gutterBottom
-                  >
-                    Experience the best with our top-rated product that
-                    guarantees satisfaction.
-                  </Typography>
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    sx={{
-                      bgcolor: "#ffccbc",
-                      color: "#fff",
-                      "&:hover": { bgcolor: "#ffab91" },
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Buy Now
-                  </Button>
-                </Box>
-              </Grid>
-
-              {/* Product Card 6 */}
-              <Grid item xs={12} sm={6} lg={4}>
-                <Box
-                  sx={{
-                    bgcolor: "#EBECE7",
-                    p: 3,
-                    borderRadius: 2,
-                    boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.2)",
-                    transition: "transform 0.3s, box-shadow 0.3s",
-                    "&:hover": {
-                      transform: "scale(1.05)",
-                      boxShadow: "0px 12px 24px rgba(0, 0, 0, 0.3)",
-                    },
-                  }}
-                >
-                  <Box
-                    sx={{
-                      height: 192,
-                      bgcolor: "#e0f7fa",
-                      borderRadius: 2,
-                      mb: 2,
-                      overflow: "hidden",
-                    }}
-                  >
-                    <img
-                      src={pop}
-                      alt="Product 6"
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                      }}
-                    />
-                  </Box>
-                  <Typography
-                    variant="h6"
-                    gutterBottom
-                    sx={{ fontWeight: "bold", color: "#4A4A4A" }}
-                  >
-                    Product 6
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    color="textSecondary"
-                    gutterBottom
-                  >
-                    Crafted to perfection, this product provides durability and
-                    superior quality.
-                  </Typography>
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    sx={{
-                      bgcolor: "#ffccbc",
-                      color: "#fff",
-                      "&:hover": { bgcolor: "#ffab91" },
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Buy Now
-                  </Button>
-                </Box>
-              </Grid>
+                </Grid>
+              ))}
             </Grid>
 
             <Box sx={{ display: "flex", justifyContent: "center", mt: 6 }}>
@@ -1196,7 +837,7 @@ const HomeTest: React.FunctionComponent = () => {
                   },
                 }}
                 component={Link}
-                to=""
+                to="/product"
               >
                 Go to Next Page
               </Button>
@@ -1345,73 +986,17 @@ const HomeTest: React.FunctionComponent = () => {
               flexWrap: "wrap",
             }}
           >
-            <Box
-              sx={{
-                backgroundColor: "#FFEBF0", // สีพาสเทลชมพู
-                padding: "20px",
-                borderRadius: "15px",
-                width: "900px",
-                boxShadow: "0 5px 10px rgba(0, 0, 0, 0.1)",
-                transition: "transform 0.3s ease",
-                "&:hover": {
-                  transform: "scale(1.05)", // ขยายเล็กน้อยเมื่อ hover
-                },
-              }}
-            >
-              <Typography
-                variant="h5"
-                fontWeight="bold"
-                textAlign="center"
-                sx={{
-                  color: "#FF69B4", // สีหัวข้อ
-                  mb: 2, // ระยะห่างด้านล่างของหัวข้อ
-                }}
-              >
-                Special Offer
-              </Typography>
-
+            {datapromotion.map((promotionImage, index) => (
               <Box
+                key={index}
                 sx={{
-                  backgroundImage: `url(${bas})`, // URL รูปภาพ
-                  backgroundSize: "cover", // ปรับขนาดภาพให้เต็มกล่อง
-                  borderRadius: "10px",
-                  height: "180px", // ความสูงของกล่องรูปภาพ
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  mb: 2, // ระยะห่างด้านล่างของกล่องรูปภาพ
-                }}
-              ></Box>
-
-              <Button
-                variant="contained"
-                sx={{
-                  backgroundColor: "#FF69B4", // สีปุ่ม
-                  color: "#FFFFFF", // สีตัวอักษรของปุ่ม
-                  "&:hover": {
-                    backgroundColor: "#FF1493", // สีปุ่มเมื่อ hover
-                  },
-                }}
-              >
-                Shop Now
-              </Button>
-            </Box>
-            <Box
-              mt={4}
-              sx={{
-                display: "flex",
-                justifyContent: "space-around",
-                flexWrap: "wrap",
-              }}
-            >
-              <Box
-                sx={{
-                  backgroundColor: "#DFF6FF", // สีพาสเทลฟ้า
+                  backgroundColor: "#FFEBF0", // สีพาสเทลชมพู
                   padding: "20px",
                   borderRadius: "15px",
-                  width: "900px",
+                  width: "1000px",
                   boxShadow: "0 5px 10px rgba(0, 0, 0, 0.1)",
                   transition: "transform 0.3s ease",
+                  marginBottom: "20px",
                   "&:hover": {
                     transform: "scale(1.05)", // ขยายเล็กน้อยเมื่อ hover
                   },
@@ -1422,105 +1007,28 @@ const HomeTest: React.FunctionComponent = () => {
                   fontWeight="bold"
                   textAlign="center"
                   sx={{
-                    color: "#00BFFF", // สีหัวข้อ
+                    color: "#FF69B4", // สีหัวข้อ
                     mb: 2, // ระยะห่างด้านล่างของหัวข้อ
                   }}
                 >
-                  50% Off!
+                  {promotionImage.name}
                 </Typography>
 
-                <Box
-                  sx={{
-                    backgroundImage: `url(${bas})`, // URL รูปภาพ (สามารถเปลี่ยนเป็นรูปที่ต้องการได้)
-                    backgroundSize: "cover", // ปรับขนาดภาพให้เต็มกล่อง
-                    borderRadius: "10px",
-                    height: "180px", // ความสูงของกล่องรูปภาพ
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    mb: 2, // ระยะห่างด้านล่างของกล่องรูปภาพ
-                  }}
-                >
-                  {/* สามารถใส่เนื้อหาหรือข้อความเพิ่มเติมที่นี่ */}
+                <Box>
+                  <img
+                    src={`http://localhost/promotion/${promotionImage.image}`} // ใช้ URL จากฐานข้อมูล
+                    alt={`Product ${index + 1}`}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      borderRadius: "15px",
+                      marginBottom: "20px",
+                    }}
+                  />
                 </Box>
-
-                <Button
-                  variant="contained"
-                  sx={{
-                    backgroundColor: "#00BFFF", // สีปุ่ม
-                    color: "#FFFFFF", // สีตัวอักษรของปุ่ม
-                    "&:hover": {
-                      backgroundColor: "#009ACD", // สีปุ่มเมื่อ hover
-                    },
-                  }}
-                >
-                  Shop Now
-                </Button>
               </Box>
-            </Box>
-
-            <Box
-              mt={4}
-              sx={{
-                display: "flex",
-                justifyContent: "space-around",
-                flexWrap: "wrap",
-              }}
-            >
-              <Box
-                sx={{
-                  backgroundColor: "#F0FFF0", // สีพาสเทลเขียว
-                  padding: "20px",
-                  borderRadius: "15px",
-                  width: "900px",
-                  boxShadow: "0 5px 10px rgba(0, 0, 0, 0.1)",
-                  transition: "transform 0.3s ease",
-                  "&:hover": {
-                    transform: "scale(1.05)", // ขยายเล็กน้อยเมื่อ hover
-                  },
-                }}
-              >
-                <Typography
-                  variant="h5"
-                  fontWeight="bold"
-                  textAlign="center"
-                  sx={{
-                    color: "#32CD32", // สีหัวข้อ
-                    mb: 2, // ระยะห่างด้านล่างของหัวข้อ
-                  }}
-                >
-                  Buy 1 Get 1!
-                </Typography>
-
-                <Box
-                  sx={{
-                    backgroundImage: `url(${bas})`, // URL รูปภาพ (สามารถเปลี่ยนเป็นรูปที่ต้องการได้)
-                    backgroundSize: "cover", // ปรับขนาดภาพให้เต็มกล่อง
-                    borderRadius: "10px",
-                    height: "180px", // ความสูงของกล่องรูปภาพ
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    mb: 2, // ระยะห่างด้านล่างของกล่องรูปภาพ
-                  }}
-                >
-                  {/* สามารถใส่เนื้อหาหรือข้อความเพิ่มเติมที่นี่ */}
-                </Box>
-
-                <Button
-                  variant="contained"
-                  sx={{
-                    backgroundColor: "#32CD32", // สีปุ่ม
-                    color: "#FFFFFF", // สีตัวอักษรของปุ่ม
-                    "&:hover": {
-                      backgroundColor: "#28A745", // สีปุ่มเมื่อ hover
-                    },
-                  }}
-                >
-                  Shop Now
-                </Button>
-              </Box>
-            </Box>
+            ))}
           </Box>
           <Box sx={{ display: "flex", justifyContent: "center", mt: 6 }}>
             <Button
@@ -1546,7 +1054,7 @@ const HomeTest: React.FunctionComponent = () => {
                 },
               }}
               component={Link}
-              to=""
+              to="/promotion"
             >
               Go to Next Page
             </Button>

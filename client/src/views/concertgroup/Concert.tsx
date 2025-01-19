@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Box, Typography, Button } from "@mui/material";
 import Gif from "/src/assets/concert/con5.gif";
+import dayjs from "dayjs";
 import Gif1 from "/src/assets/concert/gif2.gif";
 import Gif2 from "/src/assets/concert/_on.gif";
 import Gif3 from "/src/assets/concert/gif4.gif";
@@ -39,6 +40,10 @@ const Concert: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [selected, setSelected] = useState("ทั้งหมด");
   const [dataConcert, setDataConcert] = useState<any[]>([]); // Mock data for sports events
+  const [dataConcertthaimass, setDataConcertThaimass] = useState<any[]>([]);
+  const [dataConcerttpop, setDataConcertTpop] = useState<any[]>([]);
+  const [dataConcertkpop, setDataConcertKpop] = useState<any[]>([]);
+  const [dataConcertinter, setDataConcertInter] = useState<any[]>([]);
   const [images, setImages] = useState<any[]>([]);
   const [concerts, setConcerts] = useState<any[]>([]);
 
@@ -79,16 +84,137 @@ const Concert: React.FC = () => {
   };
 
   useEffect(() => {
-    const typeMap = {
-      ทั้งหมด: "ALL",
-      "THAI MASS": "thaimass",
-      "T-POP": "tpop",
-      "K-POP": "kpop",
-      INTERNATIONAL: "inter",
+    const fetchConcert = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/getAllConcerts");
+        const data: IConcert[] = await response.json();
+        const formattedConcert = data.map((item) => ({
+          id: item.id,
+          img: `http://localhost/concert/all/${item.image}`,
+          title: item.name,
+          date: `🗓️: ${dayjs(item.date).format("DD/MM/YY")}`,
+          time: `⏰: ${item.time}`,
+          location: `📌: ${item.location}`,
+          price: item.price,
+        }));
+
+        setDataConcert(formattedConcert);
+      } catch (error) {
+        console.error("Error fetching concert data:", error);
+      }
     };
-    fetchConcertsByType(typeMap[selected]);
+    const fetchConcertThaimass = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:5000/getAllConcertsthaiMass"
+        );
+        const data: IConcert[] = await response.json();
+        const formattedConcert = data.map((item) => ({
+          id: item.id,
+          img: `http://localhost/concert/all/${item.image}`, // ใช้ฟิลด์ `img` จาก API
+          title: item.name, // ใช้ฟิลด์ `name` จาก API
+          date: `🗓️: ${dayjs(item.date).format("DD/MM/YY")}`, // เพิ่มไอคอนหรือฟอร์แมตข้อความ
+          time: `⏰: ${item.time}`, // ฟิลด์ `time` (ถ้ามี)
+          location: `📌: ${item.location}`, // ใช้ฟิลด์ `location`
+          price: item.price, // ใช้ฟิลด์ `price`
+        }));
+
+        setDataConcertThaimass(formattedConcert);
+      } catch (error) {
+        console.error("Error fetching concert data:", error);
+      }
+    };
+    const fetchConcertTpop = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:5000/getAllConcertstpop"
+        );
+        const data: IConcert[] = await response.json();
+        const formattedConcert = data.map((item) => ({
+          id: item.id,
+          img: `http://localhost/concert/all/${item.image}`,
+          title: item.name,
+          date: `🗓️: $${dayjs(item.date).format("DD/MM/YY")}`,
+          time: `⏰: ${item.time}`,
+          location: `📌: ${item.location}`,
+          price: item.price,
+        }));
+
+        setDataConcertTpop(formattedConcert);
+      } catch (error) {
+        console.error("Error fetching concert data:", error);
+      }
+    };
+    const fetchConcertkpop = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:5000/getAllConcertskpop"
+        );
+        const data: IConcert[] = await response.json();
+        const formattedConcert = data.map((item) => ({
+          id: item.id,
+          img: `http://localhost/concert/all/${item.image}`,
+          title: item.name,
+          date: `🗓️: $${dayjs(item.date).format("DD/MM/YY")}`,
+          time: `⏰: ${item.time}`,
+          location: `📌: ${item.location}`,
+          price: item.price,
+        }));
+
+        setDataConcertKpop(formattedConcert);
+      } catch (error) {
+        console.error("Error fetching concert data:", error);
+      }
+    };
+    const fetchConcertinter = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:5000/getAllConcertsinter"
+        );
+        const data: IConcert[] = await response.json();
+        const formattedConcert = data.map((item) => ({
+          id: item.id,
+          img: `http://localhost/concert/all/${item.image}`,
+          title: item.name,
+          date: `🗓️: $${dayjs(item.date).format("DD/MM/YY")}`,
+          time: `⏰: ${item.time}`,
+          location: `📌: ${item.location}`,
+          price: item.price,
+        }));
+
+        setDataConcertInter(formattedConcert);
+      } catch (error) {
+        console.error("Error fetching concert data:", error);
+      }
+    };
+
+    const fetchImages = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/concertsImage");
+        const data = await response.json();
+        setImages(data);
+        console.log(data);
+      } catch (error) {
+        console.error("Error fetching images:", error);
+      }
+    };
+
+    axios
+      .get("http://localhost:5000/concertsDetail")
+      .then((response) => {
+        setConcerts(response.data);
+      })
+      .catch((error) => {
+        console.error("There was an error fetching the concerts!", error);
+      });
+
+    fetchConcert();
+    fetchConcertThaimass();
+    fetchConcertTpop();
+    fetchConcertkpop();
+    fetchConcertinter();
     fetchImages();
-  }, [selected]);
+  }, []);
 
   const categories = [
     { label: "ทั้งหมด", color: "#FF4081" }, // Highlighted button color
@@ -98,9 +224,35 @@ const Concert: React.FC = () => {
     { label: "INTERNATIONAL", color: "#FF4081" },
   ];
 
+  const filteredEvents =
+    selected === "ทั้งหมด"
+      ? dataConcert
+      : selected === "THAI MASS"
+        ? dataConcertthaimass
+        : selected === "T-POP"
+          ? dataConcerttpop
+          : selected === "K-POP"
+            ? dataConcertkpop
+            : selected === "INTERNATIONAL"
+              ? dataConcertinter
+              : [];
+
   return (
     <>
-      <Box>
+      <Box
+      // p={2}
+      // mb={8}
+      // bgcolor="gray.800"
+      // color="white"
+      // borderRadius={2}
+      // boxShadow={3}
+      // border={1}
+      // borderColor="gray.700"
+      // width={1140}
+      // sx={{
+      //   background: "linear-gradient(135deg, #EECDA3 0%, #EF629F 100%);",
+      // }}
+      >
         {/* ส่วนที่ 1 */}
         <Typography
           variant="h2"
@@ -263,7 +415,7 @@ const Concert: React.FC = () => {
           <iframe
             width="860"
             height="515"
-            src="https://www.youtube.com/embed/Qh3NVhWXOOE?autoplay=1&mute=1"
+            src="https://www.youtube.com/embed/o4t8YEM5Qco?autoplay=1&mute=1"
             title="YouTube video player"
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -343,7 +495,7 @@ const Concert: React.FC = () => {
           gap={2}
           p={5}
         >
-          {dataConcert.map((event, index) => (
+          {filteredEvents.map((event, index) => (
             <Box
               key={index}
               display="flex"
@@ -372,8 +524,8 @@ const Concert: React.FC = () => {
                 <Typography fontSize="14px" color="black" fontWeight="bold">
                   {event.title}
                 </Typography>
-                <Typography fontSize="14px" color="#00bc20" fontWeight="bold">
-                  {event.date}
+                <Typography fontSize="14px" color="#00bc20" fontWeight="bold" gutterBottom>
+                {event.date}
                 </Typography>
                 <Typography fontSize="14px" color="#4fc3f7" fontWeight="bold">
                   {event.time}
@@ -382,6 +534,7 @@ const Concert: React.FC = () => {
                   {event.location}
                 </Typography>
                 <Button
+                  // onClick={() => handleBuyTicket(event)}
                   onClick={() =>
                     handleBuyTicket({
                       id: event.id,

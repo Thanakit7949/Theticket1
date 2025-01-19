@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
 import {
   Box,
@@ -28,6 +29,7 @@ import Image5 from "/src/assets/concert/qrcode.jpg";
 import CloseIcon from "@mui/icons-material/Close";
 
 const PaymentSport: React.FC = () => {
+  const [slip, setSlip] = useState<File | null>(null);
   const location = useLocation();
   const { price, label, selectedSeats } = location.state || {}; // ค่าที่ส่งมาจากหน้า Concert
 
@@ -38,7 +40,7 @@ const PaymentSport: React.FC = () => {
   const [openSection, setOpenSection] = useState(null);
 
   // ฟังก์ชันที่ใช้ในการเปิด/ปิดกลุ่ม
-  const toggleSection = (section) => {
+  const toggleSection = (section: any) => {
     // ถ้ากลุ่มที่คลิกเป็นกลุ่มเดิมก็จะปิด, ถ้าไม่ใช่จะเปิดกลุ่มนั้น
     setOpenSection(openSection === section ? null : section);
   };
@@ -49,6 +51,7 @@ const PaymentSport: React.FC = () => {
   }) => {
     setChecked(event.target.checked);
   };
+
 
   const [openDialog, setOpenDialog] = useState(false);
   const handleOpenDialog = () => setOpenDialog(true);
@@ -86,6 +89,12 @@ const PaymentSport: React.FC = () => {
       setFormValid(true);
     } else {
       setFormValid(false);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setSlip(e.target.files[0]);
     }
   };
 
@@ -738,7 +747,11 @@ const PaymentSport: React.FC = () => {
                         backgroundColor: "#c40d19",
                       },
                     }}
-                    onClick={() => navigate("/sport/ticket-sport", { state: { price, label, selectedSeats } })}
+                    onClick={() =>
+                      navigate("/concert/ticket-concet", {
+                        state: { price, label, selectedSeats },
+                      })
+                    }
                   >
                     ยืนยัน
                   </Button>
@@ -851,88 +864,129 @@ const PaymentSport: React.FC = () => {
 
               {/* Payment Confirmation Dialog */}
               <Dialog
-                open={openPromptPayDialog}
-                onClose={handleClosePromptPayDialog}
-                maxWidth="sm"
-                fullWidth
-              >
-                <DialogTitle
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    backgroundColor: "red",
-                  }}
-                >
-                  <Typography variant="h6" sx={{ color: "white" }}>
-                    รอการชำระเงินจากคุณ
-                  </Typography>
-                  <IconButton onClick={handleClosePromptPayDialog}>
-                    <CloseIcon />
-                  </IconButton>
-                </DialogTitle>
+  open={openPromptPayDialog}
+  onClose={handleClosePromptPayDialog}
+  maxWidth="sm"
+  fullWidth
+>
+  <DialogTitle
+    sx={{
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      backgroundColor: "red",
+    }}
+  >
+    <Typography variant="h6" sx={{ color: "white" }}>
+      รอการชำระเงินจากคุณ
+    </Typography>
+    <IconButton onClick={handleClosePromptPayDialog}>
+      <CloseIcon />
+    </IconButton>
+  </DialogTitle>
 
-                <DialogContent sx={{ backgroundColor: "white" }}>
-                  <Box sx={{ padding: 2, color: "#151515" }}>
-                    <Typography
-                      variant="h4"
-                      align="center"
-                      sx={{ fontWeight: "bold", mb: 5 }}
-                    >
-                      PromptPay QR Code
-                    </Typography>
+  <DialogContent sx={{ backgroundColor: "white" }}>
+    <Box sx={{ padding: 2, color: "#151515" }}>
+      <Typography
+        variant="h4"
+        align="center"
+        sx={{ fontWeight: "bold" }}
+      >
+        PromptPay QR Code
+      </Typography>
 
-                    <img
-                      src={Image5}
-                      alt="Event Thumbnail"
-                      style={{
-                        width: "400px", // ปรับขนาดภาพให้ใหญ่ขึ้น
-                        borderRadius: "16px", // ขอบมน
-                        marginTop: "15px",
-                        display: "block", // ทำให้ภาพเป็นบล็อกเพื่อจัดตำแหน่ง
-                        margin: "0 auto", // จัดให้ภาพอยู่ตรงกลาง
-                      }}
-                    />
-                    <Typography
-                      variant="h6"
-                      align="center"
-                      sx={{ fontWeight: "bold", mb: 2 }}
-                    >
-                      SCAN QR CODE
-                    </Typography>
-                    <Divider sx={{ backgroundColor: "gray" }} />
+      <img
+        src={Image5}
+        alt="Event Thumbnail"
+        style={{
+          width: "400px",
+          borderRadius: "16px",
+          marginTop: "20px",
+          display: "block",
+          margin: "0 auto",
+        }}
+      />
+      <Typography
+        variant="h6"
+        align="center"
+        sx={{ fontWeight: "bold" }}
+      >
+        SCAN QR CODE
+      </Typography>
+      <Typography
+        variant="h5"
+        align="center"
+        sx={{ color: "red", fontWeight: "bold" }}
+      >
+        ฿{totalPrice.toFixed(2)}
+      </Typography>
+      <Divider sx={{ backgroundColor: "gray" }} />
 
-                    <Box sx={{ mt: 2 }}>
-                      <Box sx={{ mt: 2 }}></Box>
-                      <Typography
-                        variant="h5"
-                        align="center"
-                        sx={{ color: "black", fontWeight: "bold" }}
-                      >
-                        ฿{totalPrice.toFixed(2)}
-                      </Typography>
-                    </Box>
-                    <Button
-                      variant="contained"
-                      sx={{
-                        marginTop: 2,
-                        borderRadius: 20,
-                        backgroundColor: "red",
-                        width: "100%",
-                        height: 50,
-                        fontSize: "20px",
-                        "&:hover": {
-                          backgroundColor: "#c40d19",
-                          border: "1px solid white",
-                        },
-                      }}
-                      onClick={() => navigate("/sport/ticket-sport", { state: { price, label, selectedSeats } })}
-                    >
-                      กดเพื่อแสดงหน้าใบเสร็จ
-                    </Button>
-                  </Box>
-                </DialogContent>
-              </Dialog>
+      <Box sx={{ mt: 2 }}>
+        <Typography variant="h5" sx={{ mb: 1, color: "black" }}>
+          อัปโหลดสลิปการโอนเงิน:
+        </Typography>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          style={{
+            marginBottom: "10px",
+            fontSize: "17px",
+            color: "red",
+          }}
+        />
+        {slip && (
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="body1">
+              สลิปที่แนบมา:
+            </Typography>
+            <img
+              src={URL.createObjectURL(slip)}
+              alt="สลิปการโอนเงิน"
+              style={{
+                maxWidth: "100%",
+                height: "auto",
+                border: "1px solid #ccc",
+                borderRadius: 8,
+              }}
+            />
+          </Box>
+        )}
+      </Box>
+
+      <Button
+        variant="contained"
+        sx={{
+          marginTop: 2,
+          borderRadius: 20,
+          backgroundColor: "red",
+          width: "100%",
+          height: 50,
+          fontSize: "20px",
+          "&:hover": {
+            backgroundColor: "#c40d19",
+            border: "1px solid white",
+          },
+        }}
+        onClick={() => {
+          if (!slip) {
+            // ถ้ายังไม่ได้แนบสลิปจะแจ้งเตือน
+            alert("กรุณาแนบรูปสลิปการโอนเงินก่อน!");
+            return;
+          }
+          // ถ้ามีการแนบสลิปแล้ว ค่อยไปยังหน้าใบเสร็จ
+          navigate("/concert/ticket-concet", {
+            state: { price, label, selectedSeats },
+          });
+        }}
+      >
+        กดเพื่อแสดงหน้าใบเสร็จ
+      </Button>
+    </Box>
+  </DialogContent>
+</Dialog>
+
             </Box>
           </Collapse>
         </Box>
