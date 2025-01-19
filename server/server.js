@@ -506,10 +506,9 @@ app.get('/getpromotionImage', (req, res) => {
   const query = 'SELECT image FROM promotion_image';
   db.query(query, (err, result) => {
     if (err) {
-      res.status(500).send('Error fetching data');
-    } else {
-      res.json(result);
+      return res.status(500).json({ message: 'Error fetching data', error: err.message });
     }
+    return res.json(result);
   });
 });
 
@@ -518,12 +517,23 @@ app.get('/getpromotionDetail', (req, res) => {
   const query = 'SELECT * FROM promotion_detail';
   db.query(query, (err, result) => {
     if (err) {
-      res.status(500).send('Error fetching data');
-    } else {
-      res.json(result);
+      return res.status(500).json({ message: 'Error fetching data', error: err.message });
     }
+    return res.json(result);
   });
 });
+
+// promotion สำหรับดึงข้อมูล
+app.get('/getproconsport', (req, res) => {
+  const query = 'SELECT * FROM pro_consport';
+  db.query(query, (err, result) => {
+    if (err) {
+      return res.status(500).json({ message: 'Error fetching data', error: err.message });
+    }
+    return res.json(result);
+  });
+});
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Add Concert
 app.post('/addConcert', async (req, res) => {
