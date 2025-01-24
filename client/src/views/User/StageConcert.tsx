@@ -1,14 +1,25 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
 import { Box, Button, Stack,  Tooltip,  Typography } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const StageConcert: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState(5 * 60);
   const [selectedPrice, setSelectedPrice] = useState<string | null>(null);
   const [tickets, setTickets] = useState<any[]>([]);
   const navigate = useNavigate();
+    const location = useLocation();
+    const concertID = location.state;
 
+
+    useEffect(() => {
+        if (!location.state) {
+          console.log("ไม่มีข้อมูล state ที่ถูกส่งมา");
+        } else {
+          console.log("concertID:", concertID);
+        }
+      }, [location.state, concertID]);
+      
   useEffect(() => {
     const interval = setInterval(() => {
       setTimeLeft((prevTime) => (prevTime > 0 ? prevTime - 1 : 0));

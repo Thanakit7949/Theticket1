@@ -17,7 +17,9 @@ const ConcertDetail: React.FC = () => {
   // ฟังก์ชันสำหรับกดปุ่ม "ซื้อบัตร"
   const handleBuyTicket = () => {
     // ส่งข้อมูลเฉพาะที่ต้องการไปยังหน้า 'stage'
-    navigate('stage-concert');
+    // navigate('stage-concert');
+    navigate("stage-concert", { state: concert });
+    console.log("concert:", concert);
   };
 
   useEffect(() => {

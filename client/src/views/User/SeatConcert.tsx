@@ -43,7 +43,8 @@ const SeatConcert: React.FC = () => {
   // ฟังก์ชันสำหรับเปลี่ยนสถานะของที่นั่งเมื่อมีการคลิก
   const toggleSeatStatus = (rowIndex: number, colIndex: number) => {
     const seatPosition = { row: rowIndex + 1, col: colIndex + 1 };
-  
+  console.log("selectedSeats",selectedSeats)
+  console.log("seats",seats)
     setSeats((prevSeats) =>
       prevSeats.map((row, rIndex) =>
         row.map((seat: string, cIndex: number) => {
