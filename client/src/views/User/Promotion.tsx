@@ -19,6 +19,9 @@ const Promotion = () => {
     const fetchPromotionImages = async () => {
       try {
         const response = await fetch("http://localhost:5000/getpromotionImage");
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const data = await response.json();
         setPromotion(data); // กำหนด state สำหรับข้อมูลรูปภาพ
       } catch (error) {
@@ -30,6 +33,9 @@ const Promotion = () => {
         const response = await fetch(
           "http://localhost:5000/getpromotionDetail"
         );
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const data = await response.json();
         setPromotionDetail(data); // บันทึกข้อมูลใน State
       } catch (error) {
@@ -42,6 +48,9 @@ const Promotion = () => {
         const response = await fetch(
           "http://localhost:5000/getproconsport"
         );
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const data = await response.json();
         setProconSport(data); // บันทึกข้อมูลใน State
       } catch (error) {
@@ -137,7 +146,7 @@ const Promotion = () => {
         gutterBottom
         sx={{ position: "relative" }}
       >
-        ᴇɴᴊᴏʏ ᴇxᴄʟᴜꜱɪᴠᴇ เมื่อซื้อสินค้าครบตามที่กำหนดรับไปเลยส่วนลด!
+         ᴇɴᴊᴏʏ ᴇxᴄʟᴜꜱɪᴠᴇ เมื่อซื้อสินค้าครบตามที่กำหนดรับไปเลยส่วนลด!
       </Typography>
 
       {/* Image Carousel */}

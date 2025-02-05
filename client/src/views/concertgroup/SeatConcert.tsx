@@ -117,16 +117,29 @@ const SeatConcert: React.FC = () => {
   };
   
   const navigate = useNavigate(); // เรียกใช้ useNavigate
-    // ฟังก์ชันสำหรับการไปที่หน้า Payment
-    const handleBuyTicket = () => {
-      navigate("payment-concert", {
-        state: {
-          price,
-          label,
-          selectedSeats,
-        },
-      });
+  const handleBuyTicket = () => {
+    const stateData = {
+      price,
+      label,
+      selectedSeats,
     };
+  
+    console.log("Navigating with state:", stateData); // Log ข้อมูล state
+  
+    navigate("payment-concert", {
+      state: stateData,
+    });
+  };
+    // ฟังก์ชันสำหรับการไปที่หน้า Payment
+    // const handleBuyTicket = () => {
+    //   navigate("payment-concert", {
+    //     state: {
+    //       price,
+    //       label,
+    //       selectedSeats,
+    //     },
+    //   });
+    // };
 
   return (
     <Box
@@ -309,7 +322,7 @@ const SeatConcert: React.FC = () => {
           </span>{" "}
         </Typography>
  {/* ตำนานสถานะที่นั่ง */}
- <Box
+ <Box 
           sx={{
             display: "flex",
             justifyContent: "center",

@@ -2,11 +2,21 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button, Stack,  Tooltip,  Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 const StageConcert: React.FC = () => {
+
+  const location = useLocation();
+
   const [timeLeft, setTimeLeft] = useState(5 * 60);
   const [selectedPrice, setSelectedPrice] = useState<string | null>(null);
   const [tickets, setTickets] = useState<any[]>([]);
+
+  const { id, price } = location.state || {}; // รับค่าที่ถูกส่งมา
+
+  console.log("id: ", id);
+  console.log("price: ", price);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -45,10 +55,39 @@ const StageConcert: React.FC = () => {
   ? tickets.filter((ticket) => String(ticket.amount) === selectedPrice) // ใช้ String เพื่อความแม่นยำ
   : tickets;
 
+  console.log("filteredTickets: ",filteredTickets);
 
-  const handleBuyTicket = (price: string, label: string) => {
-    navigate("/concert/seat-concert", { state: { price, label } });
+  const handleBuyTicket = () => {
+
+    const stateData = {
+      price: price,
+      id: id
+    };
+    console.log("Navigating with state:", stateData); // Log ข้อมูล state
+  
+    navigate("seat-concert", {
+      state: stateData,
+    });
+
+    // navigate("/concert/seat-concert", { state: { price, label } });
   };
+  console.log("handleBuyTicket: ",handleBuyTicket);
+
+  // const handleBuyTicket = (price: string, label: string) => {
+
+  //   const stateData = {
+  //     price: price,
+  //     label: label
+  //   };
+  //   console.log("Navigating with state:", stateData); // Log ข้อมูล state
+  
+  //   navigate("seat-concert", {
+  //     state: stateData,
+  //   });
+
+  //   // navigate("/concert/seat-concert", { state: { price, label } });
+  // };
+  // console.log("handleBuyTicket: ",handleBuyTicket);
 
   return (
     <Box
@@ -166,7 +205,8 @@ const StageConcert: React.FC = () => {
                   fontWeight: "bold",
                   "&:hover": { backgroundColor: "#b39ddb", color: "white" },
                 }}
-                onClick={() => handleBuyTicket(ticket.price, ticket.label)}
+                // onClick={() => handleBuyTicket(id, price)}
+                onClick={() => handleBuyTicket()}
               >
                 จองโซนที่นั่ง
               </Button>
@@ -244,7 +284,8 @@ const StageConcert: React.FC = () => {
                     );
                     // ส่งข้อมูลไปยังหน้า seat-concert พร้อมกับชื่อโซน (label) และราคา
                     navigate("/concert/seat-concert", {
-                      state: { price: ticket?.price, label },
+                      state: { id: ticket?.id, price: ticket?.price, label },
+                      // state: { price: ticket?.price, label },
                     });
                   }}
                   sx={{
