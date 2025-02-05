@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const mysql = require('mysql2/promise');
+const mysql = require('mysql2/promise'); // Use promise-based version
 const jwt = require('jsonwebtoken');
 
 const app = express();
@@ -179,22 +179,24 @@ app.get('/getConcertsByType/:type', async (req, res) => {
   }
 });
 
-app.get('/concertsImage', (req, res) => {
+app.get('/concertsImage', async (req, res) => {
   const query = 'SELECT * FROM concert_image'; // ดึงข้อมูลทั้งหมดจาก concerts
-  db.query(query, (err, results) => {
-    if (err) {
-      return res.status(500).json({ message: 'Database error', error: err.message });
-    }
+  try {
+    const [results] = await db.query(query);
     return res.json(results); // ส่งผลลัพธ์เป็น JSON
-  });
+  } catch (err) {
+    return res.status(500).json({ message: 'Database error', error: err.message });
+  }
 });
 
-app.get('/concertsDetail', (req, res) => {
+app.get('/concertsDetail', async (req, res) => {
   const query = 'SELECT * FROM concert_detail';
-  db.query(query, (err, results) => {
-    if (err) throw err;
+  try {
+    const [results] = await db.query(query);
     res.json(results);
-  });
+  } catch (err) {
+    res.status(500).json({ message: 'Database error', error: err.message });
+  }
 });
 
 // ดึงข้อมูล Sports
@@ -277,14 +279,14 @@ app.get("/getImages", async (req, res) => {
   }
 });
 
-app.get('/getAllSportsBoxing', (req, res) => {
+app.get('/getAllSportsBoxing', async (req, res) => {
   const query = 'SELECT * FROM boxing'; // ดึงข้อมูลทั้งหมดจาก concerts
-  db.query(query, (err, results) => {
-    if (err) {
-      return res.status(500).json({ message: 'Database error', error: err.message });
-    }
+  try {
+    const [results] = await db.query(query);
     return res.json(results); // ส่งผลลัพธ์เป็น JSON
-  });
+  } catch (err) {
+    return res.status(500).json({ message: 'Database error', error: err.message });
+  }
 });
 
 
@@ -447,60 +449,58 @@ app.get('/getEventPoster', async (req, res) => {
 
 
 
-app.get('/getAllSportsFootball', (req, res) => {
+app.get('/getAllSportsFootball', async (req, res) => {
   const query = 'SELECT * FROM football';
-  db.query(query, (err, results) => {
-    if (err) {
-      return res.status(500).json({ message: 'Database error', error: err.message });
-    }
+  try {
+    const [results] = await db.query(query);
     return res.json(results);
-  });
+  } catch (err) {
+    return res.status(500).json({ message: 'Database error', error: err.message });
+  }
 });
 
-app.get('/getAllSportsOther', (req, res) => {
+app.get('/getAllSportsOther', async (req, res) => {
   const query = 'SELECT * FROM other';
-  db.query(query, (err, results) => {
-    if (err) {
-      return res.status(500).json({ message: 'Database error', error: err.message });
-    }
+  try {
+    const [results] = await db.query(query);
     return res.json(results);
-  });
+  } catch (err) {
+    return res.status(500).json({ message: 'Database error', error: err.message });
+  }
 });
 
 // Route สำหรับดึงข้อมูลกีฬาและภาพ
-app.get('/sportsImage', (req, res) => {
+app.get('/sportsImage', async (req, res) => {
   const query = 'SELECT * FROM sport_images';
-  db.query(query, (err, result) => {
-    if (err) {
-      res.status(500).send('Error fetching data');
-    } else {
-      res.json(result);
-    }
-  });
+  try {
+    const [result] = await db.query(query);
+    res.json(result);
+  } catch (err) {
+    res.status(500).send('Error fetching data');
+  }
 });
 
 //  สำหรับดึงข้อมูลรูปภาพของsport
-app.get("/getImages", (req, res) => {
+app.get("/getImages", async (req, res) => {
   // ดึงข้อมูลจากฐานข้อมูล
-  db.query("SELECT image FROM images", (err, results) => {
-    if (err) {
-      console.error("Error fetching images:", err);
-      return res.status(500).send("Error fetching images");
-    }
+  try {
+    const [results] = await db.query("SELECT image FROM images");
     res.json(results); // ส่งข้อมูลภาพในรูปแบบ JSON
-  });
+  } catch (err) {
+    console.error("Error fetching images:", err);
+    res.status(500).send("Error fetching images");
+  }
 });
 
 // product สำหรับดึงข้อมูลภาพ
-app.get('/getproductImage', (req, res) => {
+app.get('/getproductImage', async (req, res) => {
   const query = 'SELECT * FROM product_image';
-  db.query(query, (err, result) => {
-    if (err) {
-      res.status(500).send('Error fetching data');
-    } else {
-      res.json(result);
-    }
-  });
+  try {
+    const [result] = await db.query(query);
+    res.json(result);
+  } catch (err) {
+    res.status(500).send('Error fetching data');
+  }
 });
 
 // promotion สำหรับดึงข้อมูลภาพ
@@ -515,7 +515,7 @@ app.get('/getpromotionImage', (req, res) => {
 });
 
 // promotion สำหรับดึงข้อมูล
-app.get('/getpromotionDetail', (req, res) => {
+app.get('/getpromotionDetail', async (req, res) => {
   const query = 'SELECT * FROM promotion_detail';
   db.query(query, (err, result) => {
     if (err) {
@@ -554,27 +554,25 @@ app.post('/addConcert', async (req, res) => {
 });
 
 // promotion สำหรับดึงข้อมูล
-app.get('/getproconsport', (req, res) => {
+app.get('/getproconsport', async (req, res) => {
   const query = 'SELECT * FROM pro_consport';
-  db.query(query, (err, result) => {
-    if (err) {
-      res.status(500).send('Error fetching data');
-    } else {
-      res.json(result);
-    }
-  });
+  try {
+    const [result] = await db.query(query);
+    res.json(result);
+  } catch (err) {
+    res.status(500).send('Error fetching data');
+  }
 });
 
 // API สำหรับดึงข้อมูลจากฐานข้อมูล
-app.get('/getConcertstage', (req, res) => {
+app.get('/getConcertstage', async (req, res) => {
   const query = 'SELECT * FROM concert_stage'; // ตัวอย่าง query เพื่อดึงข้อมูล
-  db.query(query, (err, results) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-    } else {
-      res.json(results);
-    }
-  });
+  try {
+    const [results] = await db.query(query);
+    res.json(results);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Add concert
@@ -595,7 +593,7 @@ app.post('/addConcert', async (req, res) => {
 
 
 // Update Concert
-app.put('/updateConcert/:id', (req, res) => {
+app.put('/updateConcert/:id', async (req, res) => {
   const { id } = req.params;
   const { name, date, location, price, available_seats, type } = req.body;
   if (!name || !date || !location || price == null || available_seats == null || !type) {
@@ -606,32 +604,32 @@ app.put('/updateConcert/:id', (req, res) => {
     UPDATE concerts SET name = ?, date = ?, location = ?, price = ?, available_seats = ?, type = ?
     WHERE id = ?
   `;
-  db.query(query, [name, date, location, price, available_seats, type, id], (err, result) => {
-    if (err) {
-      console.error('Database Error:', err.message);
-      return res.status(500).json({ message: 'Database error' });
-    }
+  try {
+    const [result] = await db.query(query, [name, date, location, price, available_seats, type, id]);
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: 'Concert not found.' });
     }
     res.status(200).json({ message: 'Concert updated successfully' });
-  });
+  } catch (err) {
+    console.error('Database Error:', err.message);
+    return res.status(500).json({ message: 'Database error' });
+  }
 });
 
 // Delete Concert
-app.delete('/deleteConcert/:id', (req, res) => {
+app.delete('/deleteConcert/:id', async (req, res) => {
   const { id } = req.params;
   const query = 'DELETE FROM concerts WHERE id = ?';
-  db.query(query, [id], (err, result) => {
-    if (err) {
-      console.error('Database Error:', err.message);
-      return res.status(500).json({ message: 'Database error' });
-    }
+  try {
+    const [result] = await db.query(query, [id]);
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: 'Concert not found.' });
     }
     res.status(200).json({ message: 'Concert deleted successfully' });
-  });
+  } catch (err) {
+    console.error('Database Error:', err.message);
+    return res.status(500).json({ message: 'Database error' });
+  }
 });
 
 
@@ -660,7 +658,7 @@ app.post('/addSport', async (req, res) => {
 });
 
 // Update sport
-app.put('/updateSport/:id', (req, res) => {
+app.put('/updateSport/:id', async (req, res) => {
   const { id } = req.params;
   const { name, date, location, price, available_seats, type } = req.body;
 
@@ -672,35 +670,34 @@ app.put('/updateSport/:id', (req, res) => {
     UPDATE sports SET name = ?, date = ?, location = ?, price = ?, available_seats = ?, type = ?
     WHERE id = ?
   `;
-  db.query(query, [name, date, location, price, available_seats, type, id], (err, result) => {
-    if (err) {
-      console.error('Database Error:', err.message);
-      return res.status(500).json({ message: 'Database error' });
-    }
+  try {
+    const [result] = await db.query(query, [name, date, location, price, available_seats, type, id]);
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: 'Sport not found.' });
     }
     res.status(200).json({ message: 'Sport updated successfully' });
-  });
+  } catch (err) {
+    console.error('Database Error:', err.message);
+    return res.status(500).json({ message: 'Database error' });
+  }
 });
 
 // Delete sport
-app.delete('/deleteSport/:id', (req, res) => {
+app.delete('/deleteSport/:id', async (req, res) => {
   const { id } = req.params;
 
   const query = 'DELETE FROM sports WHERE id = ?';
-  db.query(query, [id], (err, result) => {
-    if (err) {
-      console.error('Error deleting sport:', err);
-      return res.status(500).json({ message: 'Database error', error: err.message });
-    }
-
+  try {
+    const [result] = await db.query(query, [id]);
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: 'Sport not found' });
     }
 
     res.status(200).json({ message: 'Sport deleted successfully' });
-  });
+  } catch (err) {
+    console.error('Error deleting sport:', err);
+    return res.status(500).json({ message: 'Database error', error: err.message });
+  }
 });
 
 // Fetch all users

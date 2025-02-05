@@ -29,6 +29,7 @@ import AcryliCon from "../views/User/prodetail/AcryliCon";
 import Ballkeychain from "../views/User/prodetail/Ballkeychain";
 import Footballshirt from "../views/User/prodetail/Footballshirt";
 import InformationDetail from "../views/User/InformationDetail";
+import Test from "../views/User/Test";
 //import Dashboard from "../views/User/Dashboard"
 
 export const routesConfig: {
@@ -65,7 +66,17 @@ export const routesConfig: {
       header: "home",
       component: HomeTest,
       icon: null,
-      children: [],
+      children: [
+        {
+          path: "concert-detail",
+          name: "concert-detail",
+          header: "concert-detail",
+          component: ConcertDetail,
+          icon: null,
+          subpath: false,
+          children: [],
+        },
+      ],
     },
     {
       path: "/concert",
@@ -347,7 +358,15 @@ export const routesConfig: {
     
           ],
         },
-
+        {
+          path: "/test",
+          name: "test",
+          header: "test",
+          component: Test,
+          icon: null,
+          children: [ ],
+        },
+        
        
 
    
