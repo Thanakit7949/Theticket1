@@ -132,6 +132,7 @@ const AppBarT: React.FunctionComponent = () => {
                     <Typography textAlign="center">{page.name}</Typography>
                   </MenuItem>
                 ))}
+              
 
                 {settings.map((setting) => (
                   <MenuItem

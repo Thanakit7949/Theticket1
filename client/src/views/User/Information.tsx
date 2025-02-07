@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Paper, Typography, Grid, Box, Button } from '@mui/material';
 import HTMLFlipBook from 'react-pageflip';
 import { useNavigate } from 'react-router-dom';
-import { blue } from '@mui/material/colors';
+//import { blue } from '@mui/material/colors';
 
 
 
@@ -15,8 +15,8 @@ const Information = () => {
 
   const navigate = useNavigate();
 
-    const handleViewMore = (book) => {
-        navigate(`information/${book.id}`); // เปลี่ยนไปยัง URL ใหม่
+    const handleViewMore = (book:any) => {
+        navigate(`informationdetail/${book.id}`); // เปลี่ยนไปยัง URL ใหม่
     };
   
 
@@ -297,64 +297,72 @@ fetchEventposter();
                 >
                     Additional Information
                 </Typography>
-                <Grid container spacing={4}>
-                  
+                <Grid container spacing={3}>
+                {AdditionalInformation.map((AdditionalInformation, index) => (
+        <Grid item xs={12} sm={12} md={6} key={index}>
+            <Box
+                sx={{
+                    textAlign: 'center',
+                    padding: 2,
+                    backgroundColor: '#ffffff',
+                    borderRadius: 2,
+                    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+                    transition: 'transform 0.3s, box-shadow 0.3s',
+                    '&:hover': {
+                        transform: 'translateY(-10px)',
+                        boxShadow: '0 10px 20px rgba(0, 0, 0, 0.2)',
+                    },
+                }}
+            >
+                {/* รูปภาพ */}
+                <Box
+                    component="img"
+                    src={`http://localhost/information/${AdditionalInformation.image}`} // เพิ่ม property "image" ใน AdditionalInformation
+                    sx={{
+                        width: '100%',
+                        height: '300px',
+                        objectFit: 'cover',
+                        borderRadius: 2,
+                        marginBottom: 2,
+                    }}
+                />
+
+                {/* หัวข้อ */}
+                <Typography
+                    variant="h6"
+                    sx={{
+                      fontSize: '1.4rem', // เพิ่มขนาดตัวอักษรให้ใหญ่ขึ้น
+                      fontWeight: 'bold', // ใช้ตัวหนา
+                      color: '#333', // สีปกติ
+                      textTransform: 'uppercase', // ตัวอักษรเป็นตัวพิมพ์ใหญ่
+                      marginBottom: 1,
+                      letterSpacing: '0.1rem', // เพิ่มช่องว่างระหว่างตัวอักษร
+                      transition: 'color 0.3s, transform 0.3s', // เพิ่ม transition
+                      '&:hover': {
+                          color: '#ff6b6b', // เปลี่ยนสีเมื่อ hover
+                          transform: 'scale(1.1)', // ขยายขนาดเมื่อ hover
+                      },
+                      textShadow: '2px 2px 4px rgba(0, 0, 0, 0.2)', // เพิ่มเงา
+                    }}
+                >
+                    {AdditionalInformation.title}
+                </Typography>
+
+                {/* รายละเอียด */}
+                <Typography
+                    variant="body2"
+                    sx={{
+                        fontSize: '1rem',
+                        color: '#666',
+                    }}
+                >
+                    {AdditionalInformation.description}
+                </Typography>
+            </Box>
+        </Grid>
+    ))}
                    
-                    {AdditionalInformation.map((AdditionalInformation, index) => (
-                        <Grid item xs={12} sm={6} md={6} key={index}>
-                            <Box
-                                className="card"
-                                sx={{
-                                    padding: 4,
-                                    height: '300px',
-                                    border: '2px solid #81d4fa',
-                                    borderRadius: 10,
-                                    textAlign: 'center',
-                                    backgroundColor: '#ffffff',
-                                    transition: 'transform 0.3s, box-shadow 0.3s',
-                                    boxShadow: '0 8px 15px rgba(0, 0, 0, 0.2)',
-                                    '&:hover': {
-                                        transform: 'translateY(-10px)',
-                                        boxShadow: '0 15px 30px rgba(0, 0, 0, 0.25)',
-                                    },
-                                }}
-                            >
-                                <Box
-                                    className="card-icon"
-                                    sx={{
-                                        fontSize: '80px',
-                                        marginBottom: 2,
-                                        color: '#ff6b6b',
-                                        animation: 'bounce 2s infinite',
-                                    }}
-                                >
-                                   {defaultIcons[index % defaultIcons.length]} {/* เลือกไอคอนจาก defaultIcons */}
-                                </Box>
-                                <Typography
-                                    variant="h6"
-                                    sx={{
-                                        fontSize: '1.8rem',
-                                        color: '#333',
-                                        textTransform: 'uppercase',
-                                        fontWeight: 'bold',
-                                        marginBottom: 1,
-                                    }}
-                                >
-                                    {AdditionalInformation.title}
-                                </Typography>
-                                <Typography
-                                    variant="body2"
-                                    sx={{
-                                        fontSize: '1.2rem',
-                                        color: '#555',
-                                        textAlign: 'center',
-                                    }}
-                                >
-                                    {AdditionalInformation.description}
-                                </Typography>
-                            </Box>
-                        </Grid>
-                    ))}
+                    
                 </Grid>
                 
             </Box>
@@ -457,7 +465,7 @@ fetchEventposter();
         gap: "4px",
         position: "relative",
         width: "100%", // ให้ปรับขนาดตาม container
-        height: "750px",
+        height: "680px",
       }}
     >
       <Box className="poster-header">
@@ -495,7 +503,7 @@ fetchEventposter();
           sx={{
             fontSize: "1rem",
             color: "#512da8",
-            lineHeight: 1.6,
+            lineHeight: 1.4,
             fontFamily: "Open Sans, sans-serif",
             textShadow: "1px 1px 3px rgba(0, 0, 0, 0.4)",
             animation: "bounceText 1.5s ease-in-out infinite",
@@ -509,37 +517,8 @@ fetchEventposter();
         </Typography>
       </Box>
 
-      <Box
-        className="poster-footer"
-        sx={{
-          position: "absolute",
-          bottom: 20,
-          left: "50%",
-          transform: "translateX(-50%)",
-        }}
-      >
-        <Button
-          className="poster-btn"
-          variant="contained"
-          sx={{
-            backgroundColor: "#007bff",
-            color: "white",
-            p: "8px 16px",
-            fontSize: "1.2rem",
-            borderRadius: "30px",
-            cursor: "pointer",
-            boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.5)",
-            transition: "background-color 0.3s ease, transform 0.3s ease",
-            "&:hover": {
-              backgroundColor: "#0056b3",
-              transform: "scale(1.1)",
-              boxShadow: "0px 15px 50px rgba(0, 0, 0, 0.7)",
-            },
-          }}
-        >
-          Learn More
-        </Button>
-      </Box>
+      
+      
     </Box>
   ))}
 
