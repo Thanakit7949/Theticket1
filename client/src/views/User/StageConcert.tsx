@@ -1,25 +1,34 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
-import { Box, Button, Stack,  Tooltip,  Typography } from "@mui/material";
+import { Box, Button, Stack, Tooltip, Typography } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const StageConcert: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState(5 * 60);
   const [selectedPrice, setSelectedPrice] = useState<string | null>(null);
   const [tickets, setTickets] = useState<any[]>([]);
+  const [zones, setZones] = useState<any[]>([]); // เก็บข้อมูลโซน
   const navigate = useNavigate();
-    const location = useLocation();
-    const concertID = location.state;
+  const location = useLocation();
+  const concertID = location.state;
 
+  useEffect(() => {
+    if (!concertID?.id) return;
 
-    useEffect(() => {
-        if (!location.state) {
-          console.log("ไม่มีข้อมูล state ที่ถูกส่งมา");
-        } else {
-          console.log("concertID:", concertID);
-        }
-      }, [location.state, concertID]);
-      
+    const fetchZones = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/getZones?concert_id=${concertID.id}`);
+        const data = await response.json();
+        setZones(data); // บันทึกข้อมูลโซน
+        console.log('Zone', data)
+      } catch (error) {
+        console.error("Error fetching zones:", error);
+      }
+    };
+
+    fetchZones();
+  }, [concertID]);
+
   useEffect(() => {
     const interval = setInterval(() => {
       setTimeLeft((prevTime) => (prevTime > 0 ? prevTime - 1 : 0));
@@ -34,7 +43,6 @@ const StageConcert: React.FC = () => {
         const response = await fetch("http://localhost:5000/getConcertstage");
         const data = await response.json();
         setTickets(data);
-        console.log(data);
       } catch (error) {
         console.error("Error fetching events:", error);
       }
@@ -50,28 +58,30 @@ const StageConcert: React.FC = () => {
   };
 
   const filteredTickets = selectedPrice
-  ? tickets.filter((ticket) => String(ticket.amount) === selectedPrice) // ใช้ String เพื่อความแม่นยำ
-  : tickets;
+    ? tickets.filter((ticket) => String(ticket.amount) === selectedPrice)
+    : tickets;
 
-
-  const handleBuyTicket = (price: string, label: string) => {
-    navigate("/concert/seat-concert", { state: { price, label } });
-  };
-
+    const handleBuyTicket = (zone: { id: number, concert_id: number, name: string, seat_count: number }, price: string,label:string) => {
+      // ส่งข้อมูลของ zone ที่เลือกไปใน state
+      navigate("/concert/seat-concert", {
+        state: { zone, price,label },  // ส่งทั้ง zone และราคาที่ปรับแล้ว
+      });
+    };
+    
   return (
     <Box
-    sx={{
-      display: "flex",
-      flexDirection: "row", // ใช้แสดงคอนเทนต์ในแถว
-      alignItems: "flex-start",
-      background: "linear-gradient(135deg, #EECDA3 0%, #EF629F 100%);",
-      minHeight: "100vh",
-      padding: "20px",
-      width: "1150px", // เพิ่มความยาวของกรอบ
-      height:"1100px",
-      maxHeight:"none",
-      maxWidth: "none", // กำหนดให้ไม่มีขนาดกว้างสุดที่จำกัด
-    }}
+      sx={{
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "flex-start",
+        background: "linear-gradient(135deg, #EECDA3 0%, #EF629F 100%);",
+        minHeight: "100vh",
+        padding: "20px",
+        width: "1150px",
+        height: "1100px",
+        maxHeight: "none",
+        maxWidth: "none",
+      }}
     >
       <Box
         sx={{
@@ -134,53 +144,57 @@ const StageConcert: React.FC = () => {
         </Stack>
 
         <Box
+  sx={{
+    width: "100%",
+    padding: "20px",
+    borderRadius: "30px",
+    backgroundColor: "#FFF",
+    boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)",
+    mb: 3,
+  }}
+>
+  {zones.map((zone, index) => {
+    // คำนวณราคาของโซน
+    // const zonePrice = concertID.price - 1000 * (index + 1);
+    const zonePrice = concertID.price - 1000 * index;
+
+    return (
+      <Box
+        key={index}
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          backgroundColor: "#f48fb1",
+          color: "white",
+          borderRadius: "30px",
+          padding: "12px",
+          marginBottom: "8px",
+        }}
+      >
+        <Typography>{zone.name}</Typography> {/* แสดงชื่อโซน */}
+        <Typography>{zone.seat_count} ที่นั่ง</Typography> {/* แสดงจำนวนที่นั่ง */}
+        <Typography>฿{zonePrice}</Typography> {/* แสดงราคาของโซน */}
+
+        <Button
+          variant="contained"
           sx={{
-            width: "100%",
-            padding: "20px",
+            backgroundColor: "white",
+            color: "black",
+            padding: "8px 16px",
             borderRadius: "30px",
-            backgroundColor: "#FFF",
-            boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)",
-            mb: 3,
+            fontWeight: "bold",
+            "&:hover": { backgroundColor: "#b39ddb", color: "white" },
           }}
+          onClick={() => handleBuyTicket(zone, zonePrice.toString(),zone.name)}
         >
-          {filteredTickets.map((ticket, index) => (
-            <Box
-              key={index}
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                backgroundColor: ticket.color,
-                color: "white",
-                borderRadius: "30px",
-                padding: "12px",
-                marginBottom: "8px",
-                transition: "transform 0.3s ease, box-shadow 0.3s ease",
-                "&:hover": {
-                  transform: "scale(1.05)",
-                  boxShadow: "0px 6px 16px rgba(0, 0, 0, 0.3)",
-                },
-              }}
-            >
-              <Typography>{ticket.label}: Cenzonic Concert</Typography>
-              <Typography>{ticket.price}</Typography>
-              <Button
-                variant="contained"
-                sx={{
-                  backgroundColor: "white",
-                  color: "black",
-                  padding: "8px 16px",
-                  borderRadius: "30px",
-                  fontWeight: "bold",
-                  "&:hover": { backgroundColor: "#b39ddb", color: "white" },
-                }}
-                onClick={() => handleBuyTicket(ticket.price, ticket.label)}
-              >
-                จองโซนที่นั่ง
-              </Button>
-            </Box>
-          ))}
-        </Box>
+          จองโซนที่นั่ง
+        </Button>
+      </Box>
+    );
+  })}
+</Box>
+
       </Box>
 
       <Box
@@ -203,7 +217,6 @@ const StageConcert: React.FC = () => {
           </span>
         </Typography>
 
-        {/* Stage Label */}
         <Typography
           variant="h4"
           fontWeight="bold"
@@ -211,7 +224,6 @@ const StageConcert: React.FC = () => {
             backgroundColor: "#f48fb1",
             color: "black",
             padding: "20px",
-
             width: "90%",
             maxWidth: "none",
             minHeight: "100px",
@@ -224,7 +236,6 @@ const StageConcert: React.FC = () => {
           STAGE
         </Typography>
 
-        {/* Seating Arrangement */}
         <Box
           sx={{
             display: "flex",
@@ -233,196 +244,53 @@ const StageConcert: React.FC = () => {
             width: "100%",
           }}
         >
-          {/* Front Row (AA Section) */}
-          <Box
-            sx={{ display: "flex", justifyContent: "center", gap: 1, mb: 2 }}
-          >
-            {["AA1", "AA2", "AA3"].map((label) => (
-              <Tooltip
-                key={label}
-                title={
-                  tickets.find((ticket) => ticket.label === label)?.price || ""
-                }
-                arrow
+          {zones.map((zone, index) => {
+            // คำนวณราคาของโซนที่แสดง
+            // const zonePrice = concertID.price - 1000 * (index + 1);
+            const zonePrice = concertID.price - 1000 * index;
+
+            return (
+              <Box
+                key={index}
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  gap: 1,
+                  mb: 2,
+                }}
               >
-                <Box
-                  onClick={() => {
-                    const ticket = tickets.find(
-                      (ticket) => ticket.label === label
-                    );
-                    // ส่งข้อมูลไปยังหน้า seat-concert พร้อมกับชื่อโซน (label) และราคา
-                    navigate("/concert/seat-concert", {
-                      state: { price: ticket?.price, label },
-                    });
-                  }}
-                  sx={{
-                    backgroundColor: "#FF66A4",
-                    color: "white",
-                    padding: "25px 50px",
-                    borderRadius: "10px",
-                    minWidth: "100px",
-                    textAlign: "center",
-                    fontSize: "18px",
-                    cursor: "pointer",
-                    transition: "transform 0.2s ease, box-shadow 0.2s ease", // การเพิ่ม transition
-                    "&:hover": {
-                      transform: "scale(1.1)", // เพิ่มขนาดเมื่อเมาส์อยู่บนปุ่ม
-                      boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.3)", // เพิ่มเงาหลัง
-                    },
-                  
-                  }}
+                <Tooltip
+                  key={index}
+                  title={`ราคาที่นั่ง: ฿${zonePrice}`}
+                  arrow
                 >
-                  {label} {/* แสดงชื่อโซน */}
-                </Box>
-              </Tooltip>
-            ))}
-          </Box>
-          <Box
-            sx={{ display: "flex", justifyContent: "center", gap: 1, mb: 2 }}
-          >
-            {["AA4", "AA5", "AA6"].map((label) => (
-             <Tooltip
-             key={label}
-             title={
-               tickets.find((ticket) => ticket.label === label)?.price || ""
-             }
-             arrow
-           >
-             <Box
-               onClick={() => {
-                 const ticket = tickets.find(
-                   (ticket) => ticket.label === label
-                 );
-                 // ส่งข้อมูลไปยังหน้า seat-concert พร้อมกับชื่อโซน (label) และราคา
-                 navigate("/concert/seat-concert", {
-                   state: { price: ticket?.price, label },
-                 });
-               }}
-               sx={{
-                 backgroundColor: "#FFD96A",
-                 color: "white",
-                 padding: "25px 55px",
-                 borderRadius: "10px",
-                 minWidth: "100px",
-                 textAlign: "center",
-                 fontSize: "18px",
-                 cursor: "pointer",
-                 transition: "transform 0.2s ease, box-shadow 0.2s ease", // การเพิ่ม transition
-                 "&:hover": {
-                   transform: "scale(1.1)", // เพิ่มขนาดเมื่อเมาส์อยู่บนปุ่ม
-                   boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.3)", // เพิ่มเงาหลัง
-                 },
-               }}
-             >
-               {label} {/* แสดงชื่อโซน */}
-             </Box>
-           </Tooltip>
-            ))}
-          </Box>
-
-          {/* Middle Row (BB Section) */}
-          <Box
-            sx={{ display: "flex", justifyContent: "center", gap: 1, mb: 2 }}
-          >
-            {["BB1", "BB2", "BB3", "BB4", "BB5", "BB6"].map((label) => (
-             <Tooltip
-             key={label}
-             title={
-               tickets.find((ticket) => ticket.label === label)?.price || ""
-             }
-             arrow
-           >
-             <Box
-               onClick={() => {
-                 const ticket = tickets.find(
-                   (ticket) => ticket.label === label
-                 );
-                 // ส่งข้อมูลไปยังหน้า seat-concert พร้อมกับชื่อโซน (label) และราคา
-                 navigate("/concert/seat-concert", {
-                   state: { price: ticket?.price, label },
-                 });
-               }}
-               sx={{
-                backgroundColor: "#4DC0FF",
-                color: "white",
-                padding: "15px 25px",
-                borderRadius: " 0 0 100% 100%", // ให้กรอบเป็นครึ่งวงกลมที่ด้านบน
-                minWidth: "60px",
-                textAlign: "center",
-                cursor: "pointer",
-                transition: "transform 0.2s ease, box-shadow 0.2s ease", // การเพิ่ม transition
-                "&:hover": {
-                  transform: "scale(1.1)", // เพิ่มขนาดเมื่อเมาส์อยู่บนปุ่ม
-                  boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.3)", // เพิ่มเงาหลัง
-                },
-              }}
-             >
-               {label} {/* แสดงชื่อโซน */}
-             </Box>
-           </Tooltip>
-            ))}
-          </Box>
-
-          {/* Surrounding Sections (SC, SM, L, R) */}
+                  <Box
+                     onClick={() => handleBuyTicket(zone, zonePrice.toString(),zone.name)}
+                    sx={{
+                      backgroundColor: "#8e24aa",
+                      color: "white",
+                      padding: "25px 50px",
+                      borderRadius: "10px",
+                      minWidth: "100px",
+                      textAlign: "center",
+                      fontSize: "18px",
+                      cursor: "pointer",
+                      transition: "transform 0.2s ease, box-shadow 0.2s ease",
+                      "&:hover": {
+                        transform: "scale(1.1)",
+                        boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.3)",
+                      },
+                    }}
+                  >
+                    {zone.name} - ฿{zonePrice} {/* แสดงชื่อโซนและราคา */}
+                  </Box>
+                </Tooltip>
+              </Box>
+            );
+          })}
         </Box>
 
-        {/* STD Zone */}
 
-        <Box sx={{ display: "flex", justifyContent: "center", gap: 1, mb: 2 }}>
-          {["STD"].map((label) => (
-            <Tooltip
-            key={label}
-            
-            title={
-              tickets.find((ticket) => ticket.label === label)?.price || ""
-            }
-            arrow
-          >
-            <Box
-              onClick={() => {
-                const ticket = tickets.find(
-                  (ticket) => ticket.label === label
-                );
-                // ส่งข้อมูลไปยังหน้า seat-concert พร้อมกับชื่อโซน (label) และราคา
-                navigate("/concert/seat-concert", {
-                  state: { price: ticket?.price, label },
-                });
-              }}
-              sx={{
-                width: "580px",
-                maxWidth: "none",
-                backgroundColor: "#2D2DFF",
-                color: "white",
-                textAlign: "center",
-                padding: "15px",
-                borderRadius: " 0 0 100% 100%", // ให้กรอบเป็นครึ่งวงกลมที่ด้านบน
-                mt: 1,
-                transition: "transform 0.2s ease, box-shadow 0.2s ease", // การเพิ่ม transition
-                "&:hover": {
-                  transform: "scale(1.1)", // เพิ่มขนาดเมื่อเมาส์อยู่บนปุ่ม
-                  boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.3)", // เพิ่มเงาหลัง
-                },
-              }}
-            >
-              {label} {/* แสดงชื่อโซน */}
-            </Box>
-          </Tooltip>
-          ))}
-        </Box>
-        <Box
-        
-        sx={{
-          width: "100%",
-          backgroundColor: "",
-          color: "white",
-          textAlign: "center",
-          padding: "15px",
-          borderRadius: " 0 0 100% 100%", // ให้กรอบเป็นครึ่งวงกลมที่ด้านบน
-          mt: 1,
-        }}
-      >
-      </Box>
-    
       </Box>
     </Box>
   );
