@@ -75,7 +75,18 @@ const Users: React.FC = () => {
         setUsers((prev) => [...prev, response.data]);
       }
 
-      setFormData({ email: '', password: '', phone: '', first_name: '', last_name: '', birth_date: '', address: '', gender: '', role: '', profile_image: '' });
+      setFormData({
+        email: '',
+        password: '',
+        phone: '',
+        first_name: '',
+        last_name: '',
+        birth_date: '',
+        address: '',
+        gender: '',
+        role: '',
+        profile_image: '',
+      });
       setIsEditing(false);
       setOpen(false);
     } catch (error) {
@@ -107,34 +118,28 @@ const Users: React.FC = () => {
     return <Typography>Loading users...</Typography>;
   }
 
-  const formatDate = (dateString: string) => {
-    const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: '2-digit', year: 'numeric' };
-    return new Date(dateString).toLocaleDateString('en-GB', options);
-  };
-
   return (
-    <Box>
+    <Box sx={{ p: 4 }}>
       <Typography variant="h4" textAlign="center" mt={4} mb={4}>
-        Users Management
+        User Management
       </Typography>
       <Button variant="contained" color="primary" onClick={handleOpen} sx={{ mb: 4 }}>
         Add User
       </Button>
-      <TableContainer component={Paper} sx={{ mb: 4 }}>
+      <TableContainer component={Paper}>
         <Table>
-          <TableHead sx={{ bgcolor: 'primary.main' }}>
+          <TableHead>
             <TableRow>
-              <TableCell sx={{ color: 'white' }}>ID</TableCell>
-              <TableCell sx={{ color: 'white' }}>Email</TableCell>
-              <TableCell sx={{ color: 'white' }}>Phone</TableCell>
-              <TableCell sx={{ color: 'white' }}>First Name</TableCell>
-              <TableCell sx={{ color: 'white' }}>Last Name</TableCell>
-              <TableCell sx={{ color: 'white' }}>Birth Date</TableCell>
-              <TableCell sx={{ color: 'white' }}>Address</TableCell>
-              <TableCell sx={{ color: 'white' }}>Gender</TableCell>
-              <TableCell sx={{ color: 'white' }}>Role</TableCell>
-              <TableCell sx={{ color: 'white' }}>Profile Image</TableCell>
-              <TableCell sx={{ color: 'white' }}>Actions</TableCell>
+              <TableCell>ID</TableCell>
+              <TableCell>Email</TableCell>
+              <TableCell>Phone</TableCell>
+              <TableCell>First Name</TableCell>
+              <TableCell>Last Name</TableCell>
+              <TableCell>Birth Date</TableCell>
+              <TableCell>Address</TableCell>
+              <TableCell>Gender</TableCell>
+              <TableCell>Role</TableCell>
+              <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -145,13 +150,10 @@ const Users: React.FC = () => {
                 <TableCell>{user.phone}</TableCell>
                 <TableCell>{user.first_name}</TableCell>
                 <TableCell>{user.last_name}</TableCell>
-                <TableCell>{formatDate(user.birth_date)}</TableCell>
+                <TableCell>{user.birth_date}</TableCell>
                 <TableCell>{user.address}</TableCell>
                 <TableCell>{user.gender}</TableCell>
                 <TableCell>{user.role}</TableCell>
-                <TableCell>
-                  <img src={user.profile_image} alt="Profile" width="50" height="50" />
-                </TableCell>
                 <TableCell>
                   <Button variant="contained" color="primary" size="small" sx={{ mr: 1 }} onClick={() => handleEdit(user)}>
                     Edit
@@ -166,127 +168,85 @@ const Users: React.FC = () => {
         </Table>
       </TableContainer>
       <Modal open={open} onClose={handleClose}>
-        <Box sx={{ ...modalStyle, width: 600 }}>
+        <Box sx={{ ...modalStyle, width: 400 }}>
           <Typography variant="h6" component="h2">
             {isEditing ? 'Edit User' : 'Add User'}
           </Typography>
-          <Grid container spacing={2}>
-            <Grid item xs={6}>
-              <TextField
-                label="Email"
-                name="email"
-                value={formData.email}
-                onChange={handleFormChange}
-                fullWidth
-                margin="normal"
-                required
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                label="Password"
-                name="password"
-                type="password"
-                value={formData.password}
-                onChange={handleFormChange}
-                fullWidth
-                margin="normal"
-                required
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                label="Phone"
-                name="phone"
-                value={formData.phone}
-                onChange={handleFormChange}
-                fullWidth
-                margin="normal"
-                required
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                label="First Name"
-                name="first_name"
-                value={formData.first_name}
-                onChange={handleFormChange}
-                fullWidth
-                margin="normal"
-                required
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                label="Last Name"
-                name="last_name"
-                value={formData.last_name}
-                onChange={handleFormChange}
-                fullWidth
-                margin="normal"
-                required
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                label="Birth Date"
-                name="birth_date"
-                type="date"
-                value={formData.birth_date}
-                onChange={handleFormChange}
-                fullWidth
-                margin="normal"
-                InputLabelProps={{ shrink: true }}
-                required
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                label="Address"
-                name="address"
-                value={formData.address}
-                onChange={handleFormChange}
-                fullWidth
-                margin="normal"
-                required
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <FormControl fullWidth margin="normal" required>
-                <InputLabel>Gender</InputLabel>
-                <Select
-                  name="gender"
-                  value={formData.gender}
-                  onChange={handleFormChange}
-                >
-                  <MenuItem value="Male">Male</MenuItem>
-                  <MenuItem value="Female">Female</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                label="Role"
-                name="role"
-                value={formData.role}
-                onChange={handleFormChange}
-                fullWidth
-                margin="normal"
-                required
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                label="Profile Image URL"
-                name="profile_image"
-                value={formData.profile_image}
-                onChange={handleFormChange}
-                fullWidth
-                margin="normal"
-                required
-              />
-            </Grid>
-          </Grid>
+          <TextField
+            label="Email"
+            name="email"
+            value={formData.email}
+            onChange={handleFormChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Password"
+            name="password"
+            type="password"
+            value={formData.password}
+            onChange={handleFormChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Phone"
+            name="phone"
+            value={formData.phone}
+            onChange={handleFormChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="First Name"
+            name="first_name"
+            value={formData.first_name}
+            onChange={handleFormChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Last Name"
+            name="last_name"
+            value={formData.last_name}
+            onChange={handleFormChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Birth Date"
+            name="birth_date"
+            type="date"
+            value={formData.birth_date}
+            onChange={handleFormChange}
+            fullWidth
+            margin="normal"
+            InputLabelProps={{ shrink: true }}
+          />
+          <TextField
+            label="Address"
+            name="address"
+            value={formData.address}
+            onChange={handleFormChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Gender"
+            name="gender"
+            value={formData.gender}
+            onChange={handleFormChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Role"
+            name="role"
+            value={formData.role}
+            onChange={handleFormChange}
+            fullWidth
+            margin="normal"
+          />
           <Button variant="contained" color="primary" onClick={handleAddOrUpdate} sx={{ mt: 2 }}>
             {isEditing ? 'Update' : 'Add'}
           </Button>

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { ISports } from "./HomeTest";
+import dayjs from "dayjs";
 
 const Sport: React.FC = () => {
   const navigate = useNavigate();
@@ -40,7 +41,7 @@ const Sport: React.FC = () => {
           id: item.id,
           img: `http://localhost/sport/all/${item.image}`, // ใช้ฟิลด์ `img` จาก API
           title: item.name, // ใช้ฟิลด์ `name` จาก API
-          date: `🗓️: ${item.date}`, // เพิ่มไอคอนหรือฟอร์แมตข้อความ
+          date: `🗓️: ${dayjs(item.date).format("DD/MM/YY")}`, // เพิ่มไอคอนหรือฟอร์แมตข้อความ
           time: `⏰: ${item.time}`, // ฟิลด์ `time` (ถ้ามี)
           location: `📌: ${item.location}`, // ใช้ฟิลด์ `location`
           price: item.price, // ใช้ฟิลด์ `price`
@@ -63,7 +64,7 @@ const Sport: React.FC = () => {
           id: item.id,
           img: `http://localhost/sport/all/${item.image}`, // ใช้ฟิลด์ `img` จาก API
           title: item.name, // ใช้ฟิลด์ `name` จาก API
-          date: `🗓️: ${item.date}`, // เพิ่มไอคอนหรือฟอร์แมตข้อความ
+          date: `🗓️: $${dayjs(item.date).format("DD/MM/YY")}`, // เพิ่มไอคอนหรือฟอร์แมตข้อความ
           time: `⏰: ${item.time}`, // ฟิลด์ `time` (ถ้ามี)
           location: `📌: ${item.location}`, // ใช้ฟิลด์ `location`
           price: item.price, // ใช้ฟิลด์ `price`
@@ -85,7 +86,7 @@ const Sport: React.FC = () => {
           id: item.id,
           img: `http://localhost/sport/all/${item.image}`, // ใช้ฟิลด์ `img` จาก API
           title: item.name, // ใช้ฟิลด์ `name` จาก API
-          date: `🗓️: ${item.date}`, // เพิ่มไอคอนหรือฟอร์แมตข้อความ
+          date: `🗓️: $${dayjs(item.date).format("DD/MM/YY")}`, // เพิ่มไอคอนหรือฟอร์แมตข้อความ
           time: `⏰: ${item.time}`, // ฟิลด์ `time` (ถ้ามี)
           location: `📌: ${item.location}`, // ใช้ฟิลด์ `location`
           price: item.price, // ใช้ฟิลด์ `price`
@@ -105,7 +106,7 @@ const Sport: React.FC = () => {
           id: item.id,
           img: `http://localhost/sport/all/${item.image}`, // ใช้ฟิลด์ `img` จาก API
           title: item.name, // ใช้ฟิลด์ `name` จาก API
-          date: `🗓️: ${item.date}`, // เพิ่มไอคอนหรือฟอร์แมตข้อความ
+          date: `🗓️: $${dayjs(item.date).format("DD/MM/YY")}`, // เพิ่มไอคอนหรือฟอร์แมตข้อความ
           time: `⏰: ${item.time}`, // ฟิลด์ `time` (ถ้ามี)
           location: `📌: ${item.location}`, // ใช้ฟิลด์ `location`
           price: item.price, // ใช้ฟิลด์ `price`

@@ -18,7 +18,8 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import logo from "../assets/logo/pillars.png";
 import { routesConfig } from "../router/RounterConfig";
-
+import Grid from "@mui/material/Grid2";
+import Cookies from "js-cookie";
 export interface ITopBarProps {
   DrawerHeader: any;
   open: any;
@@ -53,7 +54,9 @@ const settings = [
 
 const TopBar: React.FunctionComponent<ITopBarProps> = ({ open }) => {
   const [sidebar, setSidebar] = useState<MenuSideBar[]>([]);
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
+    null
+  );
   const navigate = useNavigate();
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -83,7 +86,8 @@ const TopBar: React.FunctionComponent<ITopBarProps> = ({ open }) => {
           };
 
           for await (const itemchildren of item.children) {
-            let inputChildrenmini: IChildrenRouter[] = itemchildren?.children ?? [];
+            let inputChildrenmini: IChildrenRouter[] =
+              itemchildren?.children ?? [];
 
             let ch: Childen = {
               name: itemchildren.name ?? "",
@@ -114,10 +118,26 @@ const TopBar: React.FunctionComponent<ITopBarProps> = ({ open }) => {
 
   return (
     <>
-      <AppBar position="fixed" style={{ background: "linear-gradient(to right, #D8BFD8, #FFEBCD)", borderRadius: "10px" }}>
+      <AppBar
+        position="fixed"
+        style={{
+          background: "linear-gradient(to right, #D8BFD8, #FFEBCD)",
+          borderRadius: "10px",
+        }}
+      >
         <Container maxWidth="xl">
           <Toolbar disableGutters>
-            <Box component="img" src={logo} alt="Logo" sx={{ display: { xs: "none", md: "flex" }, mr: 1, width: 30, height: 30 }} />
+            <Box
+              component="img"
+              src={logo}
+              alt="Logo"
+              sx={{
+                display: { xs: "none", md: "flex" },
+                mr: 1,
+                width: 30,
+                height: 30,
+              }}
+            />
             <Typography
               variant="h6"
               noWrap
@@ -160,6 +180,9 @@ const TopBar: React.FunctionComponent<ITopBarProps> = ({ open }) => {
               ))}
             </Box>
 
+            <Grid container flexDirection={"column"} sx={{ alignItems: "end" }} marginRight={2}>
+              <Typography sx={{color:"black"}}>{Cookies.get('acountname')}</Typography>
+            </Grid>
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
@@ -177,7 +200,10 @@ const TopBar: React.FunctionComponent<ITopBarProps> = ({ open }) => {
                 onClose={handleCloseUserMenu}
               >
                 {settings.map((setting) => (
-                  <MenuItem key={setting.name} onClick={() => handleMenuClick(setting.path)}>
+                  <MenuItem
+                    key={setting.name}
+                    onClick={() => handleMenuClick(setting.path)}
+                  >
                     <Typography textAlign="center">{setting.name}</Typography>
                   </MenuItem>
                 ))}
