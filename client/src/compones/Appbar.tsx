@@ -16,14 +16,13 @@ import { Link as RouterLink, Routes, Route } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 import Photo from "../assets/react.svg";
 import HomeTest from "../views/User/HomeTest";
-import Concert from "../views/User/Concert";
-import Sport from "../views/User/Sport";
+import Concert from "../views/concertgroup/Concert";
+import Sport from "../views/sportgroup/Sport";
 import Promotion from "../views/User/Promotion";
 import Product from "../views/User/Product";
 import Information from "../views/User/Information";
 import Profile from "../views/User/Profile";
 import logo from '../assets/logo/pillars.png';
-import Dashboard from "../views/User/Dashboard";
 import Account from "../views/User/Account";
 import Dashboards from "../views/Admin/Dashboards";
 import Sidebar from "../views/Admin/sidebar";
@@ -82,7 +81,7 @@ const AppBarT: React.FunctionComponent = () => {
               variant="h6"
               noWrap
               component={RouterLink}
-              to="/"
+              to="/home-test"
               sx={{
                 mr: 2,
                 display: { xs: "none", md: "flex" },
@@ -93,7 +92,7 @@ const AppBarT: React.FunctionComponent = () => {
                 textDecoration: "none",
               }}
             >
-              INTERGETHER
+              TheTicket
             </Typography>
 
             <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>

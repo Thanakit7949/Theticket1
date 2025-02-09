@@ -7,7 +7,6 @@ import cat from "/src/assets/promotion/cat.png";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { Link, useNavigate } from "react-router-dom";
-import dayjs from "dayjs";
 
 const Promotion = () => {
   const navigate = useNavigate();
@@ -20,6 +19,9 @@ const Promotion = () => {
     const fetchPromotionImages = async () => {
       try {
         const response = await fetch("http://localhost:5000/getpromotionImage");
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const data = await response.json();
         setPromotion(data); // กำหนด state สำหรับข้อมูลรูปภาพ
       } catch (error) {
@@ -31,6 +33,9 @@ const Promotion = () => {
         const response = await fetch(
           "http://localhost:5000/getpromotionDetail"
         );
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const data = await response.json();
         setPromotionDetail(data); // บันทึกข้อมูลใน State
       } catch (error) {
@@ -43,6 +48,9 @@ const Promotion = () => {
         const response = await fetch(
           "http://localhost:5000/getproconsport"
         );
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const data = await response.json();
         setProconSport(data); // บันทึกข้อมูลใน State
       } catch (error) {
@@ -138,7 +146,7 @@ const Promotion = () => {
         gutterBottom
         sx={{ position: "relative" }}
       >
-        ᴇɴᴊᴏʏ ᴇxᴄʟᴜꜱɪᴠᴇ เมื่อซื้อสินค้าครบตามที่กำหนดรับไปเลยส่วนลด!
+         ᴇɴᴊᴏʏ ᴇxᴄʟᴜꜱɪᴠᴇ เมื่อซื้อสินค้าครบตามที่กำหนดรับไปเลยส่วนลด!
       </Typography>
 
       {/* Image Carousel */}
@@ -450,7 +458,8 @@ const Promotion = () => {
                   ฿{promotion.newPrice}
                 </Typography>
                 <Typography variant="h6" sx={{ color: "#888" }}>
-                  🛒 เริ่มโปรตั้งแต่  {dayjs(promotion.date).format("DD/MM/YY")}
+                  🛒 เริ่มโปรตั้งแต่ <br></br>
+                  {promotion.date}
                 </Typography>
               </Box>
             </Box>
@@ -611,8 +620,7 @@ const Promotion = () => {
                       fontSize: "15px",
                     }}
                   >
-                     
-                    วันหมดอายุ: {dayjs(item.expiryDate).format("DD/MM/YY")} {/* เพิ่มข้อความวันหมดอายุ */}
+                    วันหมดอายุ: {item.expiryDate} {/* เพิ่มข้อความวันหมดอายุ */}
                   </Typography>
                 </Box>
 
