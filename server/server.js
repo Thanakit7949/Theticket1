@@ -15,7 +15,7 @@ const db = mysql.createPool({
   host: 'localhost',
   user: 'root',
   password: '',
-  database: 'ticket_db',
+  database: 'test',
 });
 
 // Middleware สำหรับตรวจสอบ token
@@ -149,6 +149,61 @@ app.post('/register', async (req, res) => {
 });
 
 // ดึงข้อมูล Concerts
+app.get("/getZones", (req, res) => {
+  const { concert_id } = req.query;
+
+  if (!concert_id) {
+    return res.status(400).json({ error: "concert_id is required" });
+  }
+
+  const query = "SELECT * FROM zones WHERE concert_id = ?";
+
+  db.query(query, [concert_id], (err, results) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+    res.json(results);
+  });
+});
+
+app.get('/api/seats/:zoneId', async (req, res) => {
+  const { zoneId } = req.params;
+  try {
+    console.log('กำลังดึงข้อมูลที่นั่งสำหรับโซน:', zoneId);
+
+    // ใช้ db.promise().query() เพื่อรองรับ async/await
+    const [rows] = await db.promise().query('SELECT * FROM seats WHERE zone_id = ?', [zoneId]);
+    console.log('ข้อมูลที่นั่ง:', rows);
+
+    if (!rows || rows.length === 0) {
+      console.log(`ไม่พบที่นั่งสำหรับ zoneId: ${zoneId}`);
+      return res.status(404).send('ไม่พบที่นั่ง');
+    }
+
+    res.json(rows);
+  } catch (error) {
+    console.error("ข้อผิดพลาดฐานข้อมูล:", error);
+    res.status(500).send('เกิดข้อผิดพลาดของเซิร์ฟเวอร์');
+  }
+});
+
+
+
+
+// API เพื่ออัปเดตสถานะที่นั่ง (Backend)
+app.post('/api/update-seat', async (req, res) => {
+  const { seatNumber, status } = req.body; // รับ seatNumber แทน seatId
+  try {
+    const query = 'UPDATE seats SET is_reserved = ? WHERE seat_number = ?'; // ใช้ seat_number แทน id
+    await db.execute(query, [status, seatNumber]); // ใช้ seatNumber แทน
+    res.status(200).send('Seat updated successfully');
+  } catch (error) {
+    res.status(500).send('Server Error');
+  }
+});
+
+
 app.get('/getAllConcerts', authenticate, async (req, res) => {
   try {
     const [rows] = await db.query('SELECT * FROM concerts');
@@ -644,13 +699,13 @@ app.post('/addSport', async (req, res) => {
   }
 
   try {
-    const sql = `INSERT INTO sports (name, date, location, price, available_seats, type) VALUES (?, ?, ?, ?, ?, ?)`;
-    const values = [name, date, location, price, available_seats, type];
+    const sql = `INSERT INTO sports (name, date, location, price, available_seats) VALUES (?, ?, ?, ?, ?)`;
+    const values = [name, date, location, price, availableSeats];
     
     // Using promise-based query
-    const [result] = await db.query(sql, values);  // This ensures it returns a promise.
+    await db.promise().query(sql, values);  // This ensures it returns a promise.
     
-    res.status(201).json({ message: 'Sport added successfully', id: result.insertId });
+    res.status(201).json({ message: 'Sport added successfully' });
   } catch (error) {
     console.error('Database error:', error);
     res.status(500).json({ error: 'Internal Server Error' });

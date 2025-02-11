@@ -6,20 +6,56 @@ import CloseIcon from "@mui/icons-material/Close";
 
 const SeatConcert: React.FC = () => {
   const location = useLocation();
-  const { price, label, concertId } = location.state || {}; // รับข้อมูลทั้งราคาและชื่อโซน (label)
-  const [selectedSeats, setSelectedSeats] = useState<
-    { row: number; col: number }[]
-  >([]); // เปลี่ยนให้เป็น array เพื่อเก็บหลายที่นั่ง
-
+  const navigate = useNavigate();
+  const { price, label } = location.state || {}; // รับข้อมูลทั้งราคาและชื่อโซน (label)
   const [timeLeft, setTimeLeft] = useState(5 * 60); // ตัวแปรเวลาที่เหลือในการทำรายการ 5 นาที (5 * 60 วินาที)
+  const concert_Zone = location.state;
+  const [seats, setSeats] = useState<string[]>([]); // เก็บข้อมูลที่นั่งในรูปแบบ 1D array เช่น ["A1", "A2", "A3", ...]
+  const [selectedSeats, setSelectedSeats] = useState<string[]>([]); // เก็บที่นั่งที่เลือกเป็น string array
+
+  useEffect(() => {
+    if (!location.state) {
+      console.log("ไม่มีข้อมูล state ที่ถูกส่งมา");
+    } else {
+      console.log("concert_Zone:", concert_Zone);
+    }
+  }, [location.state, concert_Zone]);
+
+  useEffect(() => {
+    if (!concert_Zone.zone) {
+      console.error("ไม่มีข้อมูลโซน");
+      return;
+    }
+    console.log(`ดึงข้อมูลที่นั่งจาก API: http://localhost:5000/api/seats/${concert_Zone.zone.id}`);
+    fetch(`http://localhost:5000/api/seats/${concert_Zone.zone.id}`)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("ข้อมูลที่นั่งจากฐานข้อมูล:", data);
+        // สมมุติว่า data ที่ได้มาจะเป็นอาร์เรย์ของที่นั่ง เช่น ["A1", "A2", "A3", ..., "A20"]
+        setSeats(data);
+      })
+      .catch((error) => {
+        console.error("เกิดข้อผิดพลาดในการดึงข้อมูลที่นั่ง:", error);
+      });
+  }, [concert_Zone.zone]);
+
+  // ฟังก์ชันสำหรับเลือกที่นั่ง
+  const toggleSeatStatus = (seat: string) => {
+    setSelectedSeats((prevSelected) => {
+      const exists = prevSelected.includes(seat);
+      if (exists) {
+        return prevSelected.filter((s) => s !== seat);
+      } else {
+        return [...prevSelected, seat];
+      }
+    });
+    console.log(selectedSeats)
+  };
+
+
 
   // แปลง price จาก string เช่น "฿2,500" ให้เป็นตัวเลข
   const numericPrice = price ? parseFloat(price.replace(/[^\d.-]/g, "")) : 0; //จะลบอักขระที่ไม่ใช่ตัวเลขหรือเครื่องหมายจุดทศนิยมออก (เช่น "฿", ",", เป็นต้น)
-
-  // สถานะที่นั่ง
-  const [seats, setSeats] = useState(
-    Array(10).fill(Array(10).fill("available")) // สร้างแผนที่ที่นั่งขนาด 10x10 เริ่มต้นให้ที่นั่งทั้งหมดเป็นสถานะ "ว่าง" (available)
-  );
 
   // อัปเดตตัวจับเวลาให้ทำงานทุก ๆ 1 วินาที
   useEffect(() => {
@@ -34,112 +70,57 @@ const SeatConcert: React.FC = () => {
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
     const seconds = time % 60;
-    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
-      2,
-      "0"
-    )}`;
+    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
   };
 
-  useEffect(() => {
-    const fetchSeats = async () => {
-      try {
-        const response = await fetch(`http://localhost:5000/getConcertSeats/${concertId}`);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        setSeats(data);
-      } catch (error) {
-        console.error("Error fetching seats:", error);
-      }
-    };
-  
-    fetchSeats();
-  }, [concertId]);
-  
-  const updateSeatStatus = async (seatId: number, status: string) => {
+
+  const updateSeatsInDatabase = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/updateConcertSeat/${seatId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status }),
-      });
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      console.log(data);
+      await Promise.all(
+        selectedSeats.map(async (seatNumber) => {
+          console.log(seatNumber);
+          const response = await fetch("http://localhost:5000/api/update-seat", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              seatNumber: seatNumber,  // เปลี่ยนเป็น seatNumber
+              status: 1,
+            }),
+          });
+  
+          // ดูรายละเอียดของการตอบกลับจาก API
+          console.log("response:", response);
+  
+          if (!response.ok) {
+            const errorData = await response.json();
+            console.error("ข้อผิดพลาดในการอัปเดตที่นั่ง:", errorData);
+            alert("ไม่สามารถอัปเดตที่นั่งในฐานข้อมูลได้");
+          } else {
+            console.log("อัปเดตที่นั่งสำเร็จ:", seatNumber);
+          }
+        })
+      );
+  
+      console.log("ที่นั่งถูกอัปเดตในฐานข้อมูลเรียบร้อย");
     } catch (error) {
-      console.error("Error updating seat status:", error);
+      console.error("ข้อผิดพลาดในการอัปเดตที่นั่ง:", error);
+      alert("ไม่สามารถอัปเดตที่นั่งในฐานข้อมูลได้");
     }
   };
   
-  const toggleSeatStatus = (rowIndex: number, colIndex: number) => {
-    const seat = seats[rowIndex][colIndex];
-    const newStatus = seat.status === "available" ? "selected" : "available";
-    updateSeatStatus(seat.id, newStatus);
-    const seatPosition = { row: rowIndex + 1, col: colIndex + 1 };
-  
-    setSeats((prevSeats) =>
-      prevSeats.map((row, rIndex) =>
-        row.map((seat: string, cIndex: number) => {
-          if (rIndex === rowIndex && cIndex === colIndex) {
-            if (seat === "available") {
-              setSelectedSeats((prevSelectedSeats) =>
-                prevSelectedSeats.some(
-                  (selectedSeat) =>
-                    selectedSeat.row === seatPosition.row &&
-                    selectedSeat.col === seatPosition.col
-                )
-                  ? prevSelectedSeats
-                  : [...prevSelectedSeats, seatPosition]
-              ); // เพิ่มที่นั่งใหม่ ถ้าไม่มีใน `selectedSeats`
-              return "selected";
-            } else if (seat === "selected") {
-              setSelectedSeats((prevSelectedSeats) =>
-                prevSelectedSeats.filter(
-                  (selectedSeat) =>
-                    !(
-                      selectedSeat.row === seatPosition.row &&
-                      selectedSeat.col === seatPosition.col
-                    )
-                )
-              ); // ลบที่นั่งที่เลือกออกจาก `selectedSeats`
-              return "available";
-            }
-          }
-          return seat;
-        })
-      )
-    );
-  };
-  
-  const navigate = useNavigate(); // เรียกใช้ useNavigate
-  const handleBuyTicket = () => {
-    const stateData = {
-      price,
-      label,
-      selectedSeats,
-    };
-  
-    console.log("Navigating with state:", stateData); // Log ข้อมูล state
-  
+
+  const handleBuyTicket = async () => {
+    await updateSeatsInDatabase(); // อัปเดตสถานะที่นั่งก่อน
     navigate("payment-concert", {
-      state: stateData,
+      state: {
+        price,
+        label,
+        selectedSeats,
+      },
     });
   };
-    // ฟังก์ชันสำหรับการไปที่หน้า Payment
-    // const handleBuyTicket = () => {
-    //   navigate("payment-concert", {
-    //     state: {
-    //       price,
-    //       label,
-    //       selectedSeats,
-    //     },
-    //   });
-    // };
 
   return (
     <Box
@@ -148,23 +129,15 @@ const SeatConcert: React.FC = () => {
         flexDirection: "row",
         alignItems: "flex-start",
         background: "linear-gradient(135deg, #EECDA3 0%, #EF629F 100%);",
-        height:"800px",
+        height: "800px",
         padding: "20px",
-        maxHeight:"none",
+        maxHeight: "none",
         width: "1150px",
         maxWidth: "none",
       }}
     >
       {/* Sidebar ซ้าย */}
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-start",
-          width: "505px",
-          mr: 2,
-        }}
-      >
+      <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", width: "505px", mr: 2 }}>
         <Box
           sx={{
             padding: "20px",
@@ -173,19 +146,11 @@ const SeatConcert: React.FC = () => {
             boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
           }}
         >
-          <Typography
-            variant="h4"
-            sx={{ marginBottom: "20px", fontWeight: "bold", fontSize: "25px" }}
-          >
-            {" "}
-            รายละเอียดการจองโซนที่นั่ง: {label}{" "}
+          <Typography variant="h4" sx={{ marginBottom: "20px", fontWeight: "bold", fontSize: "25px" }}>
+            รายละเอียดการจองโซนที่นั่ง: {label}
           </Typography>
-          <Typography
-            variant="h6"
-            sx={{ marginBottom: "10px", textAlign: "left", color: "red" }}
-          >
-            {" "}
-            บัตรโซนที่นั่งราคา: {price} บาท{" "}
+          <Typography variant="h6" sx={{ marginBottom: "10px", textAlign: "left", color: "red" }}>
+            บัตรโซนที่นั่งราคา: {price} บาท
           </Typography>
 
           {/* แสดงโซนเมื่อเลือกที่นั่ง */}
@@ -215,50 +180,49 @@ const SeatConcert: React.FC = () => {
                   fontSize: "15px",
                 }}
               >
-                {" "}
-                {label}{" "}
+                {label}
               </Box>
             </Typography>
           )}
 
           {/* แสดงที่นั่งที่เลือก */}
           {selectedSeats.length > 0 && (
-           <Box
-           sx={{
-             display: "flex",
-             flexDirection: "row",
-             flexWrap: "wrap",
-             gap: "10px",
-             maxHeight: "150px", // กำหนดความสูงสูงสุด
-             overflowY: "auto", // เพิ่ม Scrollbar เมื่อรายการเกินพื้นที่
-             padding: "10px",
-             backgroundColor: "#fff",
-             borderRadius: "8px",
-             boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
-           }}
-         >
-            ที่นั่ง:
-            {selectedSeats.map((seat, index) => (
-              <Box
-        key={index}
-        sx={{
-          width: "50px",
-          height: "50px",
-          borderRadius: "50%",
-          backgroundColor: "#00FF00",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          color: "black",
-          fontWeight: "bold",
-          fontSize: "14px",
-        }}
-      >
-        {`${label}${seat.row}-${seat.col}`}
-      </Box>
-    ))}
-  </Box>
-)}
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                flexWrap: "wrap",
+                gap: "10px",
+                maxHeight: "150px",
+                overflowY: "auto",
+                padding: "10px",
+                backgroundColor: "#fff",
+                borderRadius: "8px",
+                boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+              }}
+            >
+              ที่นั่ง:
+              {selectedSeats.map((seat:any, index:number) => (
+                <Box
+                  key={index}
+                  sx={{
+                    width: "50px",
+                    height: "50px",
+                    borderRadius: "50%",
+                    backgroundColor: "#00FF00",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    color: "black",
+                    fontWeight: "bold",
+                    fontSize: "14px",
+                  }}
+                >
+                  {`${seat}`}
+                </Box>
+              ))}
+            </Box>
+          )}
 
           {/* แสดงราคา */}
           <Box
@@ -292,8 +256,7 @@ const SeatConcert: React.FC = () => {
               onClick={handleBuyTicket}
               disabled={selectedSeats.length === 0}
             >
-              {" "}
-              ยืนยันการจองที่นั่ง{" "}
+              ยืนยันการจองที่นั่ง
             </Button>
           </Box>
         </Box>
@@ -321,8 +284,8 @@ const SeatConcert: React.FC = () => {
             {formatTime(timeLeft)}{" "}
           </span>{" "}
         </Typography>
- {/* ตำนานสถานะที่นั่ง */}
- <Box 
+        {/* ตำนานสถานะที่นั่ง */}
+        <Box
           sx={{
             display: "flex",
             justifyContent: "center",
@@ -467,40 +430,37 @@ const SeatConcert: React.FC = () => {
             mt: 3,
           }}
         >
-          {seats.map((row, rowIndex) =>
-            row.map((seat: string, colIndex: number) => (
+          {seats.map((seat:any) => {
+            const isReserved = seat.is_reserved === 1; // ตรวจสอบว่า seat ถูกจองแล้วหรือไม่
+
+            return (
               <Box
-                key={`${rowIndex}-${colIndex}`}
-                onClick={() => toggleSeatStatus(rowIndex, colIndex)}
+                key={seat}
+                onClick={() => !isReserved && toggleSeatStatus(seat.seat_number)} // ถ้าไม่ถูกจองแล้วให้กดได้
                 sx={{
-                  width: "30px",
-                  height: "30px",
+                  width: "40px",
+                  height: "40px",
+                  backgroundColor:
+                    selectedSeats.includes(seat.seat_number)
+                      ? "#00FF00"
+                      : isReserved
+                        ? "#C0C0C0"
+                        : "#00AEEF",
                   borderRadius: "5px",
+                  cursor: isReserved ? "not-allowed" : "pointer", // ป้องกันการคลิกที่นั่งที่จองแล้ว
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
-                  backgroundColor:
-                    seat === "available"
-                      ? "#00AEEF"
-                      : seat === "selected"
-                      ? "#00FF00"
-                      : "#C0C0C0",
-                  cursor:
-                    seat === "available" || seat === "selected"
-                      ? "pointer"
-                      : "default",
                 }}
               >
-                {seat === "selected" && (
-                  <CheckIcon style={{ color: "black", fontSize: "20px" }} />
-                )}
+                {selectedSeats.includes(seat.seat_number) && <CheckIcon style={{ color: "black" }} />}
               </Box>
-            ))
-          )}
+            );
+          })}
+
         </Box>
       </Box>
     </Box>
   );
 };
-
 export default SeatConcert;
