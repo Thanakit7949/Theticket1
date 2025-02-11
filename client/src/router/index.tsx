@@ -9,12 +9,14 @@ import { routesConfig } from "./RounterConfig";
 import { MainRouter } from "../interface/Router.interface";
 import Home from "../views/Home"
 import RegisterPage from "../views/Register";
-import Dashboards from "../views/Admin/Dashboards";
 import Profile from "../views/User/Profile";
 import Dbconcerts from "../views/Admin/Dbconcerts";
 import Dbsports from "../views/Admin/Dbsports";
 import HomeAdmin from "../views/Admin/HomeAdmin";
 import HomeTest from "../views/User/HomeTest";
+import Interface from "../views/Admin/Interface";
+import Users from "../views/Admin/Users";
+import Orders from "../views/Admin/Orders";
 
 
 const Router: React.FC = () => {
@@ -147,10 +149,13 @@ const Router: React.FC = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/dashboards" element={<Dashboards />} />
         <Route path="/dbconcerts" element={<Dbconcerts />} />
         <Route path="/dbsports" element={<Dbsports />} />
-        <Route path="/home-admin" element={<HomeAdmin />} />
+        <Route path="/HomeAdmin" element={<HomeAdmin />} />
+        <Route path="/Interface" element={<Interface />} />
+        <Route path="/Users" element={<Users />} />
+        {/* <Route path="/Products" element={<Products />} /> */}
+        <Route path="/Orders" element={<Orders />} />
         
         
         <Route path="/" element={
