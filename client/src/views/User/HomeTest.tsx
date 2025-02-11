@@ -11,17 +11,9 @@ import {
 } from "@mui/material";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom"; // เพิ่ม useNavigate
-import bas from "/src/assets/home/bas.jpg";
-import molly from "/src/assets/home/molly.jpg";
-import pop from "/src/assets/home/pop.jpg";
-import toy from "/src/assets/home/toy.jpg";
-import pur from "/src/assets/home/pur.jpg";
-import bbrick from "/src/assets/home/bbrick.jpg";
-import labubu from "/src/assets/home/labubu.jpg";
+import { Link } from "react-router-dom"; // สำหรับการใช้งาน Link
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
-import EventPoster from "/src/assets/eventPosterData"; // Ensure the correct path to EventPoster data
 
 import "swiper/swiper-bundle.css";
 
@@ -52,11 +44,10 @@ export interface ISports {
 
 const HomeTest: React.FunctionComponent = () => {
   const [dataconcerts, setDataconcerts] = useState<IConcert[]>([]);
-  const [dataSports, setDataSports] = useState<ISports[]>([]);
-  const [eventPoster, setEventPoster] = useState<any[]>([]);
-  const [lightstickcon, setlightstickcon] = useState<any[]>([]); // Define lightstickcon state
-  const navigate = useNavigate(); // เพิ่ม useNavigate
-  const [datapromotion, setPromotion] = useState<any[]>([]); // Define datapromotion state
+  const [dataSports, setDataSports] = useState<ISports[]>([]); // Mock data for sports events
+  const [EventPoster, seteventposter] = useState<any[]>([]);
+  const [datapromotion, setPromotion] = useState<any[]>([]);
+  const [lightstickcon, setlightstickcon] = useState<any[]>([]);
 
   const fetchConcerts = async () => {
     try {
@@ -114,18 +105,17 @@ const HomeTest: React.FunctionComponent = () => {
     fetchSports();
   }, []);
   useEffect(() => {
-    const fetchEventPoster = async () => {
+    const fetchEventposter = async () => {
       try {
         const response = await fetch("http://localhost:5000/getEventPoster");
         const data = await response.json();
-        setEventPoster(Array.isArray(data) ? data : []); // Ensure data is an array
+        seteventposter(data);
       } catch (error) {
-        console.error("Error fetching event posters:", error);
-        setEventPoster([]); // Set to empty array on error
+        console.error("Error fetching products:", error);
       }
     };
 
-    fetchEventPoster();
+    fetchEventposter();
   }, []);
 
   useEffect(() => {
@@ -159,21 +149,6 @@ const HomeTest: React.FunctionComponent = () => {
     fetchPromotionImages();
   }, []);
 
-  const handleBuyTicket = (item: {
-    id: number;
-    name: string;
-    img: string;
-    date: string;
-    time: string;
-    location: string;
-    price: number;
-    availableSeats: number;
-  }) => {
-    // setDataconcert(item)
-    console.log("Item data:", item); // ตรวจสอบค่าที่ส่งมา
-    navigate("concert-detail", { state: item });
-  };
-  
   return (
     <>
       <Box>
@@ -316,21 +291,6 @@ const HomeTest: React.FunctionComponent = () => {
                   minWidth: 350,
                   height: 420,
                 }}
-                onClick={() =>
-                  handleBuyTicket(
-                    {
-                      id: concert.id,
-                      name: concert.name,
-                      img: `http://localhost/concert/all/${concert.image}`,
-                      date: concert.date,
-                      time: concert.time,
-                      location: concert.location,
-                      price: concert.price,
-                      availableSeats: concert.available_seats,
-                    },
-                    'concert'
-                  )
-                }
               >
                 <CardMedia
                   component="img"
@@ -363,18 +323,6 @@ const HomeTest: React.FunctionComponent = () => {
                     {concert.location}
                   </Typography>
                 </Box>
-
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  sx={{
-                    mt: "auto",
-                    bgcolor: "#FF6699",
-                    "&:hover": { bgcolor: "black" },
-                  }}
-                >
-                  Book Now
-                </Button>
               </Card>
             ))}
           </Box>
@@ -485,21 +433,6 @@ const HomeTest: React.FunctionComponent = () => {
                   minWidth: 350,
                   height: 410,
                 }}
-                onClick={() =>
-                  handleBuyTicket(
-                    {
-                      id: sport.id,
-                      name: sport.name,
-                      img: `http://localhost/sport/all/${sport.image}`,
-                      date: sport.date,
-                      time: sport.time,
-                      location: sport.location,
-                      price: sport.price,
-                      availableSeats: sport.available_seats,
-                    },
-                    'sport'
-                  )
-                }
               >
                 <CardMedia
                   component="img"
@@ -532,18 +465,6 @@ const HomeTest: React.FunctionComponent = () => {
                     {sport.location}
                   </Typography>
                 </Box>
-
-                <Button
-                  variant="contained"
-                  color="primary"
-                  sx={{
-                    mt: "auto",
-                    bgcolor: "#1976d2",
-                    "&:hover": { bgcolor: "#1565c0" },
-                  }}
-                >
-                  Book Now
-                </Button>
               </Card>
             ))}
           </Box>
@@ -651,7 +572,7 @@ const HomeTest: React.FunctionComponent = () => {
           >
             {/* Event Poster */}
             <Grid container spacing={4} justifyContent="space-between">
-              {eventPoster.map((poster, index) => (
+              {EventPoster.map((EventPoster, index) => (
                 <Grid item xs={12} sm={6} key={index}>
                   <Paper
                     sx={{
@@ -667,15 +588,15 @@ const HomeTest: React.FunctionComponent = () => {
                     }}
                   >
                     <Typography variant="h4" color="primary" gutterBottom>
-                      {poster.title}
+                      {EventPoster.title}
                     </Typography>
                     <img
-                      src={`http://localhost/information/${poster.image}`}
+                      src={`http://localhost/information/${EventPoster.image}`}
                       className="poster-subtitle-img"
                       style={{ maxWidth: "100%", height: "200px" }}
                     />
                     <Typography variant="body1" paragraph>
-                      {poster.text}
+                      {EventPoster.text}
                     </Typography>
                   </Paper>
                 </Grid>
