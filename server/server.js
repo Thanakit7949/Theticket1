@@ -384,7 +384,7 @@ app.get('/getAllshoesport', (req, res) => {
 
 
 app.get('/getInformationbook', (req, res) => {
-  const query = 'SELECT * FROM informationbook'; // ดึงข้อมูลทั้งหมดจาก product
+  const query = 'SELECT * FROM informationbook'; 
   db.query(query, (err, results) => {
     if (err) {
       return res.status(500).json({ message: 'Database error', error: err.message });
@@ -395,7 +395,7 @@ app.get('/getInformationbook', (req, res) => {
 
 
 app.get('/getAdditionalInformation', (req, res) => {
-  const query = 'SELECT * FROM additionalinformation'; // ดึงข้อมูลทั้งหมดจาก product
+  const query = 'SELECT * FROM additionalinformation'; 
   db.query(query, (err, results) => {
     if (err) {
       return res.status(500).json({ message: 'Database error', error: err.message });
@@ -406,7 +406,7 @@ app.get('/getAdditionalInformation', (req, res) => {
 
 
 app.get('/getEventPoster', (req, res) => {
-  const query = 'SELECT * FROM eventposter'; // ดึงข้อมูลทั้งหมดจาก product
+  const query = 'SELECT * FROM eventposter'; 
   db.query(query, (err, results) => {
     if (err) {
       return res.status(500).json({ message: 'Database error', error: err.message });

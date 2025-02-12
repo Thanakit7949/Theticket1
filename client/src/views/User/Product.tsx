@@ -634,9 +634,15 @@ const Product = () => {
           <Typography variant="h6" sx={{ fontWeight: "bold" }}>
             {product.name}
           </Typography>
+           <Typography
+           variant="h6"
+           sx={{ textDecoration: "line-through", color: "grey" }}
+          >
+           {product.oldPrice} ฿
+         </Typography>
           <Typography
             variant="body1"
-            sx={{ color: "#888888", marginBottom: 1 }}
+            sx={{ color: "red", marginBottom: 1 }}
           >
             {product.price} ฿
           </Typography>

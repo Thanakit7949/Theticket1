@@ -300,7 +300,7 @@ export const routesConfig: {
       children: [
         
         {
-          path: "information/:id", // เส้นทางที่มีพารามิเตอร์ id
+          path: "informationdetail/:id", // เส้นทางที่มีพารามิเตอร์ id
           element: <InformationDetail />, // แสดงหน้า InformationDetail
           component: InformationDetail,
           icon: null,

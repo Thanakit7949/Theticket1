@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -27,12 +27,20 @@ import Image3 from "/src/assets/concert/express.png";
 import Image4 from "/src/assets/concert/prompt.png";
 import Image5 from "/src/assets/concert/qrcode.jpg";
 import CloseIcon from "@mui/icons-material/Close";
-
+import Cookies from "js-cookie";
 const PaymentConcert: React.FC = () => {
   const [slip, setSlip] = useState<File | null>(null);
   const location = useLocation();
   const { price, label, selectedSeats } = location.state || {}; // ค่าที่ส่งมาจากหน้า Concert
 
+   useEffect(() => {
+      if (!location.state) {
+        console.log("ไม่มีข้อมูล state ที่ถูกส่งมา");
+      } else {
+        console.log("location.state:", location.state);
+        console.log("selectedSeats:", selectedSeats);
+      }
+    }, [location.state, selectedSeats]);
   // แปลงราคาเป็นตัวเลข (เอาเฉพาะตัวเลขออกจากข้อความ)
   const numericPrice = price ? parseFloat(price.replace(/[^\d.-]/g, "")) : 0;
 
@@ -154,6 +162,7 @@ const PaymentConcert: React.FC = () => {
               fullWidth
               variant="outlined"
               label="ชื่อ"
+              value={Cookies.get('acountname')}
               defaultValue="สวย"
               InputProps={{
                 style: { borderRadius: "20px", color: "black" }, // ขอบมนและสีข้อความสีขาว
@@ -175,6 +184,7 @@ const PaymentConcert: React.FC = () => {
               fullWidth
               variant="outlined"
               label="นามสกุล"
+              value={Cookies.get('lastname')}
               defaultValue="งาน"
               InputProps={{
                 style: { borderRadius: "20px", color: "black" },
@@ -196,6 +206,7 @@ const PaymentConcert: React.FC = () => {
               fullWidth
               variant="outlined"
               label="เบอร์โทรศัพท์"
+              value={Cookies.get('phone')}
               defaultValue="0926239547"
               InputProps={{
                 style: { borderRadius: "20px", color: "black" },
@@ -217,6 +228,7 @@ const PaymentConcert: React.FC = () => {
               fullWidth
               variant="outlined"
               label="อีเมล"
+              value={Cookies.get('email')}
               defaultValue="onanongmaenthim@gmail.com"
               InputProps={{
                 style: { borderRadius: "20px", color: "black" },
@@ -302,15 +314,7 @@ const PaymentConcert: React.FC = () => {
             color: "black",
           }}
         >
-          ที่นั่งที่เลือก:{" "}
-          {selectedSeats.length > 0
-            ? selectedSeats
-                .map(
-                  (seat: { row: number; col: number }) =>
-                    `${label}${seat.row}-${seat.col}`
-                )
-                .join(" / ") // Joining the seats with a separator (e.g., " / ")
-            : "ยังไม่ได้เลือกที่นั่ง"}
+          {selectedSeats.length > 0 ? selectedSeats.join(", ") : "ยังไม่ได้เลือกที่นั่ง"}
         </Typography>
 
         {/* ราคารวม */}
