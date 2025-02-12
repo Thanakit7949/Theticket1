@@ -11,14 +11,17 @@ const StageConcert: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const concertID = location.state;
+  const [conid,setconid]=useState()
 
   useEffect(() => {
     if (!concertID?.id) return;
-
     const fetchZones = async () => {
       try {
+        console.log('obconcertID.idject',concertID.id)
+        setconid(concertID.id)
         const response = await fetch(`http://localhost:5000/getZones?concert_id=${concertID.id}`);
         const data = await response.json();
+        console.log('object')
         setZones(data); // บันทึกข้อมูลโซน
         console.log('Zone', data)
       } catch (error) {
@@ -64,7 +67,7 @@ const StageConcert: React.FC = () => {
     const handleBuyTicket = (zone: { id: number, concert_id: number, name: string, seat_count: number }, price: string,label:string) => {
       // ส่งข้อมูลของ zone ที่เลือกไปใน state
       navigate("/concert/seat-concert", {
-        state: { zone, price,label },  // ส่งทั้ง zone และราคาที่ปรับแล้ว
+        state: { zone, price,label, conid },  // ส่งทั้ง zone และราคาที่ปรับแล้ว
       });
     };
     

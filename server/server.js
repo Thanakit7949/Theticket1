@@ -15,7 +15,7 @@ const db = mysql.createPool({
   host: 'localhost',
   user: 'root',
   password: '',
-  database: 'test',
+  database: 'product_db',
 });
 
 // Login และส่ง JWT กลับ
@@ -37,42 +37,6 @@ app.post('/login', async (req, res) => {
     } else {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
-<<<<<<< HEAD
-=======
-  });
-});
-
-app.post('/login-phone', async (req, res) => {
-  const { phone } = req.body;
-
-  if (!phone) {
-    return res.status(400).json({ message: 'Phone number is required' });
-  }
-
-  try {
-    const [rows] = await db.query('SELECT * FROM users WHERE phone = ?', [phone]);
-    if (rows.length > 0) {
-      const user = rows[0];
-      const { password, ...userData } = user;
-      return res.json({ user: userData });
-    } else {
-      return res.status(401).json({ message: 'Invalid phone number' });
-    }
-  } catch (error) {
-    console.error('Error during phone login:', error);
-    return res.status(500).json({ message: 'Internal server error' });
-  }
-});
-
-app.get('/users/:id', async (req, res) => {
-  const userId = req.params.id;
-  try {
-    const user = await db.getUserById(userId); // Fetch user from the database
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-    res.json(user);
->>>>>>> origin
   } catch (error) {
     console.error('Error during login:', error);
     return res.status(500).json({ message: 'Internal server error' });
@@ -169,31 +133,44 @@ app.post('/register', async (req, res) => {
 });
 
 // ดึงข้อมูล Concerts
-app.get("/getZones", (req, res) => {
-  const { concert_id } = req.query;
+app.get("/getZones", async (req, res) => {
+  try {
+    const { concert_id } = req.query;
+    console.log("Received concert_id:", concert_id);
 
-  if (!concert_id) {
-    return res.status(400).json({ error: "concert_id is required" });
-  }
-
-  const query = "SELECT * FROM zones WHERE concert_id = ?";
-
-  db.query(query, [concert_id], (err, results) => {
-    if (err) {
-      console.error("Database error:", err);
-      return res.status(500).json({ error: "Database error" });
+    // แปลงค่าให้เป็นตัวเลข (ถ้าจำเป็น)
+    const concertIdNum = Number(concert_id);
+    if (isNaN(concertIdNum)) {
+      return res.status(400).json({ error: "concert_id must be a valid number" });
     }
+
+    // ใช้ await query ข้อมูลจากฐานข้อมูล
+    const [results] = await db.query("SELECT * FROM zones WHERE concert_id = ?", [concertIdNum]);
+
+    console.log("Query Results:", results);
     res.json(results);
-  });
+  } catch (error) {
+    console.error("Database error:", error);
+    res.status(500).json({ error: "Database error", details: error.message });
+  }
 });
 
+
+// API ดึงข้อมูลที่นั่งสำหรับโซน
 app.get('/api/seats/:zoneId', async (req, res) => {
   const { zoneId } = req.params;
   try {
     console.log('กำลังดึงข้อมูลที่นั่งสำหรับโซน:', zoneId);
 
-    // ใช้ db.promise().query() เพื่อรองรับ async/await
-    const [rows] = await db.promise().query('SELECT * FROM seats WHERE zone_id = ?', [zoneId]);
+    // แปลงค่าให้แน่ใจว่าเป็นตัวเลข
+    const zoneIdNum = Number(zoneId);
+    if (isNaN(zoneIdNum)) {
+      return res.status(400).json({ error: "zoneId must be a valid number" });
+    }
+
+    // ใช้ .promise().query()
+    // const [rows] = await db.promise().query('SELECT * FROM seats WHERE zone_id = ?', [zoneIdNum]);
+    const [rows] = await db.query('SELECT * FROM seats WHERE zone_id = ?', [zoneId]);
     console.log('ข้อมูลที่นั่ง:', rows);
 
     if (!rows || rows.length === 0) {
@@ -212,13 +189,116 @@ app.get('/api/seats/:zoneId', async (req, res) => {
 app.post('/api/update-seat', async (req, res) => {
   const { seatNumber, status } = req.body; // รับ seatNumber แทน seatId
   try {
-    const query = 'UPDATE seats SET is_reserved = ? WHERE seat_number = ?'; // ใช้ seat_number แทน id
-    await db.execute(query, [status, seatNumber]); // ใช้ seatNumber แทน
+    if (!seatNumber || status === undefined) {
+      return res.status(400).json({ error: "seatNumber and status are required" });
+    }
+
+    console.log("Updating seat:", { seatNumber, status });
+
+    const query = 'UPDATE seats SET is_reserved = ? WHERE seat_number = ?';
+
+    // ใช้ .promise().execute()
+    // await db.promise().execute(query, [status, seatNumber]);
+    await db.execute(query, [status, seatNumber]);
+
+
     res.status(200).send('Seat updated successfully');
   } catch (error) {
+    console.error("Database error:", error);
     res.status(500).send('Server Error');
   }
 });
+
+
+app.post('/api/book-seats', async (req, res) => {
+  const { userId, concertId, zoneId, selectedSeats,total_price } = req.body;
+console.log(userId)
+console.log(concertId)
+console.log(zoneId)
+console.log(selectedSeats)
+  // 1. สร้าง booking entry ใน bookings_user
+  const bookingTime = new Date();
+  try {
+    // 2. Insert ข้อมูลการจองเข้าไปใน bookings_user
+    const [bookingResult] = await db.execute(
+      `INSERT INTO bookings_user (user_id, concert_id, zone_id, booking_time,total_price) VALUES (?, ?, ?, ?, ?)`,
+      [userId, concertId, zoneId, bookingTime,total_price]
+    );
+    const bookingId = bookingResult.insertId;
+
+    // 3. ดึงข้อมูล seat_id จาก seat_number สำหรับแต่ละที่นั่ง
+    for (const seat of selectedSeats) {
+      const [seatResult] = await db.execute(
+        `SELECT id FROM seats WHERE seat_number = ? AND zone_id = ?`,
+        [seat, zoneId]
+      );
+
+      if (seatResult.length > 0) {
+        const seatId = seatResult[0].id;
+
+        // 4. Insert ข้อมูลที่นั่งที่ถูกจองเข้าไปใน seat_bookings
+        await db.execute(
+          `INSERT INTO seat_bookings (booking_id, seat_id) VALUES (?, ?)`,
+          [bookingId, seatId]
+        );
+      } else {
+        console.log(`ไม่พบที่นั่ง ${seat} ในโซน ${zoneId}`);
+      }
+    }
+
+    res.status(200).send('จองที่นั่งสำเร็จ');
+  } catch (error) {
+    console.error('เกิดข้อผิดพลาดในการจองที่นั่ง:', error);
+    res.status(500).send('เกิดข้อผิดพลาดในการจองที่นั่ง');
+  }
+});
+
+app.get('/api/booking-details', async (req, res) => {
+  const { user_id, concert_id } = req.query;
+
+  try {
+    const query = `
+      SELECT 
+        u.first_name AS user_name, 
+        c.name AS concert_name, 
+        c.location AS concert_location, 
+        c.image AS concert_img, 
+        c.date AS concert_date, 
+        c.time AS concert_time, 
+        z.name AS zone_name, 
+        z.seat_count AS total_seats, 
+        s.seat_number,
+        bu.total_price AS price
+      FROM 
+        bookings_user bu
+      JOIN 
+        users u ON bu.user_id = u.id
+      JOIN 
+        concerts c ON bu.concert_id = c.id
+      JOIN 
+        zones z ON bu.zone_id = z.id
+      JOIN 
+        seat_bookings sb ON bu.booking_id = sb.booking_id
+      JOIN 
+        seats s ON sb.seat_id = s.id
+      WHERE 
+        bu.user_id = ? AND bu.concert_id = ?
+    `;
+
+    const [rows] = await db.execute(query, [user_id, concert_id]);
+
+    if (rows.length === 0) {
+      res.status(404).send("ไม่พบข้อมูลการจอง");
+    } else {
+      res.json(rows);
+    }
+  } catch (error) {
+    console.error("เกิดข้อผิดพลาดในการดึงข้อมูลการจอง:", error);
+    res.status(500).send("เกิดข้อผิดพลาดในการดึงข้อมูล");
+  }
+});
+
+
 
 app.get('/getAllConcerts', async (req, res) => {
   try {

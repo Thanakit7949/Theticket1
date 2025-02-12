@@ -34,12 +34,18 @@ const LoginPage: React.FunctionComponent = () => {
       localStorage.setItem('users', JSON.stringify(users));
 
       localStorage.setItem("token", data.token);
+      console.log(users);
       console.log(data);
+      console.log( data.user);
+      console.log( data.user.first_name);
+      console.log( data.user.last_name);
+      console.log( data.user.id);
       Cookies.set("token", data.token);
-      Cookies.set("acountname", data.first_name);
-      Cookies.set("lastname", data.last_name);
-      Cookies.set("phone", data.phone);
-      Cookies.set("email", data.email);
+      Cookies.set("userid", data.user.id);
+      Cookies.set("acountname", data.user.first_name);
+      Cookies.set("lastname", data.user.last_name);
+      Cookies.set("phone", data.user.phone);
+      Cookies.set("email", data.user.email);
       if (data.role === "admin") {
         navigate("/home-admin");
       } else if (data.role === "user") {

@@ -226,7 +226,7 @@ const Dbconcerts: React.FC = () => {
             <Select
               name="type"
               value={formData.type}
-              onChange={handleFormChange}
+              // onChange={handleFormChange}
             >
               <MenuItem value="kpop">Kpop</MenuItem>
               <MenuItem value="tpop">Tpop</MenuItem>

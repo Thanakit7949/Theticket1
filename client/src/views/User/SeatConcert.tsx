@@ -3,11 +3,11 @@ import { Box, Button, Typography } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
-
+import Cookies from "js-cookie";
 const SeatConcert: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { price, label } = location.state || {}; // รับข้อมูลทั้งราคาและชื่อโซน (label)
+  const { price, label,conid } = location.state || {}; // รับข้อมูลทั้งราคาและชื่อโซน (label)
   const [timeLeft, setTimeLeft] = useState(5 * 60); // ตัวแปรเวลาที่เหลือในการทำรายการ 5 นาที (5 * 60 วินาที)
   const concert_Zone = location.state;
   const [seats, setSeats] = useState<string[]>([]); // เก็บข้อมูลที่นั่งในรูปแบบ 1D array เช่น ["A1", "A2", "A3", ...]
@@ -73,6 +73,14 @@ const SeatConcert: React.FC = () => {
     return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
   };
 
+// คำนวณราคารวมสุทธิ
+const totalPrice = selectedSeats.length > 0
+  ? (
+      numericPrice * selectedSeats.length + // ราคารวม
+      numericPrice * selectedSeats.length * 0.07 + // ค่าบริการ (VAT)
+      numericPrice * selectedSeats.length * 0.07 * 1.07 // ค่าธรรมเนียมการชำระเงิน (VAT)
+    ).toFixed(2)
+  : 0;  // ถ้าไม่ได้เลือกที่นั่ง ก็จะได้ราคารวมเป็น 0
 
   const updateSeatsInDatabase = async () => {
     try {
@@ -110,14 +118,44 @@ const SeatConcert: React.FC = () => {
     }
   };
   
-
+  const updateSeatsInDatabasebooking = async () => {
+    console.log('totalPrice',totalPrice)
+    try {
+      const response = await fetch("http://localhost:5000/api/book-seats", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: Cookies.get('userid'), // ตัวอย่าง userId, สามารถเปลี่ยนเป็นค่าจาก session หรือข้อมูลผู้ใช้จริง
+          concertId: concert_Zone.zone.concert_id, // concert_id ที่เลือก
+          zoneId: concert_Zone.zone.id, // zone_id ที่เลือก
+          selectedSeats: selectedSeats, // ที่นั่งที่เลือก
+          total_price: totalPrice,
+        }),
+      });
+  
+      if (response.ok) {
+        console.log("ที่นั่งถูกจองสำเร็จ");
+      } else {
+        console.error("ไม่สามารถจองที่นั่งได้");
+        alert("ไม่สามารถจองที่นั่งได้");
+      }
+    } catch (error) {
+      console.error("เกิดข้อผิดพลาดในการจองที่นั่ง:", error);
+      alert("เกิดข้อผิดพลาดในการจองที่นั่ง");
+    }
+  };
+  
   const handleBuyTicket = async () => {
     await updateSeatsInDatabase(); // อัปเดตสถานะที่นั่งก่อน
+    await updateSeatsInDatabasebooking(); // อัปเดตสถานะที่นั่งก่อน
     navigate("payment-concert", {
       state: {
         price,
         label,
         selectedSeats,
+        concert_Zone
       },
     });
   };

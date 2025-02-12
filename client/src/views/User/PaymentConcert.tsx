@@ -31,7 +31,7 @@ import Cookies from "js-cookie";
 const PaymentConcert: React.FC = () => {
   const [slip, setSlip] = useState<File | null>(null);
   const location = useLocation();
-  const { price, label, selectedSeats } = location.state || {}; // ค่าที่ส่งมาจากหน้า Concert
+  const { price, label, selectedSeats,concert_Zone } = location.state || {}; // ค่าที่ส่งมาจากหน้า Concert
 
    useEffect(() => {
       if (!location.state) {
@@ -753,7 +753,7 @@ const PaymentConcert: React.FC = () => {
                     }}
                     onClick={() =>
                       navigate("/concert/ticket-concet", {
-                        state: { price, label, selectedSeats },
+                        state: { price, label, selectedSeats,concert_Zone },
                       })
                     }
                   >
@@ -958,7 +958,7 @@ const PaymentConcert: React.FC = () => {
           </Box>
         )}
       </Box>
-
+{/* กดเพื่อแสดงหน้าใบเสร็จ */}
       <Button
         variant="contained"
         sx={{
@@ -981,7 +981,7 @@ const PaymentConcert: React.FC = () => {
           }
           // ถ้ามีการแนบสลิปแล้ว ค่อยไปยังหน้าใบเสร็จ
           navigate("/concert/ticket-concet", {
-            state: { price, label, selectedSeats },
+            state: { price, label, selectedSeats,concert_Zone },
           });
         }}
       >
