@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Box, Typography, Divider } from "@mui/material";
 import { useLocation } from "react-router-dom";
 import image from "/src/assets/concert/thang.png";
@@ -7,7 +7,14 @@ import image1 from "/src/assets/concert/thang1.png";
 const TicketConcert: React.FC = () => {
   const location = useLocation();
   const { price, label, selectedSeats } = location.state || {}; // ดึงข้อมูลจาก state
-
+useEffect(() => {
+      if (!location.state) {
+        console.log("ไม่มีข้อมูล state ที่ถูกส่งมา");
+      } else {
+        console.log("location.state:", location.state);
+        console.log("selectedSeats:", selectedSeats);
+      }
+    }, [location.state, selectedSeats]);
   const numericPrice = price ? parseFloat(price.replace(/[^\d.-]/g, "")) : 0;
   const totalSeatPrice = numericPrice * selectedSeats.length;
   const vatAmount = totalSeatPrice * 0.07;
@@ -48,7 +55,7 @@ const TicketConcert: React.FC = () => {
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
               <Typography variant="h6" sx={{ textAlign: "left", color: "black" }}>ที่นั่งที่เลือก:</Typography>
               <Typography variant="h6" sx={{ textAlign: "right", color: "black" }}>
-                {selectedSeats.length > 0 ? selectedSeats.map((seat): string => `${label}${seat.row}-${seat.col}`).join(" / ") : "ยังไม่ได้เลือกที่นั่ง"}
+                {selectedSeats.length > 0 ? selectedSeats.join(" / ") : "ยังไม่ได้เลือกที่นั่ง"}
               </Typography>
             </Box>
 

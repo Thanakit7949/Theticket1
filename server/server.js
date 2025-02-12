@@ -37,6 +37,42 @@ app.post('/login', async (req, res) => {
     } else {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
+<<<<<<< HEAD
+=======
+  });
+});
+
+app.post('/login-phone', async (req, res) => {
+  const { phone } = req.body;
+
+  if (!phone) {
+    return res.status(400).json({ message: 'Phone number is required' });
+  }
+
+  try {
+    const [rows] = await db.query('SELECT * FROM users WHERE phone = ?', [phone]);
+    if (rows.length > 0) {
+      const user = rows[0];
+      const { password, ...userData } = user;
+      return res.json({ user: userData });
+    } else {
+      return res.status(401).json({ message: 'Invalid phone number' });
+    }
+  } catch (error) {
+    console.error('Error during phone login:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+app.get('/users/:id', async (req, res) => {
+  const userId = req.params.id;
+  try {
+    const user = await db.getUserById(userId); // Fetch user from the database
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.json(user);
+>>>>>>> origin
   } catch (error) {
     console.error('Error during login:', error);
     return res.status(500).json({ message: 'Internal server error' });

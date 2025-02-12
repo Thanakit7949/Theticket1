@@ -17,13 +17,12 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import logo from "../assets/logo/pillars.png";
-import { routesConfig } from "../router/RounterConfig";
+import { routesConfigD } from "../router/RounterConfigD";
 import Grid from "@mui/material/Grid2";
 import Cookies from "js-cookie";
+
 export interface ITopBarProps {
-  DrawerHeader: any;
-  open: any;
-  handleDrawerClose: any;
+  onNavigate: (path: string) => void;
 }
 
 export interface miniChilden {
@@ -52,12 +51,11 @@ const settings = [
   { name: "Logout", path: "/login" }, // กำหนด path ของ Logout ไปที่ /login
 ];
 
-const TopBar: React.FunctionComponent<ITopBarProps> = ({ open }) => {
+const TopBarD: React.FunctionComponent<ITopBarProps> = ({ onNavigate }) => {
   const [sidebar, setSidebar] = useState<MenuSideBar[]>([]);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
-  const navigate = useNavigate();
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -73,8 +71,8 @@ const TopBar: React.FunctionComponent<ITopBarProps> = ({ open }) => {
 
   const setRouter = async () => {
     let temp: any[] = [];
-    if (routesConfig["privateRoute"] !== undefined) {
-      for await (const item of routesConfig["privateRoute"]) {
+    if (routesConfigD["privateRoute"] !== undefined) {
+      for await (const item of routesConfigD["privateRoute"]) {
         if (item.children !== undefined) {
           let inputchildren: Childen[] = [];
 
@@ -113,7 +111,7 @@ const TopBar: React.FunctionComponent<ITopBarProps> = ({ open }) => {
     if (path === "/login") {
       // เพิ่ม logic การ logout ที่นี่ เช่น การล้าง token หรือข้อมูลของผู้ใช้
     }
-    navigate(path);
+    onNavigate(path);
   };
 
   return (
@@ -153,7 +151,7 @@ const TopBar: React.FunctionComponent<ITopBarProps> = ({ open }) => {
                 textDecoration: "none",
               }}
             >
-              INTERGETHER
+              Dashboard
             </Typography>
 
             <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
@@ -166,7 +164,7 @@ const TopBar: React.FunctionComponent<ITopBarProps> = ({ open }) => {
               {sidebar.map((page) => (
                 <Button
                   key={page.name}
-                  onClick={() => navigate(page.path)}
+                  onClick={() => onNavigate(page.path)}
                   sx={{
                     my: 2,
                     color: "#8B0000",
@@ -216,4 +214,4 @@ const TopBar: React.FunctionComponent<ITopBarProps> = ({ open }) => {
   );
 };
 
-export default TopBar;
+export default TopBarD;
