@@ -42,6 +42,9 @@ const LoginPage: React.FunctionComponent = () => {
       console.log(data);
       Cookies.set("token", data.token);
       Cookies.set("acountname", data.first_name);
+      Cookies.set("lastname", data.last_name);
+      Cookies.set("phone", data.phone);
+      Cookies.set("email", data.email);
       if (data.role === "admin") {
         navigate("/home-admin");
       } else if (data.role === "user") {
