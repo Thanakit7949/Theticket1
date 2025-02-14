@@ -15,7 +15,7 @@ const db = mysql.createPool({
   host: 'localhost',
   user: 'root',
   password: '',
-  database: 'product_db',
+  database: 'ex',
 });
 
 // Login และส่ง JWT กลับ
@@ -326,6 +326,43 @@ app.get('/getConcertsByType/:type', async (req, res) => {
     res.json(rows);
   } catch (error) {
     console.error('Error fetching concerts by type:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+app.get('/getAllConcertsthaiMass', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM concerts WHERE type = "thaimass"');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching concerts:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+app.get('/getAllConcertstpop', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM concerts WHERE type = "tpop"');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching concerts:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+app.get('/getAllConcertskpop', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM concerts WHERE type = "kpop"');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching concerts:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+app.get('/getAllConcertsinter', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM concerts WHERE type = "inter"');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching concerts:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
