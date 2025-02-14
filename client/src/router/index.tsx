@@ -17,15 +17,21 @@ import HomeTest from "../views/User/HomeTest";
 import Interface from "../views/Admin/Interface";
 import Users from "../views/Admin/Users";
 import Orders from "../views/Admin/Orders";
+import HomeIsAdmin from "../views/HomeIsAdmin";
+import { routesConfigD } from "./RounterConfigD";
 
 
 const Router: React.FC = () => {
   const [publicRouteElements, setPublicRouteElements] = useState<any[]>([])
   const [privateRouteElements, setPrivateRouteElements] = useState<any[]>([])
+  const [publicRouteElementsD, setPublicRouteElementsD] = useState<any[]>([])
+  const [privateRouteElementsD, setPrivateRouteElementsD] = useState<any[]>([])
 
   useEffect(() => {
       listRoute("publicRoute")
       listRoute("privateRoute")
+      listRoute("publicRouteD")
+      listRoute("privateRouteD")
   }, [])
 
   useEffect(() => {
@@ -37,7 +43,7 @@ const Router: React.FC = () => {
       }
   }, [])
 
-  const listRoute = async (routeType: "publicRoute" | "privateRoute") => {
+  const listRoute = async (routeType: "publicRoute" | "privateRoute" | 'publicRouteD' | 'privateRouteD') => {
       if (routeType === "publicRoute") {
           let temp = routesConfig[routeType].map(
               (item: any, index: number) => {
@@ -52,7 +58,8 @@ const Router: React.FC = () => {
           )
 
           setPublicRouteElements(temp)
-      } else {
+      } 
+      else if (routeType === "privateRoute") {
           let temp: MainRouter[] = []
 
           for await (const item of routesConfig[routeType]) {
@@ -141,6 +148,110 @@ const Router: React.FC = () => {
 
           setPrivateRouteElements(_temp)
       }
+      else if(routeType === "publicRouteD"){
+          let temp = routesConfigD[routeType].map(
+              (item: any, index: number) => {
+                  return (
+                      <Route
+                          key={index}
+                          path={item.path}
+                          element={item.component}
+                      />
+                  )
+              }
+          )
+
+          setPublicRouteElementsD(temp)
+      } 
+      else if (routeType === "privateRouteD") {
+        let temp: MainRouter[] = []
+
+        for await (const item of routesConfigD[routeType]) {
+            if (!R.isNil(item.component)) {
+                // let input: MainRouter = {
+                //     name: item.name,
+                //     path: item.path,
+                //     header: item.header,
+                //     component: item.component,
+                //     pathHeader: item.header,
+                //     // children:item.children.length > 0?item.children:[]
+                // }
+                let input = {
+                    name: item.name,
+                    path: item.path,
+                    header: item.header,
+                    component: item.component,
+                    pathHeader: item.header,
+                    subpath: item.subpath
+                    // children:item.children.length > 0?item.children:[]
+                }
+                temp.push(input)
+            }
+
+            if (item.children && item.children.length > 0) {
+                for await (const itemchildren of item.children) {
+                    let tempItem: any = itemchildren
+                    let inputchildren = {
+                        name: tempItem.name,
+                        header: tempItem.header,
+                        path: item.path + "/" + tempItem.path,
+                        component: tempItem.component,
+                        pathHeader: item.header + " / " + tempItem.header,
+                        subpath: itemchildren.subpath
+                        // children:itemchildren?.children?.length > 0?itemchildren?.children:[]
+                    }
+                    temp.push(inputchildren)
+
+                    if (
+                        itemchildren.children !== undefined &&
+                        itemchildren.children?.length > 0
+                    ) {
+                        for await (const itemchildrenmini of itemchildren.children) {
+                            let tempChildrenmini: any = itemchildrenmini
+                            let inputchildrenmini = {
+                                // name: itemchildrenmini.name,
+                                // path: item.path + '/' + itemchildren.path + '/' + itemchildrenmini.path,
+                                // header: itemchildren.header + ' >> ' + itemchildrenmini.header,
+                                // component: itemchildrenmini.component,
+
+                                name: tempChildrenmini.name,
+                                header: tempChildrenmini.header,
+                                path:
+                                    item.path +
+                                    "/" +
+                                    tempItem.path +
+                                    "/" +
+                                    tempChildrenmini.path,
+                                component: tempChildrenmini.component,
+                                pathHeader:
+                                    item.header +
+                                    " / " +
+                                    tempChildrenmini.header,
+                                subpath: item.subpath
+                            }
+                            temp.push(inputchildrenmini)
+                        }
+                    }
+                }
+            }
+        }
+
+        let _temp = temp.map((item: any, index: number) => {
+            return (
+                <Route
+                    key={index}
+                    path={item.path}
+                    element={
+                        <HomeIsAdmin routerHeader={item}>
+                            <item.component />
+                        </HomeIsAdmin>
+                    }
+                />
+            )
+        })
+
+        setPrivateRouteElementsD(_temp)
+    }
   }
 
   return (
@@ -174,6 +285,26 @@ const Router: React.FC = () => {
         {publicRouteElements}
 
         {privateRouteElements}
+    </Routes>
+
+    <Routes>
+    <Route path="/login-in" element={<LoginPage />} />
+        <Route path="/" element={
+            <HomeIsAdmin routerHeader={{
+                path: "/home-admin",
+                name: "home-admin",
+                header: "home-admin",
+                component: Interface,
+                icon: null,
+                children: [],
+            }}>
+                <Interface />
+            </HomeIsAdmin>
+        } />
+
+        {publicRouteElementsD}
+
+        {privateRouteElementsD}
     </Routes>
 </BrowserRouter>
 //  <Route path="/concert-bus" element={<ConcertBus />} />

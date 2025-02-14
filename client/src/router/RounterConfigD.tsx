@@ -5,26 +5,37 @@ import Dbsports from "../views/Admin/Dbsports";
 
 import Users from "../views/Admin/Users";
 import Orders from "../views/Admin/Orders";
+import Interface from "../views/Admin/Interface";
 
 export const routesConfigD: {
-  publicRoute: MainRouter[];
-  privateRoute: MainRouter[];
+  publicRouteD: MainRouter[];
+  privateRouteD: MainRouter[];
 } = {
-  publicRoute: [
+  publicRouteD: [
     {
       path: "*",
       // component: <NotFoundPage />,
       component: "",
     },
   ],
-  privateRoute: [
+  privateRouteD: [
     {
-      path: "/home-test",
-      name: "home",
-      header: "home",
-      component: HomeTest,
+      path: "/home-admin",
+      name: "home-Interface",
+      header: "home-Interface",
+      component: Interface,
       icon: null,
-      children:  [],
+      children: [
+        {
+          path: "/users",
+          name: "users",
+          header: "users",
+          component: Users,
+          icon: null,
+          children: [],   
+        },
+       
+      ],
     },
     {
       path: "/users",

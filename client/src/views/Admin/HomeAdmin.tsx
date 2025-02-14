@@ -22,7 +22,9 @@ const HomeAdmin: React.FC = () => {
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <TopBarD onNavigate={handleNavigation} />
+      <TopBarD 
+      onNavigate={handleNavigation} />
+      
     </Box>
   );
 };
