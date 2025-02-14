@@ -36,9 +36,7 @@ const Users: React.FC = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/getAllUsers', {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      });
+      const response = await axios.get('http://localhost:5000/getAllUsers');
       setUsers(response.data);
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -65,9 +63,7 @@ const Users: React.FC = () => {
         ? `http://localhost:5000/updateUser/${formData.id}`
         : 'http://localhost:5000/addUser';
       const method = isEditing ? axios.put : axios.post;
-      const response = await method(url, formData, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      });
+      const response = await method(url, formData);
 
       if (isEditing) {
         setUsers((prev) => prev.map((user) => (user.id === formData.id ? response.data : user)));
@@ -102,9 +98,7 @@ const Users: React.FC = () => {
 
   const handleDelete = async (id: number) => {
     try {
-      await axios.delete(`http://localhost:5000/deleteUser/${id}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      });
+      await axios.delete(`http://localhost:5000/deleteUser/${id}`);
       setUsers((prev) => prev.filter((user) => user.id !== id));
     } catch (error) {
       console.error('Error deleting user:', error);

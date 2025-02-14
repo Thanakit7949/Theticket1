@@ -14,6 +14,12 @@ import {
   Toolbar,
   Tooltip,
   Typography,
+  Drawer,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Divider,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import logo from "../assets/logo/pillars.png";
@@ -56,6 +62,7 @@ const TopBarD: React.FunctionComponent<ITopBarProps> = ({ onNavigate }) => {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -63,6 +70,17 @@ const TopBarD: React.FunctionComponent<ITopBarProps> = ({ onNavigate }) => {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+  };
+
+  const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
+    if (
+      event.type === 'keydown' &&
+      ((event as React.KeyboardEvent).key === 'Tab' ||
+        (event as React.KeyboardEvent).key === 'Shift')
+    ) {
+      return;
+    }
+    setDrawerOpen(open);
   };
 
   useEffect(() => {
@@ -114,6 +132,32 @@ const TopBarD: React.FunctionComponent<ITopBarProps> = ({ onNavigate }) => {
     onNavigate(path);
   };
 
+  const list = () => (
+    <Box
+      sx={{ width: 250 }}
+      role="presentation"
+      onClick={toggleDrawer(false)}
+      onKeyDown={toggleDrawer(false)}
+    >
+      <List>
+        {sidebar.map((page) => (
+          <ListItem button key={page.name} onClick={() => onNavigate(page.path)}>
+            <ListItemIcon>{page.icon}</ListItemIcon>
+            <ListItemText primary={page.name} />
+          </ListItem>
+        ))}
+      </List>
+      <Divider />
+      <List>
+        {settings.map((setting) => (
+          <ListItem button key={setting.name} onClick={() => handleMenuClick(setting.path)}>
+            <ListItemText primary={setting.name} />
+          </ListItem>
+        ))}
+      </List>
+    </Box>
+  );
+
   return (
     <>
       <AppBar
@@ -125,6 +169,23 @@ const TopBarD: React.FunctionComponent<ITopBarProps> = ({ onNavigate }) => {
       >
         <Container maxWidth="xl">
           <Toolbar disableGutters>
+            <IconButton
+              size="large"
+              edge="start"
+              color="inherit"
+              aria-label="menu"
+              sx={{ mr: 2 }}
+              onClick={toggleDrawer(true)}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Drawer
+              anchor="left"
+              open={drawerOpen}
+              onClose={toggleDrawer(false)}
+            >
+              {list()}
+            </Drawer>
             <Box
               component="img"
               src={logo}

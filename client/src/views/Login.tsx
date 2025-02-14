@@ -33,9 +33,7 @@ const LoginPage: React.FunctionComponent = () => {
       users.push(userData);
       localStorage.setItem('users', JSON.stringify(users));
 
-      localStorage.setItem("token", data.token);
       console.log(data);
-      Cookies.set("token", data.token);
       Cookies.set("acountname", data.first_name);
       Cookies.set("lastname", data.last_name);
       Cookies.set("phone", data.phone);
@@ -48,9 +46,48 @@ const LoginPage: React.FunctionComponent = () => {
         setMessage('Unknown role');
       }
       localStorage.setItem('user', JSON.stringify(data.user)); // เก็บข้อมูลผู้ใช้
-      localStorage.setItem('token', data.token); // เก็บ Token
 
       navigate(data.user.role === "admin" ? "/home-admin" : "/home-test");
+    } catch (error: any) {
+      setMessage(error.response?.data?.message || 'Login failed');
+    }
+  };
+
+  const handlePhoneLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post('http://localhost:5000/login-phone', {
+        phone,
+      });
+      const data = response.data;
+
+      const userData = {
+        id: data.id,
+        first_name: data.first_name,
+        last_name: data.last_name,
+        email: data.email,
+        phone: data.phone,
+        role: data.role,
+      };
+      let users = JSON.parse(localStorage.getItem("users") || "[]");
+      users.push(userData);
+      localStorage.setItem('users', JSON.stringify(users));
+
+      console.log(data);
+      Cookies.set("acountname", data.first_name);
+      Cookies.set("lastname", data.last_name);
+      Cookies.set("phone", data.phone);
+      Cookies.set("email", data.email);
+      if (data.role === "admin") {
+        navigate("/home-admin");
+      } else if (data.role === "user") {
+        navigate("/home-test");
+      } else {
+        setMessage('Unknown role');
+      }
+      localStorage.setItem('user', JSON.stringify(data)); // เก็บข้อมูลผู้ใช้
+
+      navigate(data.role === "admin" ? "/home-admin" : "/home-test");
     } catch (error: any) {
       setMessage(error.response?.data?.message || 'Login failed');
     }
@@ -182,8 +219,7 @@ const LoginPage: React.FunctionComponent = () => {
         )}
 
         {tabIndex === 1 && (
-          <form onSubmit={handleLogin}>
-          {/* <form onSubmit={handlePhoneLogin}> */}
+          <form onSubmit={handlePhoneLogin}>
             <Stack spacing={3}>
               <TextField
                 label="Phone"

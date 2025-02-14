@@ -30,9 +30,7 @@ const Dbconcerts: React.FC = () => {
 
   const fetchConcerts = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/getAllConcerts', {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      });
+      const response = await axios.get('http://localhost:5000/getAllConcerts');
       setConcerts(response.data);
     } catch (error) {
       console.error('Error fetching concerts:', error);
@@ -63,9 +61,7 @@ const Dbconcerts: React.FC = () => {
         ? `http://localhost:5000/updateConcert/${formData.id}`
         : 'http://localhost:5000/addConcert';
       const method = isEditing ? axios.put : axios.post;
-      const response = await method(url, payload, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      });
+      const response = await method(url, payload);
 
       if (isEditing) {
         setConcerts((prev) => prev.map((concert) => (concert.id === formData.id ? response.data : concert)));
@@ -95,9 +91,7 @@ const Dbconcerts: React.FC = () => {
 
   const handleDelete = async (id: number) => {
     try {
-      await axios.delete(`http://localhost:5000/deleteConcert/${id}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      });
+      await axios.delete(`http://localhost:5000/deleteConcert/${id}`);
       setConcerts((prev) => prev.filter((concert) => concert.id !== id));
       alert('Concert deleted successfully!');
     } catch (error) {
