@@ -17,9 +17,7 @@ const Orders: React.FC = () => {
 
   const fetchOrders = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/getAllOrders', {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      });
+      const response = await axios.get('http://localhost:5000/getAllOrders');
       setOrders(response.data);
     } catch (error) {
       console.error('Error fetching orders:', error);
@@ -39,9 +37,7 @@ const Orders: React.FC = () => {
 
   const handleCancel = async (id: number) => {
     try {
-      await axios.delete(`http://localhost:5000/deleteOrder/${id}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      });
+      await axios.delete(`http://localhost:5000/deleteOrder/${id}`);
       setOrders((prev) => prev.filter((order) => order.id !== id));
     } catch (error) {
       console.error('Error canceling order:', error);

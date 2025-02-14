@@ -14,6 +14,12 @@ import {
   Toolbar,
   Tooltip,
   Typography,
+  Drawer,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Divider,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import logo from "../assets/logo/pillars.png";
@@ -22,7 +28,10 @@ import Grid from "@mui/material/Grid2";
 import Cookies from "js-cookie";
 
 export interface ITopBarProps {
-  onNavigate: (path: string) => void;
+  DrawerHeader: any;
+  open: any;
+  handleDrawerClose: any;
+  // onNavigate: (path: string) => void;
 }
 
 export interface miniChilden {
@@ -47,7 +56,7 @@ export interface MenuSideBar {
 const settings = [
   { name: "Profile", path: "/profile" },
   { name: "Account", path: "/account" },
-  { name: "Dashboards", path: "/HomeAdmin" },
+  { name: "Dashboards", path: "/home-admin" },
   { name: "Logout", path: "/login" }, // กำหนด path ของ Logout ไปที่ /login
 ];
 
@@ -57,13 +66,19 @@ const TopBarD: React.FunctionComponent<ITopBarProps> = ({ onNavigate }) => {
     null
   );
 
-  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
+  const navigate = useNavigate();
+  
+    const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+      setAnchorElUser(event.currentTarget);
+    };
+  
+    const handleCloseUserMenu = () => {
+      setAnchorElUser(null);
+    };
+  
+    useEffect(() => {
+      setRouter();
+    }, []);
 
   useEffect(() => {
     setRouter();
@@ -71,8 +86,8 @@ const TopBarD: React.FunctionComponent<ITopBarProps> = ({ onNavigate }) => {
 
   const setRouter = async () => {
     let temp: any[] = [];
-    if (routesConfigD["privateRoute"] !== undefined) {
-      for await (const item of routesConfigD["privateRoute"]) {
+    if (routesConfigD["privateRouteD"] !== undefined) {
+      for await (const item of routesConfigD["privateRouteD"]) {
         if (item.children !== undefined) {
           let inputchildren: Childen[] = [];
 
@@ -108,14 +123,19 @@ const TopBarD: React.FunctionComponent<ITopBarProps> = ({ onNavigate }) => {
 
   const handleMenuClick = (path: string) => {
     setAnchorElUser(null);
+    console.log('path', path)
     if (path === "/login") {
+      console.log('first')
       // เพิ่ม logic การ logout ที่นี่ เช่น การล้าง token หรือข้อมูลของผู้ใช้
     }
-    onNavigate(path);
+    navigate(path);
+    // onNavigate(path);
   };
 
+  
+
   return (
-    <>
+      <>
       <AppBar
         position="fixed"
         style={{
@@ -151,7 +171,7 @@ const TopBarD: React.FunctionComponent<ITopBarProps> = ({ onNavigate }) => {
                 textDecoration: "none",
               }}
             >
-              Dashboard
+              INTERGETHER
             </Typography>
 
             <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
@@ -164,7 +184,7 @@ const TopBarD: React.FunctionComponent<ITopBarProps> = ({ onNavigate }) => {
               {sidebar.map((page) => (
                 <Button
                   key={page.name}
-                  onClick={() => onNavigate(page.path)}
+                  onClick={() => navigate(page.path)}
                   sx={{
                     my: 2,
                     color: "#8B0000",

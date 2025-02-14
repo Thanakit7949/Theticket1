@@ -1,16 +1,12 @@
 const express = require('express');
 const cors = require('cors');
-const mysql = require('mysql2/promise'); // Use promise-based version
-const jwt = require('jsonwebtoken');
-
+const mysql = require('mysql2/promise'); // Use promise-based version of MySQL2
 const app = express();
 const port = 5000;
-const secretKey = 'your-secret-key';
 
 app.use(cors());
 app.use(express.json());
 
-// สร้างการเชื่อมต่อฐานข้อมูล
 const db = mysql.createPool({
   host: 'localhost',
   user: 'root',
@@ -18,7 +14,6 @@ const db = mysql.createPool({
   database: 'ex',
 });
 
-// Login และส่ง JWT กลับ
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
@@ -30,10 +25,8 @@ app.post('/login', async (req, res) => {
     const [rows] = await db.query('SELECT * FROM users WHERE email = ? AND password = ?', [email, password]);
     if (rows.length > 0) {
       const user = rows[0];
-      const token = jwt.sign({ id: user.id, email: user.email }, secretKey, { expiresIn: '1h' });
-
       const { password, ...userData } = user;
-      return res.json({ token, user: userData });
+      return res.json({ ...userData, role: userData.role });
     } else {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
@@ -47,6 +40,8 @@ app.post('/login', async (req, res) => {
 app.post('/login-phone', async (req, res) => {
   const { phone } = req.body;
 
+  console.log("Received Phone:", phone);
+
   if (!phone) {
     return res.status(400).json({ message: 'Phone number is required' });
   }
@@ -58,7 +53,7 @@ app.post('/login-phone', async (req, res) => {
       const token = jwt.sign({ id: user.id, phone: user.phone }, secretKey, { expiresIn: '1h' });
 
       const { password, ...userData } = user;
-      return res.json({ token, user: userData });
+      return res.json(userData); // Send userData directly
     } else {
       return res.status(401).json({ message: 'Invalid phone number' });
     }
@@ -73,41 +68,17 @@ app.get('/users/:id', async (req, res) => {
   const userId = req.params.id;
 
   try {
-    const [rows] = await db.query('SELECT id, first_name, last_name, email, phone, birth_date, gender, profile_image FROM users WHERE id = ?', [userId]);
-    if (rows.length > 0) {
-      return res.json(rows[0]);
-    } else {
+    const [rows] = await db.query('SELECT * FROM users WHERE id = ?', [userId]);
+    if (rows.length === 0) {
       return res.status(404).json({ message: 'User not found' });
     }
+    res.json(rows[0]);
   } catch (error) {
     console.error('Error fetching user:', error);
     return res.status(500).json({ message: 'Internal server error' });
   }
 });
 
-// อัพเดทข้อมูลผู้ใช้
-app.put('/users/:id', async (req, res) => {
-  const userId = req.params.id;
-  const { first_name, last_name, email, phone, birth_date, gender, profile_image } = req.body;
-
-  try {
-    const [result] = await db.query(
-      'UPDATE users SET first_name = ?, last_name = ?, email = ?, phone = ?, birth_date = ?, gender = ?, profile_image = ? WHERE id = ?',
-      [first_name, last_name, email, phone, birth_date, gender, profile_image, userId]
-    );
-
-    if (result.affectedRows > 0) {
-      return res.json({ message: 'Profile updated successfully' });
-    } else {
-      return res.status(404).json({ message: 'User not found' });
-    }
-  } catch (error) {
-    console.error('Error updating user:', error);
-    return res.status(500).json({ message: 'Internal server error' });
-  }
-});
-
-// Register
 app.post('/register', async (req, res) => {
   const { email, password, phone, firstName, lastName, birthdate, gender } = req.body;
 
@@ -121,14 +92,38 @@ app.post('/register', async (req, res) => {
       return res.status(409).json({ message: 'Email already exists' });
     }
 
-    await db.query(
-      'INSERT INTO users (email, password, phone, first_name, last_name, birth_date, gender) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [email, password, phone, firstName, lastName, birthdate, gender]
-    );
-    return res.status(201).json({ message: 'User registered successfully' });
+    const query = 'INSERT INTO users (email, password, phone, first_name, last_name, birth_date, gender) VALUES (?, ?, ?, ?, ?, ?, ?)';
+    await db.query(query, [email, password, phone, firstName, lastName, birthdate, gender]);
+    res.status(201).json({ message: 'User registered successfully' });
   } catch (error) {
-    console.error('Error registering user:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+    console.error('Database error:', error);
+    res.status(500).json({ message: 'Database error', error: error.message });
+  }
+});
+
+app.get('/getAllConcerts', async (req, res) => {
+  try {
+    const [results] = await db.query('SELECT * FROM concerts');
+    res.json(results);
+  } catch (error) {
+    console.error('Database error:', error);
+    res.status(500).json({ message: 'Database error', error: error.message });
+  }
+});
+
+app.get("/getZones", async (req, res) => {
+  const { concert_id } = req.query;
+
+  if (!concert_id) {
+    return res.status(400).json({ error: "concert_id is required" });
+  }
+
+  try {
+    const [results] = await db.query("SELECT * FROM zones WHERE concert_id = ?", [concert_id]);
+    res.json(results);
+  } catch (error) {
+    console.error("Database error:", error);
+    res.status(500).json({ error: "Database error" });
   }
 });
 
@@ -841,7 +836,6 @@ app.delete('/deleteSport/:id', async (req, res) => {
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: 'Sport not found' });
     }
-
     res.status(200).json({ message: 'Sport deleted successfully' });
   } catch (err) {
     console.error('Error deleting sport:', err);

@@ -3,6 +3,7 @@ import { Box, Typography, CssBaseline, Drawer, List, ListItem, ListItemIcon, Lis
 import { Home, People, Dashboard, ShoppingCart, Event, SportsSoccer } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import TopBarD from '../../compones/TopBarD';
+import Sidebar from '../../compones/Sidebar';
 
 
 const HomeAdmin: React.FC = () => {
@@ -21,10 +22,9 @@ const HomeAdmin: React.FC = () => {
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <TopBarD onNavigate={handleNavigation} />
-
-
-    
+      <TopBarD 
+      onNavigate={handleNavigation} />
+      
     </Box>
   );
 };

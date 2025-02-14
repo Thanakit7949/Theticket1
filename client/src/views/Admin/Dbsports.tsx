@@ -30,9 +30,7 @@ const Dbsports: React.FC = () => {
 
   const fetchSports = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/getAllSports', {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      });
+      const response = await axios.get('http://localhost:5000/getAllSports');
       setSports(response.data);
     } catch (error) {
       console.error('Error fetching sports:', error);
@@ -63,9 +61,7 @@ const Dbsports: React.FC = () => {
         ? `http://localhost:5000/updateSport/${formData.id}`
         : 'http://localhost:5000/addSport';
       const method = isEditing ? axios.put : axios.post;
-      const response = await method(url, payload, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      });
+      const response = await method(url, payload);
 
       if (isEditing) {
         setSports((prev) => prev.map((sport) => (sport.id === formData.id ? response.data : sport)));
@@ -95,9 +91,7 @@ const Dbsports: React.FC = () => {
 
   const handleDelete = async (id: number) => {
     try {
-      await axios.delete(`http://localhost:5000/deleteSport/${id}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      });
+      await axios.delete(`http://localhost:5000/deleteSport/${id}`);
       setSports((prev) => prev.filter((sport) => sport.id !== id));
       alert('Sport deleted successfully!');
     } catch (error) {

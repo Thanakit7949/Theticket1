@@ -30,6 +30,8 @@ import Ballkeychain from "../views/User/prodetail/Ballkeychain";
 import Footballshirt from "../views/User/prodetail/Footballshirt";
 import InformationDetail from "../views/User/InformationDetail";
 import Test from "../views/User/Test";
+import Interface from "../views/Admin/Interface";
+import Users from "../views/Admin/Users";
 //import Dashboard from "../views/User/Dashboard"
 
 export const routesConfig: {
@@ -52,6 +54,32 @@ export const routesConfig: {
     // },
   ],
   privateRoute: [
+    // {
+    //   path: "/home-admin",
+    //   name: "home-Interface",
+    //   header: "home-Interface",
+    //   component: Interface,
+    //   icon: null,
+    //   children: [
+    //     {
+    //       path: "/users",
+    //       name: "users",
+    //       header: "users",
+    //       component: Users,
+    //       icon: null,
+    //       children: [],   
+    //     },
+    //     {
+    //       path: "concert-detail",
+    //       name: "concert-detail",
+    //       header: "concert-detail",
+    //       component: Interface,
+    //       icon: null,
+    //       subpath: false,
+    //       children: [],
+    //     },
+    //   ],
+    // },
     // {
     //     path: "/dashboard",
     //     name: "dashboard",

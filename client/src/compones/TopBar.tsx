@@ -48,7 +48,7 @@ export interface MenuSideBar {
 const settings = [
   { name: "Profile", path: "/profile" },
   { name: "Account", path: "/account" },
-  { name: "Dashboards", path: "/HomeAdmin" },
+  { name: "Dashboards", path: "/home-admin" },
   { name: "Logout", path: "/login" }, // กำหนด path ของ Logout ไปที่ /login
 ];
 
@@ -110,6 +110,7 @@ const TopBar: React.FunctionComponent<ITopBarProps> = ({ open }) => {
 
   const handleMenuClick = (path: string) => {
     setAnchorElUser(null);
+    console.log('path', path)
     if (path === "/login") {
       // เพิ่ม logic การ logout ที่นี่ เช่น การล้าง token หรือข้อมูลของผู้ใช้
     }
