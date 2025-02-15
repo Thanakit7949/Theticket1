@@ -650,37 +650,48 @@ app.get('/getproductImage', async (req, res) => {
   }
 });
 
-// promotion สำหรับดึงข้อมูลภาพ
-app.get('/getpromotionImage', (req, res) => {
+app.get('/getpromotionImage', async (req, res) => {
   const query = 'SELECT image FROM promotion_image';
-  db.query(query, (err, result) => {
-    if (err) {
-      return res.status(500).json({ message: 'Error fetching data', error: err.message });
-    }
+  try {
+    // ใช้ await เพื่อให้ดึงข้อมูลแบบ promise
+    const [result] = await db.query(query);
     return res.json(result);
-  });
+  } catch (err) {
+    return res.status(500).json({ message: 'Error fetching data', error: err.message });
+  }
 });
 
+
 // promotion สำหรับดึงข้อมูล
+// app.get('/getpromotionDetail', async (req, res) => {
+//   const query = 'SELECT * FROM promotion_detail';
+//   db.query(query, (err, result) => {
+//     if (err) {
+//       return res.status(500).json({ message: 'Error fetching data', error: err.message });
+//     }
+//     return res.json(result);
+//   });
+// });
+
 app.get('/getpromotionDetail', async (req, res) => {
   const query = 'SELECT * FROM promotion_detail';
-  db.query(query, (err, result) => {
-    if (err) {
-      return res.status(500).json({ message: 'Error fetching data', error: err.message });
-    }
+  try {
+    const [result] = await db.query(query);
     return res.json(result);
-  });
+  } catch (err) {
+    return res.status(500).json({ message: 'Error fetching data', error: err.message });
+  }
 });
 
 // promotion สำหรับดึงข้อมูล
-app.get('/getproconsport', (req, res) => {
+app.get('/getproconsport', async (req, res) => {
   const query = 'SELECT * FROM pro_consport';
-  db.query(query, (err, result) => {
-    if (err) {
-      return res.status(500).json({ message: 'Error fetching data', error: err.message });
-    }
+  try {
+    const [result] = await db.query(query);
     return res.json(result);
-  });
+  } catch (err) {
+    return res.status(500).json({ message: 'Error fetching data', error: err.message });
+  }
 });
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

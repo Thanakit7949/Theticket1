@@ -37,9 +37,9 @@ const LoginPage: React.FunctionComponent = () => {
       console.log(users);
       console.log(data);
       console.log( data.user);
-      console.log( data.user.first_name);
-      console.log( data.user.last_name);
-      console.log( data.user.id);
+      // console.log( data.user.first_name);
+      // console.log( data.user.last_name);
+      // console.log( data.user.id);
       Cookies.set("token", data.token);
       Cookies.set("userid", data.id);
       Cookies.set("acountname", data.first_name);
