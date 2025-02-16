@@ -386,14 +386,14 @@ export const routesConfig: {
     
           ],
         },
-        {
-          path: "/test",
-          name: "test",
-          header: "test",
-          component: Test,
-          icon: null,
-          children: [ ],
-        },
+        // {
+        //   path: "/test",
+        //   name: "test",
+        //   header: "test",
+        //   component: Test,
+        //   icon: null,
+        //   children: [ ],
+        // },
         
        
 

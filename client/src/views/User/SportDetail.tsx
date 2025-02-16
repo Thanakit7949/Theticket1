@@ -10,7 +10,7 @@ const SportDetail: React.FC = () => {
   const [loading, setLoading] = useState(true); // ใช้เช็คสถานะการโหลดข้อมูล
   const [error, setError] = useState<string | null>(null); // เก็บ error ถ้ามี
   const location = useLocation();
-const sportTest = location.state;
+  const sportTest = location.state;
 // console.log("Sport details:", sportTest);
   // useEffect(() => {
   //   console.log(id)
@@ -42,9 +42,11 @@ const sportTest = location.state;
   // }
  
     // ฟังก์ชันสำหรับกดปุ่ม "ซื้อบัตร"
+   
     const handleBuyTicket = () => {
       // ส่งข้อมูลเฉพาะที่ต้องการไปยังหน้า 'stage'
-      navigate('stage-sport');
+      navigate('stage-sport', { state: sportTest });
+      console.log("sportTest:", sportTest);
     };
 
     useEffect(() => {
@@ -107,7 +109,7 @@ const sportTest = location.state;
           }}
         >
           <Typography variant="body1" fontWeight="bold" color="black">
-            ราคาเริ่มต้น: ฿{sportTest.price} {/* ใช้ราคา จากฐานข้อมูล */}
+            ราคา: ฿{sportTest.price} {/* ใช้ราคา จากฐานข้อมูล */}
           </Typography>
 
           <Button

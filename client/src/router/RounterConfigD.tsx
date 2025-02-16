@@ -61,14 +61,14 @@ export const routesConfigD: {
       icon: null,
       children: [],   
     },
-    {
-      path: "/Product",
-      name: "Product",
-      header: "",
-      component: "",
-      icon: null,
-      children: [],   
-    },
+    // {
+    //   path: "/Product",
+    //   name: "Product",
+    //   header: "",
+    //   component: "",
+    //   icon: null,
+    //   children: [],   
+    // },
     {
       path: "/Orders",
       name: "Order",

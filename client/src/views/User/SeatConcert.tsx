@@ -1,13 +1,14 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import CheckIcon from "@mui/icons-material/Check";
-import CloseIcon from "@mui/icons-material/Close";
 import Cookies from "js-cookie";
+
 const SeatConcert: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { price, label,conid } = location.state || {}; // รับข้อมูลทั้งราคาและชื่อโซน (label)
+  const { price, label,} = location.state || {}; // รับข้อมูลทั้งราคาและชื่อโซน (label)
   const [timeLeft, setTimeLeft] = useState(5 * 60); // ตัวแปรเวลาที่เหลือในการทำรายการ 5 นาที (5 * 60 วินาที)
   const concert_Zone = location.state;
   const [seats, setSeats] = useState<string[]>([]); // เก็บข้อมูลที่นั่งในรูปแบบ 1D array เช่น ["A1", "A2", "A3", ...]
@@ -167,15 +168,16 @@ const totalPrice = selectedSeats.length > 0
         flexDirection: "row",
         alignItems: "flex-start",
         background: "linear-gradient(135deg, #EECDA3 0%, #EF629F 100%);",
-        height: "800px",
+        height: "700px",
         padding: "20px",
         maxHeight: "none",
         width: "1150px",
         maxWidth: "none",
+        borderRadius:"15px",
       }}
     >
       {/* Sidebar ซ้าย */}
-      <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", width: "505px", mr: 2 }}>
+      <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", width: "405px", mr: 2 }}>
         <Box
           sx={{
             padding: "20px",
@@ -185,7 +187,10 @@ const totalPrice = selectedSeats.length > 0
           }}
         >
           <Typography variant="h4" sx={{ marginBottom: "20px", fontWeight: "bold", fontSize: "25px" }}>
-            รายละเอียดการจองโซนที่นั่ง: {label}
+            รายละเอียดการจองโซนที่นั่ง: 
+          </Typography >
+          <Typography variant="h4" sx={{ marginBottom: "20px", fontWeight: "bold", fontSize: "25px" }}>
+          {label}
           </Typography>
           <Typography variant="h6" sx={{ marginBottom: "10px", textAlign: "left", color: "red" }}>
             บัตรโซนที่นั่งราคา: {price} บาท
@@ -414,47 +419,20 @@ const totalPrice = selectedSeats.length > 0
               </Typography>
             </Box>
 
-            {/* ที่นั่งที่ชำระเงินแล้ว */}
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                textAlign: "center",
-              }}
-            >
-              <Box
-                sx={{
-                  width: "30px",
-                  height: "30px",
-                  backgroundColor: "#C0C0C0",
-                  borderRadius: "5px",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <CloseIcon style={{ color: "red" }} />
-              </Box>
-              <Typography variant="body2" sx={{ color: "black", mt: 1 }}>
-                ที่นั่งที่ชำระเงินแล้ว
-              </Typography>
-            </Box>
           </Box>
         </Box>
         <Typography
           variant="h4"
           fontWeight="bold"
           sx={{
-            backgroundColor: "#f48fb1",
-            color: "black",
+            backgroundColor: "#d81b60",
+            color: "white",
             padding: "20px",
             width: "90%",
             maxWidth: "none",
             minHeight: "100px",
             textAlign: "center",
             lineHeight: "2.5",
-            border: "3px solid black",
             mt: 3
           }}
         >

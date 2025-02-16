@@ -1,85 +1,86 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
 import { Box, Button, Tooltip, Typography } from "@mui/material";
-import { useNavigate } from "react-router-dom"; // นำเข้า useNavigate
+import { useLocation, useNavigate } from "react-router-dom";
 
 const StageSport: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState(5 * 60);
-  const [selectedPrice,] = useState<string | null>(null);
-  const [tickets, setTickets] = useState<any[]>([]);
-  const navigate = useNavigate(); // ประกาศใช้ navigate
+  const [zones, setZones] = useState<any[]>([]);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const sportID = location.state;
+  const [sportid, setsportid] = useState();
 
-  // อัปเดตตัวจับเวลาให้ทำงานทุก ๆ 1 วินาที
+  const seatStyle = {
+    backgroundColor: "#8e24aa",
+    color: "white",
+    padding: "30px",
+    borderRadius: "10px",
+    textAlign: "center",
+    fontSize: "18px",
+    cursor: "pointer",
+    transition: "transform 0.2s ease, box-shadow 0.2s ease",
+    "&:hover": {
+      transform: "scale(1.1)",
+      boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.3)",
+    },
+  };
+  
+
+  useEffect(() => {
+    if (!sportID?.id) return;
+    const fetchZones = async () => {
+      try {
+        setsportid(sportID.id);
+        const response = await fetch(
+          `http://localhost:5000/getZoneSport?sport_id=${sportID.id}`
+        );
+        const data = await response.json();
+        setZones(data);
+      } catch (error) {
+        console.error("Error fetching zones:", error);
+      }
+    };
+    fetchZones();
+  }, [sportID]);
+
   useEffect(() => {
     const interval = setInterval(() => {
-      setTimeLeft((prevTime) => (prevTime > 0 ? prevTime - 1 : 0)); // ลดเวลาลงทีละ 1 วินาที หยุดเมื่อถึง 0
+      setTimeLeft((prevTime) => (prevTime > 0 ? prevTime - 1 : 0));
     }, 1000);
-
-    // ล้าง interval เมื่อคอมโพเนนต์ถูกยกเลิก
     return () => clearInterval(interval);
   }, []);
 
-    useEffect(() => {
-      const fetchTicket = async () => {
-        try {
-          const response = await fetch("http://localhost:5000/getSportstage");
-          const data = await response.json();
-          setTickets(data);
-          console.log(data);
-        } catch (error) {
-          console.error("Error fetching events:", error);
-        }
-      };
-  
-      fetchTicket();
-    }, []);
-
-  // ฟังก์ชันสำหรับฟอร์แมตเวลาเป็นรูปแบบ MM:SS
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
     const seconds = time % 60;
     return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
   };
 
-
-  // กรองบัตรตามราคาที่เลือก
-const filteredTickets = selectedPrice
-  ? tickets.filter((ticket) => String(ticket.amount) === selectedPrice) // ใช้ String เพื่อความแม่นยำ
-  : tickets;
-
-  const handleBuyTicket = (price: string, label: string) => {
-    navigate("/sport/seat-sport", { state: { price, label } });
+  const handleBuyTicket = (zone: any, price: string, label: string) => {
+    navigate("/sport/seat-sport", { state: { zone, price, label, sportid } });
   };
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "row", // ใช้แสดงคอนเทนต์ในแถว
-        alignItems: "flex-start",
-        background: "linear-gradient(135deg, #EECDA3 0%, #EF629F 100%);",
-        minHeight: "100vh",
-        padding: "20px",
-        width: "1150px", // เพิ่มความยาวของกรอบ
-        height: "1100px",
-        maxHeight: "none",
-        maxWidth: "none", // กำหนดให้ไม่มีขนาดกว้างสุดที่จำกัด
-      }}
-    >
-      {/* Sidebar ซ้าย */}
       <Box
         sx={{
           display: "flex",
-          flexDirection: "column",
+          flexDirection: "row",
           alignItems: "flex-start",
-          width: "505px",
-          mr: 2,
+          background: "linear-gradient(135deg, #EECDA3 0%, #EF629F 100%);",
+          minHeight: "100vh",
+          padding: "20px",
+          width: "1150px",
+          height: "500px",
+          borderRadius:"15px",
+          maxHeight: "none",
+          maxWidth: "none",
         }}
       >
-        {/* Tickets List */}
+      {/* Sidebar */}
+      <Box sx={{ width: "505px", mr: 2 }}>
         <Box
           sx={{
-            width: "100%",
             padding: "20px",
             borderRadius: "30px",
             backgroundColor: "#FFF",
@@ -87,52 +88,55 @@ const filteredTickets = selectedPrice
             mb: 3,
           }}
         >
-          {filteredTickets.map((ticket, index) => (
-            <Box
-              key={index}
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                backgroundColor: ticket.color,
-                color: "white",
-                borderRadius: "30px",
-                padding: "12px",
-                marginBottom: "8px",
-                transition: "transform 0.3s ease, box-shadow 0.3s ease",
-                "&:hover": {
-                  transform: "scale(1.05)",
-                  boxShadow: "0px 6px 16px rgba(0, 0, 0, 0.3)",
-                },
-              }}
-            >
-              <Typography>{ticket.label}: Cenzonic Concert</Typography>
-              <Typography>{ticket.price}</Typography>
-              <Button
-                variant="contained"
+          {zones.map((zone, index) => {
+            const zonePrice = parseFloat(sportID.price);
+            return (
+              <Box
+                key={index}
                 sx={{
-                  backgroundColor: "white",
-                  color: "black",
-                  padding: "8px 16px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  backgroundColor: "purple",
+                  color: "white",
                   borderRadius: "30px",
-                  fontWeight: "bold",
-                  "&:hover": { backgroundColor: "#b39ddb", color: "white" },
+                  padding: "12px",
+                  marginBottom: "8px",
+                  transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                  "&:hover": {
+                    transform: "scale(1.05)",
+                    boxShadow: "0px 6px 16px rgba(0, 0, 0, 0.3)",
+                  },
                 }}
-                onClick={() => handleBuyTicket(ticket.price, ticket.label)} // ส่งทั้งราคาและชื่อโซน
               >
-                จองโซนที่นั่ง
-              </Button>
-            </Box>
-          ))}
+                <Typography>{zone.name}:</Typography>
+                <Typography>{zone.seat_count} ที่นั่ง</Typography>
+                <Typography>฿{zonePrice}</Typography>
+                <Button
+                  variant="contained"
+                  sx={{
+                    backgroundColor: "white",
+                    color: "black",
+                    borderRadius: "30px",
+                    fontWeight: "bold",
+                    "&:hover": { backgroundColor: "#b39ddb", color: "white" },
+                  }}
+                  onClick={() =>
+                    handleBuyTicket(zone, zonePrice.toString(), zone.name)
+                  }
+                >
+                  จองโซนที่นั่ง
+                </Button>
+              </Box>
+            );
+          })}
         </Box>
       </Box>
 
-      {/* แผนที่ที่นั่ง */}
-
+      {/* Stage Area */}
       <Box
         sx={{
           width: "740px",
-          maxWidth: "none",
           padding: "20px",
           borderRadius: "20px",
           backgroundColor: "#FFF",
@@ -140,7 +144,7 @@ const filteredTickets = selectedPrice
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          position: "relative", // Relative positioning for the stage
+          position: "relative",
         }}
       >
         <Typography variant="h6" sx={{ color: "black", mb: 2 }}>
@@ -150,85 +154,73 @@ const filteredTickets = selectedPrice
           </span>
         </Typography>
 
-        {/* Stage Label */}
-        <Box
-          sx={{
-            position: "absolute", // ใช้ position absolute เพื่อให้อยู่ตรงกลาง
-            top: "54.5%", // วางตรงกลางในแนวตั้ง
-            left: "50%", // วางตรงกลางในแนวนอน
-            transform: "translate(-50%, -50%)", // เพื่อปรับให้จุดศูนย์กลางตรง
-            backgroundColor: "#26a69a",
-            width: "250px", // ขนาดวงกลม
-            height: "250px", // ขนาดวงกลม
-            borderRadius: "50%", // ทำให้เป็นวงกลม
-            display: "flex",
-            justifyContent: "center", // จัดข้อความให้อยู่กลาง
-            alignItems: "center", // จัดข้อความให้อยู่กลาง
-            fontWeight: "bold",
-            textAlign: "center",
-            border: "1px solid white",
-            color: "white",
-            padding: "15px 30px",
-            boxShadow: "0 3px 10px rgba(0, 0, 0, 0.2)",
-            fontSize:"30px"
-          }}
-        >
-          STAGE
-        </Box>
-
-        {/* Seating Arrangement */}
-        <Box
-  sx={{
-    display: "flex",
-    justifyContent: "center",
+        <Box 
+  sx={{ 
+    display: "grid",
+    gridTemplateColumns: "repeat(3, 1fr)", // แบ่ง 3 คอลัมน์ (ซ้าย - กลาง - ขวา)
+    gap: 2, 
+    justifyContent: "center", 
     alignItems: "center",
-    width: "100%",
-    position: "relative",
-    height: "500px",
-    border: "1px solid black",
+    width: "100%", 
+    padding: "20px",
+    textAlign: "center",
   }}
 >
-  {/* Map over seating labels to create a semicircular arrangement */}
-  {["AA1", "AA2", "AA3", "AA4", "AA5", "AA6","AA7" ,"AA8", "AA9", "AA10", ].map((label, index) => {
-    const angle = (180 / 5) * index; // Adjust to 180 degrees for half circle
-    return (
-      <Tooltip
-        key={label}
-        title={
-          tickets.find((ticket) => ticket.label === label)?.price || ""
-        }
-        arrow
+  {/* โซนซ้ายของ STAGE */}
+  {zones[0] && (
+    <Tooltip title={`ราคาที่นั่ง: ฿${parseFloat(sportID.price)}`} arrow>
+      <Box
+        onClick={() => handleBuyTicket(zones[0], sportID.price.toString(), zones[0].name)}
+        sx={seatStyle}
       >
+        {zones[0].name} - ฿{parseFloat(sportID.price)}
+      </Box>
+    </Tooltip>
+  )}
+
+  {/* STAGE ตรงกลาง */}
+  <Box
+    sx={{
+      backgroundColor: "#26a69a",
+      width: "180px",
+      height: "180px",
+      borderRadius: "50%",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      fontWeight: "bold",
+      textAlign: "center",
+      border: "1px solid white",
+      color: "white",
+      fontSize: "30px",
+      gridColumn: "2", // อยู่ตรงกลาง
+    }}
+  >
+    STAGE
+  </Box>
+
+  {/* โซนขวาของ STAGE */}
+  {zones[1] && (
+    <Tooltip title={`ราคาที่นั่ง: ฿${parseFloat(sportID.price)}`} arrow>
+      <Box
+        onClick={() => handleBuyTicket(zones[1], (parseFloat(sportID.price) ).toString(), zones[1].name)}
+        sx={seatStyle}
+      >
+        {zones[1].name} - ฿{parseFloat(sportID.price)}
+      </Box>
+    </Tooltip>
+  )}
+
+  {/* 3 โซนด้านล่าง */}
+  {zones.slice(2, 5).map((zone, index) => {
+    const zonePrice = parseFloat(sportID.price);
+    return (
+      <Tooltip key={index} title={`ราคาที่นั่ง: ฿${zonePrice}`} arrow>
         <Box
-          onClick={() => {
-            const ticket = tickets.find(
-              (ticket) => ticket.label === label
-            );
-            navigate("/sport/seat-sport", {
-              state: { price: ticket?.price, label },
-            });
-          }}
-          sx={{
-            backgroundColor: "#5e35b1",
-            color: "white",
-            padding: "25px 35px",
-            borderRadius: "10px",
-            minWidth: "100px",
-            textAlign: "center",
-            fontSize: "18px",
-            cursor: "pointer",
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: `translate(-50%, -50%) rotate(${angle}deg) translateX(200px) rotate(-${angle}deg)`, // Create a half-circle effect
-            transition: "transform 0.2s ease, box-shadow 0.2s ease", // Add transition effect
-            "&:hover": {
-              transform: `scale(1.1) translate(-50%, -50%) rotate(${angle}deg) translateX(200px) rotate(-${angle}deg)`,
-              boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.3)", // Add shadow on hover
-            },
-          }}
+          onClick={() => handleBuyTicket(zone, zonePrice.toString(), zone.name)}
+          sx={seatStyle}
         >
-          {label} {/* Display zone label */}
+          {zone.name} - ฿{zonePrice}
         </Box>
       </Tooltip>
     );

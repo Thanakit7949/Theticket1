@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState, useRef } from "react";
 import { Box, Typography, Divider, Button } from "@mui/material";
 import { useLocation } from "react-router-dom";
@@ -145,11 +146,11 @@ const TicketConcert: React.FC = () => {
       </Typography>
 
       <Box sx={{ flex: "1 1 auto", mr: 3 }}>
-        <img
+        {/* <img
           src={formattedData[0]?.concert_img}
           alt={formattedData[0]?.concert_name}
           style={{ width: "40%", maxWidth: "200px", borderRadius: "10px" }}
-        />
+        /> */}
       </Box>
       <Divider sx={{ backgroundColor: "gray", my: 2 }} />
       <Box sx={{ color: "#151515" }}>
@@ -247,10 +248,39 @@ const TicketConcert: React.FC = () => {
       </Box>
       
     </Box>
-    <footer style={{ marginTop: 20 }}>
-        <Button variant="contained" color="primary" onClick={handleDownloadImage} disabled={loading}>
-          {loading ? "กำลังบันทึก..." : "บันทึกเป็นรูปภาพ"}
-        </Button>
+    <footer
+        style={{
+          marginTop: 20,
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
+       <Button
+                 variant="contained"
+                 disabled={loading}
+                 onClick={() => navigate("/home-test")}
+                 sx={{
+                   backgroundColor: "#f48fb1",
+                   color: "#ffffff",
+                   "&:hover": { backgroundColor: "#c40d19" },
+                 }}
+               >
+                 {"กลับหน้าหลัก"}
+               </Button>
+       
+               <Button
+                 variant="contained"
+                 color="primary"
+                 onClick={handleDownloadImage}
+                 disabled={loading}
+                 sx={{
+                   backgroundColor: "#c40d19",
+                   color: "#ffffff",
+                   "&:hover": { backgroundColor: "#f48fb1" },
+                 }}
+               >
+                 {loading ? "กำลังบันทึก..." : "บันทึกเป็นรูปภาพ"}
+               </Button>
       </footer>
     </section>
   );

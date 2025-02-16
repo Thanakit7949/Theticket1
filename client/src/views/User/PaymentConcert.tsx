@@ -314,6 +314,7 @@ const PaymentConcert: React.FC = () => {
             color: "black",
           }}
         >
+           ที่นั่งที่เลือก: 
           {selectedSeats.length > 0 ? selectedSeats.join(", ") : "ยังไม่ได้เลือกที่นั่ง"}
         </Typography>
 
@@ -329,7 +330,7 @@ const PaymentConcert: React.FC = () => {
               width: "100%",
             }}
           >
-            <span>ราคารวม</span>
+            <span>ราคาบัตรคอนเสิร์ต</span>
             <span>
               {selectedSeats.length > 0
                 ? `฿${(numericPrice * selectedSeats.length).toFixed(2)}` // คูณจำนวนที่นั่งกับราคา
