@@ -11,8 +11,39 @@ const db = mysql.createPool({
   host: 'localhost',
   user: 'root',
   password: '',
-  database: 'ex',
+  database: 'base1',
 });
+
+
+
+//Profile App ให้ดึงชื่อกับอีเมลเข้ามา
+app.get('/users/:id', async (req, res) => {
+  const userId = req.params.id;
+  try {
+    const [rows] = await db.query(
+      'SELECT  first_name, email FROM users WHERE id = ?',
+      [userId]
+    );
+    console.log("User Data: ", rows); // ตรวจสอบข้อมูลที่ดึงมาได้
+    if (rows.length === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.json(rows[0]);
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+
+
+
+
+
+
+
+
+
 
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;

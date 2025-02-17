@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom";
 import image from "/src/assets/concert/thang.png";
 import image1 from "/src/assets/concert/thang1.png";
 import Cookies from "js-cookie";
-import html2canvas from "html2canvas";
+//import html2canvas from "html2canvas";
 
 const TicketConcert: React.FC = () => {
   const ticketRef = useRef<HTMLDivElement>(null);
