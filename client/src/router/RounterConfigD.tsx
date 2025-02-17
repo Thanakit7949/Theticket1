@@ -6,6 +6,7 @@ import Dbsports from "../views/Admin/Dbsports";
 import Users from "../views/Admin/Users";
 import Orders from "../views/Admin/Orders";
 import Interface from "../views/Admin/Interface";
+import Products from "../views/Admin/products";
 
 export const routesConfigD: {
   publicRouteD: MainRouter[];
@@ -62,10 +63,10 @@ export const routesConfigD: {
       children: [],   
     },
     {
-      path: "/Product",
-      name: "Product",
-      header: "",
-      component: "",
+      path: "/Products",
+      name: "Products",
+      header: "Products",
+      component: Products,
       icon: null,
       children: [],   
     },

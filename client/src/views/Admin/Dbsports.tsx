@@ -52,6 +52,11 @@ const Dbsports: React.FC = () => {
   };
 
   const handleAddOrUpdate = async () => {
+    if (!formData.name || !formData.date || !formData.location || formData.price === 0 || formData.available_seats === 0 || !formData.type) {
+      alert('All fields are required.');
+      return;
+    }
+
     try {
       const payload = {
         ...formData,
@@ -75,8 +80,13 @@ const Dbsports: React.FC = () => {
       setIsEditing(false);
       setOpen(false);
     } catch (error) {
-      console.error('Error adding/updating sport:', error);
-      alert('Failed to add/update sport.');
+      if (error.response) {
+        console.error('Error adding/updating sport:', error.response.data);
+        alert(`Failed to add/update sport: ${error.response.data.message}`);
+      } else {
+        console.error('Error adding/updating sport:', error);
+        alert('Failed to add/update sport.');
+      }
     }
   };
 

@@ -19,6 +19,7 @@ import Users from "../views/Admin/Users";
 import Orders from "../views/Admin/Orders";
 import HomeIsAdmin from "../views/HomeIsAdmin";
 import { routesConfigD } from "./RounterConfigD";
+import Products from "../views/Admin/products";
 
 
 const Router: React.FC = () => {
@@ -260,14 +261,14 @@ const Router: React.FC = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/dbconcerts" element={<Dbconcerts />} />
-        <Route path="/dbsports" element={<Dbsports />} />
+        {/* <Route path="/dbconcerts" element={<Dbconcerts />} />
+        <Route path="/dbsports" element={<Dbsports />} /> */}
         <Route path="/HomeAdmin" element={<HomeAdmin />} />
-        <Route path="/Interface" element={<Interface />} />
+        {/* <Route path="/Interface" element={<Interface />} />
         <Route path="/Users" element={<Users />} />
-        {/* <Route path="/Products" element={<Products />} /> */}
+        <Route path="/Products" element={<Products />} />
         <Route path="/Orders" element={<Orders />} />
-        
+         */}
         
         <Route path="/" element={
             <Home routerHeader={{
