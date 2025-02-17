@@ -31,7 +31,7 @@ const Dbsports: React.FC = () => {
     available_seats: 0,
     type: '',
   });
-  const [zoneData, setZoneData] = useState<ZoneData[]>([]);
+  const [zonesData, setZonesData] = useState<ZoneData[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
@@ -63,29 +63,29 @@ const Dbsports: React.FC = () => {
 
   const handleZoneChange = (index: number, e: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>) => {
     const { name, value } = e.target;
-    const updatedZones = [...zoneData];
+    const updatedZones = [...zonesData];
     updatedZones[index] = {
       ...updatedZones[index],
       [name as string]: name === 'seat_count' ? parseInt(value as string) : value,
     };
-    setZoneData(updatedZones);
+    setZonesData(updatedZones);
   };
 
-  const addZone = () => {
-    setZoneData([...zoneData, { name: '', seat_count: 0 }]);
+  const addZones = () => {
+    setZonesData([...zonesData, { name: '', seat_count: 0 }]);
   };
 
-  const removeZone = (index: number) => {
-    const updatedZones = [...zoneData];
+  const removeZones = (index: number) => {
+    const updatedZones = [...zonesData];
     updatedZones.splice(index, 1);
-    setZoneData(updatedZones);
+    setZonesData(updatedZones);
   };
 
   const handleAddOrUpdate = async () => {
     try {
       const payload = {
         ...formData,
-        date: new Date(formData.date).toISOString(),
+        date: new Date(formData.date).toISOString().slice(0, 19).replace('T', ' '),
       };
       const url = isEditing
         ? `http://localhost:5000/updateSport/${formData.id}`
@@ -94,7 +94,7 @@ const Dbsports: React.FC = () => {
       const response = await method(url, payload);
 
       if (isEditing) {
-        setSports((prev) => prev.map((sport) => (sport.id === formData.id ? response.data : sport)));
+        setSports((prev) => prev.map((sport) => (sport.id === formData.id ? { ...sport, ...payload } : sport)));
         await updateZonesAndSeats(formData.id!);
         alert('Sport updated successfully!');
       } else {
@@ -105,7 +105,7 @@ const Dbsports: React.FC = () => {
       }
 
       setFormData({ name: '', date: '', location: '', price: 0, available_seats: 0, type: '' });
-      setZoneData([]);
+      setZonesData([]);
       setIsEditing(false);
       setOpen(false);
     } catch (error) {
@@ -116,15 +116,15 @@ const Dbsports: React.FC = () => {
 
   const addZonesAndSeats = async (sportId: number) => {
     try {
-      for (const zone of zoneData) {
-        const zoneResponse = await axios.post('http://localhost:5000/addZone', {
+      for (const zone of zonesData) {
+        const zoneResponse = await axios.post('http://localhost:5000/addSportZone', {
           sport_id: sportId,
           name: zone.name,
           seat_count: zone.seat_count,
         });
         const zoneId = zoneResponse.data.id;
         for (let i = 0; i < zone.seat_count; i++) {
-          await axios.post('http://localhost:5000/addSeat', {
+          await axios.post('http://localhost:5000/addSportSeat', {
             zone_id: zoneId,
             seat_number: `Seat ${i + 1}`,
           });
@@ -138,14 +138,12 @@ const Dbsports: React.FC = () => {
 
   const updateZonesAndSeats = async (sportId: number) => {
     try {
-      await axios.delete(`http://localhost:5000/deleteZonesBySport/${sportId}`);
-      await addZonesAndSeats(sportId);
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        console.error('Error updating zones and seats:', error.response.data);
-      } else {
-        console.error('Error updating zones and seats:', error);
+      const response = await axios.delete(`http://localhost:5000/deleteZonesBySport/${sportId}`);
+      if (response.status === 200) {
+        await addZonesAndSeats(sportId);
       }
+    } catch (error) {
+      console.error('Error updating zones and seats:', error);
       alert('Failed to update zones and seats.');
     }
   };
@@ -159,10 +157,11 @@ const Dbsports: React.FC = () => {
     setOpen(true);
 
     try {
-      const response = await axios.get(`http://localhost:5000/getZones?sport_id=${sport.id}`);
-      setZoneData(response.data);
+      const response = await axios.get(`http://localhost:5000/getZonesp?sport_id=${sport.id}`);
+      setZonesData(response.data);
     } catch (error) {
       console.error('Error fetching zones:', error);
+      alert('Failed to fetch zones.');
     }
   };
 
@@ -340,7 +339,7 @@ const Dbsports: React.FC = () => {
           <Typography variant="h6" component="h3" sx={{ mt: 2 }}>
             Zones
           </Typography>
-          {zoneData.map((zone, index) => (
+          {zonesData.map((zone, index) => (
             <Grid container spacing={2} key={index} sx={{ mt: 2 }}>
               <Grid item xs={5}>
                 <TextField
@@ -367,7 +366,7 @@ const Dbsports: React.FC = () => {
                 <Button
                   variant="contained"
                   color="error"
-                  onClick={() => removeZone(index)}
+                  onClick={() => removeZones(index)}
                   sx={{ mt: 2 }}
                 >
                   Remove
@@ -375,7 +374,7 @@ const Dbsports: React.FC = () => {
               </Grid>
             </Grid>
           ))}
-          <Button variant="contained" color="primary" onClick={addZone} sx={{ mt: 2 }}>
+          <Button variant="contained" color="primary" onClick={addZones} sx={{ mt: 2 }}>
             Add Zone
           </Button>
           <Button

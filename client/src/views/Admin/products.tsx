@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Modal, TextField, Select, MenuItem, FormControl, InputLabel, CircularProgress } from '@mui/material';
+import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Modal, TextField, Select, MenuItem, FormControl, InputLabel, CircularProgress, Tabs, Tab } from '@mui/material';
 import { Add, Edit, Delete } from '@mui/icons-material';
 
 interface Product {
@@ -35,6 +35,7 @@ const Products: React.FC = () => {
   });
   const [isEditing, setIsEditing] = useState(false);
   const [selectedTable, setSelectedTable] = useState<string>('product');
+  const [tabIndex, setTabIndex] = useState(0);
 
   const fetchProducts = async () => {
     try {
@@ -86,9 +87,10 @@ const Products: React.FC = () => {
         ? `http://localhost:5000/updateProduct/${formData.id}`
         : `http://localhost:5000/addProduct?table=${selectedTable}`;
       const method = isEditing ? axios.put : axios.post;
-      const response = await method(url, { ...formData, table: selectedTable });
+      const response = await method(url, { ...formData });
 
       if (isEditing) {
+        setProducts((prev) => prev.map((product) => (product.id === formData.id ? response.data : product)));
         alert('Product updated successfully!');
       } else {
         setProducts((prev) => [...prev, response.data]);
@@ -135,6 +137,10 @@ const Products: React.FC = () => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setTabIndex(newValue);
+  };
+
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
@@ -142,6 +148,70 @@ const Products: React.FC = () => {
       </Box>
     );
   }
+
+  const renderTable = (products: Product[], tableName: string) => (
+    <TableContainer component={Paper} sx={{ mb: 4 }}>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>ID</TableCell>
+            <TableCell>Name</TableCell>
+            <TableCell>Price</TableCell>
+            <TableCell>Category</TableCell>
+            <TableCell>Description</TableCell>
+            <TableCell>Image</TableCell>
+            <TableCell>Status</TableCell>
+            <TableCell>Actions</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {products.map((product) => (
+            <TableRow key={product.id}>
+              <TableCell>{product.id}</TableCell>
+              <TableCell>{product.name}</TableCell>
+              <TableCell>{product.price}</TableCell>
+              <TableCell>{product.category}</TableCell>
+              <TableCell>{product.description}</TableCell>
+              <TableCell>{product.image}</TableCell>
+              <TableCell>{product.status}</TableCell>
+              <TableCell>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  size="small"
+                  startIcon={<Edit />}
+                  sx={{ mr: 1 }}
+                  onClick={() => handleEdit(product)}
+                >
+                  Edit
+                </Button>
+                <Button
+                  variant="contained"
+                  color="error"
+                  size="small"
+                  startIcon={<Delete />}
+                  onClick={() => handleDelete(product.id, tableName)}
+                >
+                  Delete
+                </Button>
+                <FormControl fullWidth margin="normal">
+                  <InputLabel>Status</InputLabel>
+                  <Select
+                    value={product.status}
+                    onChange={(e) => handleStatusChange(product.id, e.target.value as string)}
+                  >
+                    <MenuItem value="Available">Available</MenuItem>
+                    <MenuItem value="Out of Stock">Out of Stock</MenuItem>
+                    <MenuItem value="Discontinued">Discontinued</MenuItem>
+                  </Select>
+                </FormControl>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
 
   return (
     <Box p={4}>
@@ -157,518 +227,24 @@ const Products: React.FC = () => {
       >
         Add Product
       </Button>
-      <TableContainer component={Paper} sx={{ mb: 4 }}>
-        <Typography variant="h6" textAlign="center" mt={2}>
-          Flash Sale Products
-        </Typography>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Price</TableCell>
-              <TableCell>Category</TableCell>
-              <TableCell>Description</TableCell>
-              <TableCell>Image</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {flashsalePro.map((product) => (
-              <TableRow key={product.id}>
-                <TableCell>{product.id}</TableCell>
-                <TableCell>{product.name}</TableCell>
-                <TableCell>{product.price}</TableCell>
-                <TableCell>{product.category}</TableCell>
-                <TableCell>{product.description}</TableCell>
-                <TableCell>{product.image}</TableCell>
-                <TableCell>{product.status}</TableCell>
-                <TableCell>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    size="small"
-                    startIcon={<Edit />}
-                    sx={{ mr: 1 }}
-                    onClick={() => handleEdit(product)}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="error"
-                    size="small"
-                    startIcon={<Delete />}
-                    onClick={() => handleDelete(product.id, 'flashsalepro')}
-                  >
-                    Delete
-                  </Button>
-                  <FormControl fullWidth margin="normal">
-                    <InputLabel>Status</InputLabel>
-                    <Select
-                      value={product.status}
-                      onChange={(e) => handleStatusChange(product.id, e.target.value as string)}
-                    >
-                      <MenuItem value="Available">Available</MenuItem>
-                      <MenuItem value="Out of Stock">Out of Stock</MenuItem>
-                      <MenuItem value="Discontinued">Discontinued</MenuItem>
-                    </Select>
-                  </FormControl>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TableContainer component={Paper} sx={{ mb: 4 }}>
-        <Typography variant="h6" textAlign="center" mt={2}>
-          Flash Sale Sports
-        </Typography>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Price</TableCell>
-              <TableCell>Category</TableCell>
-              <TableCell>Description</TableCell>
-              <TableCell>Image</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {flashsaleSport.map((product) => (
-              <TableRow key={product.id}>
-                <TableCell>{product.id}</TableCell>
-                <TableCell>{product.name}</TableCell>
-                <TableCell>{product.price}</TableCell>
-                <TableCell>{product.category}</TableCell>
-                <TableCell>{product.description}</TableCell>
-                <TableCell>{product.image}</TableCell>
-                <TableCell>{product.status}</TableCell>
-                <TableCell>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    size="small"
-                    startIcon={<Edit />}
-                    sx={{ mr: 1 }}
-                    onClick={() => handleEdit(product)}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="error"
-                    size="small"
-                    startIcon={<Delete />}
-                    onClick={() => handleDelete(product.id, 'flashsalesport')}
-                  >
-                    Delete
-                  </Button>
-                  <FormControl fullWidth margin="normal">
-                    <InputLabel>Status</InputLabel>
-                    <Select
-                      value={product.status}
-                      onChange={(e) => handleStatusChange(product.id, e.target.value as string)}
-                    >
-                      <MenuItem value="Available">Available</MenuItem>
-                      <MenuItem value="Out of Stock">Out of Stock</MenuItem>
-                      <MenuItem value="Discontinued">Discontinued</MenuItem>
-                    </Select>
-                  </FormControl>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TableContainer component={Paper} sx={{ mb: 4 }}>
-        <Typography variant="h6" textAlign="center" mt={2}>
-          Products
-        </Typography>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Price</TableCell>
-              <TableCell>Category</TableCell>
-              <TableCell>Description</TableCell>
-              <TableCell>Image</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {products.map((product) => (
-              <TableRow key={product.id}>
-                <TableCell>{product.id}</TableCell>
-                <TableCell>{product.name}</TableCell>
-                <TableCell>{product.price}</TableCell>
-                <TableCell>{product.category}</TableCell>
-                <TableCell>{product.description}</TableCell>
-                <TableCell>{product.image}</TableCell>
-                <TableCell>{product.status}</TableCell>
-                <TableCell>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    size="small"
-                    startIcon={<Edit />}
-                    sx={{ mr: 1 }}
-                    onClick={() => handleEdit(product)}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="error"
-                    size="small"
-                    startIcon={<Delete />}
-                    onClick={() => handleDelete(product.id, 'product')}
-                  >
-                    Delete
-                  </Button>
-                  <FormControl fullWidth margin="normal">
-                    <InputLabel>Status</InputLabel>
-                    <Select
-                      value={product.status}
-                      onChange={(e) => handleStatusChange(product.id, e.target.value as string)}
-                    >
-                      <MenuItem value="Available">Available</MenuItem>
-                      <MenuItem value="Out of Stock">Out of Stock</MenuItem>
-                      <MenuItem value="Discontinued">Discontinued</MenuItem>
-                    </Select>
-                  </FormControl>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TableContainer component={Paper} sx={{ mb: 4 }}>
-        <Typography variant="h6" textAlign="center" mt={2}>
-          Scarf Sports
-        </Typography>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Price</TableCell>
-              <TableCell>Category</TableCell>
-              <TableCell>Description</TableCell>
-              <TableCell>Image</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {scarfSport.map((product) => (
-              <TableRow key={product.id}>
-                <TableCell>{product.id}</TableCell>
-                <TableCell>{product.name}</TableCell>
-                <TableCell>{product.price}</TableCell>
-                <TableCell>{product.category}</TableCell>
-                <TableCell>{product.description}</TableCell>
-                <TableCell>{product.image}</TableCell>
-                <TableCell>{product.status}</TableCell>
-                <TableCell>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    size="small"
-                    startIcon={<Edit />}
-                    sx={{ mr: 1 }}
-                    onClick={() => handleEdit(product)}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="error"
-                    size="small"
-                    startIcon={<Delete />}
-                    onClick={() => handleDelete(product.id, 'scarfsport')}
-                  >
-                    Delete
-                  </Button>
-                  <FormControl fullWidth margin="normal">
-                    <InputLabel>Status</InputLabel>
-                    <Select
-                      value={product.status}
-                      onChange={(e) => handleStatusChange(product.id, e.target.value as string)}
-                    >
-                      <MenuItem value="Available">Available</MenuItem>
-                      <MenuItem value="Out of Stock">Out of Stock</MenuItem>
-                      <MenuItem value="Discontinued">Discontinued</MenuItem>
-                    </Select>
-                  </FormControl>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TableContainer component={Paper} sx={{ mb: 4 }}>
-        <Typography variant="h6" textAlign="center" mt={2}>
-          Shoe Sports
-        </Typography>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Price</TableCell>
-              <TableCell>Category</TableCell>
-              <TableCell>Description</TableCell>
-              <TableCell>Image</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {shoeSport.map((product) => (
-              <TableRow key={product.id}>
-                <TableCell>{product.id}</TableCell>
-                <TableCell>{product.name}</TableCell>
-                <TableCell>{product.price}</TableCell>
-                <TableCell>{product.category}</TableCell>
-                <TableCell>{product.description}</TableCell>
-                <TableCell>{product.image}</TableCell>
-                <TableCell>{product.status}</TableCell>
-                <TableCell>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    size="small"
-                    startIcon={<Edit />}
-                    sx={{ mr: 1 }}
-                    onClick={() => handleEdit(product)}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="error"
-                    size="small"
-                    startIcon={<Delete />}
-                    onClick={() => handleDelete(product.id, 'shoesport')}
-                  >
-                    Delete
-                  </Button>
-                  <FormControl fullWidth margin="normal">
-                    <InputLabel>Status</InputLabel>
-                    <Select
-                      value={product.status}
-                      onChange={(e) => handleStatusChange(product.id, e.target.value as string)}
-                    >
-                      <MenuItem value="Available">Available</MenuItem>
-                      <MenuItem value="Out of Stock">Out of Stock</MenuItem>
-                      <MenuItem value="Discontinued">Discontinued</MenuItem>
-                    </Select>
-                  </FormControl>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TableContainer component={Paper} sx={{ mb: 4 }}>
-        <Typography variant="h6" textAlign="center" mt={2}>
-          Shirt Sports
-        </Typography>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Price</TableCell>
-              <TableCell>Category</TableCell>
-              <TableCell>Description</TableCell>
-              <TableCell>Image</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {shirtSport.map((product) => (
-              <TableRow key={product.id}>
-                <TableCell>{product.id}</TableCell>
-                <TableCell>{product.name}</TableCell>
-                <TableCell>{product.price}</TableCell>
-                <TableCell>{product.category}</TableCell>
-                <TableCell>{product.description}</TableCell>
-                <TableCell>{product.image}</TableCell>
-                <TableCell>{product.status}</TableCell>
-                <TableCell>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    size="small"
-                    startIcon={<Edit />}
-                    sx={{ mr: 1 }}
-                    onClick={() => handleEdit(product)}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="error"
-                    size="small"
-                    startIcon={<Delete />}
-                    onClick={() => handleDelete(product.id, 'shirtsport')}
-                  >
-                    Delete
-                  </Button>
-                  <FormControl fullWidth margin="normal">
-                    <InputLabel>Status</InputLabel>
-                    <Select
-                      value={product.status}
-                      onChange={(e) => handleStatusChange(product.id, e.target.value as string)}
-                    >
-                      <MenuItem value="Available">Available</MenuItem>
-                      <MenuItem value="Out of Stock">Out of Stock</MenuItem>
-                      <MenuItem value="Discontinued">Discontinued</MenuItem>
-                    </Select>
-                  </FormControl>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TableContainer component={Paper} sx={{ mb: 4 }}>
-        <Typography variant="h6" textAlign="center" mt={2}>
-          Shirt Con
-        </Typography>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Price</TableCell>
-              <TableCell>Category</TableCell>
-              <TableCell>Description</TableCell>
-              <TableCell>Image</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {shirtCon.map((product) => (
-              <TableRow key={product.id}>
-                <TableCell>{product.id}</TableCell>
-                <TableCell>{product.name}</TableCell>
-                <TableCell>{product.price}</TableCell>
-                <TableCell>{product.category}</TableCell>
-                <TableCell>{product.description}</TableCell>
-                <TableCell>{product.image}</TableCell>
-                <TableCell>{product.status}</TableCell>
-                <TableCell>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    size="small"
-                    startIcon={<Edit />}
-                    sx={{ mr: 1 }}
-                    onClick={() => handleEdit(product)}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="error"
-                    size="small"
-                    startIcon={<Delete />}
-                    onClick={() => handleDelete(product.id, 'shirtcon')}
-                  >
-                    Delete
-                  </Button>
-                  <FormControl fullWidth margin="normal">
-                    <InputLabel>Status</InputLabel>
-                    <Select
-                      value={product.status}
-                      onChange={(e) => handleStatusChange(product.id, e.target.value as string)}
-                    >
-                      <MenuItem value="Available">Available</MenuItem>
-                      <MenuItem value="Out of Stock">Out of Stock</MenuItem>
-                      <MenuItem value="Discontinued">Discontinued</MenuItem>
-                    </Select>
-                  </FormControl>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TableContainer component={Paper} sx={{ mb: 4 }}>
-        <Typography variant="h6" textAlign="center" mt={2}>
-          Shirt Con Pro
-        </Typography>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Price</TableCell>
-              <TableCell>Category</TableCell>
-              <TableCell>Description</TableCell>
-              <TableCell>Image</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {shirtConPro.map((product) => (
-              <TableRow key={product.id}>
-                <TableCell>{product.id}</TableCell>
-                <TableCell>{product.name}</TableCell>
-                <TableCell>{product.price}</TableCell>
-                <TableCell>{product.category}</TableCell>
-                <TableCell>{product.description}</TableCell>
-                <TableCell>{product.image}</TableCell>
-                <TableCell>{product.status}</TableCell>
-                <TableCell>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    size="small"
-                    startIcon={<Edit />}
-                    sx={{ mr: 1 }}
-                    onClick={() => handleEdit(product)}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="error"
-                    size="small"
-                    startIcon={<Delete />}
-                    onClick={() => handleDelete(product.id, 'shirtconpro')}
-                  >
-                    Delete
-                  </Button>
-                  <FormControl fullWidth margin="normal">
-                    <InputLabel>Status</InputLabel>
-                    <Select
-                      value={product.status}
-                      onChange={(e) => handleStatusChange(product.id, e.target.value as string)}
-                    >
-                      <MenuItem value="Available">Available</MenuItem>
-                      <MenuItem value="Out of Stock">Out of Stock</MenuItem>
-                      <MenuItem value="Discontinued">Discontinued</MenuItem>
-                    </Select>
-                  </FormControl>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <Tabs value={tabIndex} onChange={handleTabChange} centered>
+        <Tab label="Flash Sale Products" />
+        <Tab label="Flash Sale Sports" />
+        <Tab label="Products" />
+        <Tab label="Scarf Sports" />
+        <Tab label="Shoe Sports" />
+        <Tab label="Shirt Sports" />
+        <Tab label="Shirt Con" />
+        <Tab label="Shirt Con Pro" />
+      </Tabs>
+      {tabIndex === 0 && renderTable(flashsalePro, 'flashsalepro')}
+      {tabIndex === 1 && renderTable(flashsaleSport, 'flashsalesport')}
+      {tabIndex === 2 && renderTable(products, 'product')}
+      {tabIndex === 3 && renderTable(scarfSport, 'scarfsport')}
+      {tabIndex === 4 && renderTable(shoeSport, 'shoesport')}
+      {tabIndex === 5 && renderTable(shirtSport, 'shirtsport')}
+      {tabIndex === 6 && renderTable(shirtCon, 'shirtcon')}
+      {tabIndex === 7 && renderTable(shirtConPro, 'shirtconpro')}
       <Modal open={open} onClose={handleClose}>
         <Box sx={{ ...modalStyle, width: 400 }}>
           <Typography variant="h6" component="h2" mb={2}>

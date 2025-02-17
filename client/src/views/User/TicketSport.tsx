@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState, useRef } from "react";
 import { Box, Typography, Divider, Button } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -227,6 +226,11 @@ const TicketSport: React.FC = () => {
                   ? selectedSeats.join(" / ")
                   : "ยังไม่ได้เลือกที่นั่ง"}
               </Typography>
+
+
+
+
+
             </Box>
           </Box>
 
@@ -238,6 +242,7 @@ const TicketSport: React.FC = () => {
               <Typography variant="h6">ราคาบัตร:</Typography>
               <Typography variant="h6">฿{numericPrice}</Typography>
             </Box>
+
             <Box sx={{ display: "flex", justifyContent: "space-between" }}>
               <Typography variant="h6">ค่าบริการ (VAT 7%):</Typography>
               <Typography variant="h6" color="#1b5e20">
@@ -254,7 +259,10 @@ const TicketSport: React.FC = () => {
               </Typography>
             </Box>
 
+
             <Divider sx={{ backgroundColor: "gray", my: 2 }} />
+
+
 
             <Box
               sx={{
@@ -341,5 +349,6 @@ const TicketSport: React.FC = () => {
     </section>
   );
 };
+
 
 export default TicketSport;
