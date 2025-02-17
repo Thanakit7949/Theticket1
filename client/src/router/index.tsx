@@ -20,6 +20,7 @@ import Orders from "../views/Admin/Orders";
 import HomeIsAdmin from "../views/HomeIsAdmin";
 import { routesConfigD } from "./RounterConfigD";
 import Products from "../views/Admin/products";
+import Account from "../views/User/Account";
 
 
 const Router: React.FC = () => {
@@ -261,6 +262,7 @@ const Router: React.FC = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/Account" element={<Account />} />
         {/* <Route path="/dbconcerts" element={<Dbconcerts />} />
         <Route path="/dbsports" element={<Dbsports />} /> */}
         <Route path="/HomeAdmin" element={<HomeAdmin />} />

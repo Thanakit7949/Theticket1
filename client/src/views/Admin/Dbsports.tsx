@@ -31,7 +31,7 @@ const Dbsports: React.FC = () => {
     available_seats: 0,
     type: '',
   });
-  const [zonesData, setZonesData] = useState<ZoneData[]>([]);
+  const [zoneData, setZoneData] = useState<ZoneData[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
@@ -63,29 +63,29 @@ const Dbsports: React.FC = () => {
 
   const handleZoneChange = (index: number, e: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>) => {
     const { name, value } = e.target;
-    const updatedZones = [...zonesData];
+    const updatedZones = [...zoneData];
     updatedZones[index] = {
       ...updatedZones[index],
       [name as string]: name === 'seat_count' ? parseInt(value as string) : value,
     };
-    setZonesData(updatedZones);
+    setZoneData(updatedZones);
   };
 
   const addZones = () => {
-    setZonesData([...zonesData, { name: '', seat_count: 0 }]);
+    setZoneData([...zoneData, { name: '', seat_count: 0 }]);
   };
 
   const removeZones = (index: number) => {
-    const updatedZones = [...zonesData];
+    const updatedZones = [...zoneData];
     updatedZones.splice(index, 1);
-    setZonesData(updatedZones);
+    setZoneData(updatedZones);
   };
 
   const handleAddOrUpdate = async () => {
     try {
       const payload = {
         ...formData,
-        date: new Date(formData.date).toISOString().slice(0, 19).replace('T', ' '),
+        date: new Date(formData.date).toISOString(),
       };
       const url = isEditing
         ? `http://localhost:5000/updateSport/${formData.id}`
@@ -94,7 +94,7 @@ const Dbsports: React.FC = () => {
       const response = await method(url, payload);
 
       if (isEditing) {
-        setSports((prev) => prev.map((sport) => (sport.id === formData.id ? { ...sport, ...payload } : sport)));
+        setSports((prev) => prev.map((sport) => (sport.id === formData.id ? response.data : sport)));
         await updateZonesAndSeats(formData.id!);
         alert('Sport updated successfully!');
       } else {
@@ -105,7 +105,7 @@ const Dbsports: React.FC = () => {
       }
 
       setFormData({ name: '', date: '', location: '', price: 0, available_seats: 0, type: '' });
-      setZonesData([]);
+      setZoneData([]);
       setIsEditing(false);
       setOpen(false);
     } catch (error) {
@@ -116,7 +116,7 @@ const Dbsports: React.FC = () => {
 
   const addZonesAndSeats = async (sportId: number) => {
     try {
-      for (const zone of zonesData) {
+      for (const zone of zoneData) {
         const zoneResponse = await axios.post('http://localhost:5000/addSportZone', {
           sport_id: sportId,
           name: zone.name,
@@ -157,8 +157,8 @@ const Dbsports: React.FC = () => {
     setOpen(true);
 
     try {
-      const response = await axios.get(`http://localhost:5000/getZonesp?sport_id=${sport.id}`);
-      setZonesData(response.data);
+      const response = await axios.get(`http://localhost:5000/getZoneSport?sport_id=${sport.id}`);
+      setZoneData(response.data);
     } catch (error) {
       console.error('Error fetching zones:', error);
       alert('Failed to fetch zones.');
@@ -329,8 +329,8 @@ const Dbsports: React.FC = () => {
                   value={formData.type}
                   onChange={handleFormChange}
                 >
-                  <MenuItem value="indoor">Indoor</MenuItem>
-                  <MenuItem value="outdoor">Outdoor</MenuItem>
+                  <MenuItem value="football">Football</MenuItem>
+                  <MenuItem value="boxing">Boxing</MenuItem>
                   <MenuItem value="other">Other</MenuItem>
                 </Select>
               </FormControl>
@@ -339,7 +339,7 @@ const Dbsports: React.FC = () => {
           <Typography variant="h6" component="h3" sx={{ mt: 2 }}>
             Zones
           </Typography>
-          {zonesData.map((zone, index) => (
+          {zoneData.map((zone, index) => (
             <Grid container spacing={2} key={index} sx={{ mt: 2 }}>
               <Grid item xs={5}>
                 <TextField
@@ -374,25 +374,28 @@ const Dbsports: React.FC = () => {
               </Grid>
             </Grid>
           ))}
-          <Button variant="contained" color="primary" onClick={addZones} sx={{ mt: 2 }}>
-            Add Zone
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => handleConfirmOpen(handleAddOrUpdate)}
-            sx={{ mt: 2 }}
-          >
-            {isEditing ? 'Update' : 'Add'}
-          </Button>
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={handleClose}
-            sx={{ mt: 2, ml: 2 }}
-          >
-            Cancel
-          </Button>
+          <Box display="flex" justifyContent="space-between" mt={2}>
+            <Button variant="contained" color="primary" onClick={addZones}>
+              Add Zone
+            </Button>
+            <Box>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => handleConfirmOpen(handleAddOrUpdate)}
+                sx={{ mr: 2 }}
+              >
+                {isEditing ? 'Update' : 'Add'}
+              </Button>
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={handleClose}
+              >
+                Cancel
+              </Button>
+            </Box>
+          </Box>
         </Box>
       </Modal>
       <Dialog open={confirmOpen} onClose={handleConfirmClose}>

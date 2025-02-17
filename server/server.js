@@ -129,29 +129,6 @@ app.get("/getZoneSport", async (req, res) => {
   }
 });
 
-// ดึงข้อมูล sport
-app.get("/getZoneSport", async (req, res) => {
-  try {
-    const { sport_id } = req.query;
-    console.log("Received sport_id:", sport_id);
-
-    // แปลงค่าให้เป็นตัวเลข (ถ้าจำเป็น)
-    const sportIdNum = Number(sport_id);
-    if (isNaN(sportIdNum)) {
-      return res.status(400).json({ error: "sport_id must be a valid number" });
-    }
-
-    // ใช้ await query ข้อมูลจากฐานข้อมูล
-    const [results] = await db.query("SELECT * FROM sport_zone WHERE sport_id = ?", [sportIdNum]);
-
-    console.log("Query Results:", results);
-    res.json(results);
-  } catch (error) {
-    console.error("Database error:", error);
-    res.status(500).json({ error: "Database error", details: error.message });
-  }
-});
-
 app.get('/api/seatSport/:zoneSpId', async (req, res) => {
   const { zoneSpId } = req.params;
   try {
@@ -1071,14 +1048,20 @@ app.delete('/deleteZonesBySport/:sportId', async (req, res) => {
   const { sportId } = req.params;
 
   try {
-    // First, delete dependent rows in sportbooking_user
-    await db.query('DELETE FROM bookings_user WHERE zone_id IN (SELECT id FROM zonesp WHERE sport_id = ?)', [sportId]);
+    // First, delete dependent rows in seatsport_bookings
+    await db.query('DELETE FROM seatsport_bookings WHERE booking_id IN (SELECT booking_id FROM sportbooking_user WHERE zoneSp_id IN (SELECT id FROM sport_zone WHERE sport_id = ?))', [sportId]);
 
-    // Then, delete the zones
-    const query = 'DELETE FROM zonesp WHERE sport_id = ?';
+    // Then, delete dependent rows in sportbooking_user
+    await db.query('DELETE FROM sportbooking_user WHERE zoneSp_id IN (SELECT id FROM sport_zone WHERE sport_id = ?)', [sportId]);
+
+    // Next, delete dependent rows in sport_seats
+    await db.query('DELETE FROM sport_seats WHERE zoneSp_id IN (SELECT id FROM sport_zone WHERE sport_id = ?)', [sportId]);
+
+    // Finally, delete the zones
+    const query = 'DELETE FROM sport_zone WHERE sport_id = ?';
     const [result] = await db.query(query, [sportId]);
     if (result.affectedRows === 0) {
-      return res.status(404).json({ message: 'Zonesp not found' });
+      return res.status(404).json({ message: 'Zones not found' });
     }
     res.status(200).json({ message: 'Zones deleted successfully' });
   } catch (error) {
@@ -1584,7 +1567,7 @@ app.post('/addSportZone', async (req, res) => {
   }
 
   try {
-    const query = 'INSERT INTO zonesp (sport_id, name, seat_count) VALUES (?, ?, ?)';
+    const query = 'INSERT INTO sport_zone (sport_id, name, seat_count) VALUES (?, ?, ?)';
     const [result] = await db.query(query, [sport_id, name, seat_count]);
     res.status(201).json({ id: result.insertId, message: 'Zone added successfully' });
   } catch (error) {
@@ -1602,7 +1585,7 @@ app.post('/addSportSeat', async (req, res) => {
   }
 
   try {
-    const query = 'INSERT INTO seats (zone_id, seat_number) VALUES (?, ?)';
+    const query = 'INSERT INTO sport_seats (zoneSp_id, seat_number) VALUES (?, ?)';
     await db.query(query, [zone_id, seat_number]);
     res.status(201).json({ message: 'Seat added successfully' });
   } catch (error) {
@@ -1621,7 +1604,7 @@ app.put('/updateZonesBySport/:sportId', async (req, res) => {
   }
 
   try {
-    const query = 'UPDATE zonesp SET name = ?, seat_count = ? WHERE sport_id = ?';
+    const query = 'UPDATE sport_zone SET name = ?, seat_count = ? WHERE sport_id = ?';
     const [result] = await db.query(query, [name, seat_count, sportId]);
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: 'Zones not found' });
