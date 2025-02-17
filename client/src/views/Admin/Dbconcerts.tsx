@@ -4,7 +4,7 @@ import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, Ta
 import { Add, Edit, Delete } from '@mui/icons-material';
 
 interface ConcertData {
-  id?: number;
+  id: number;
   name: string;
   date: string;
   location: string;
@@ -118,8 +118,9 @@ const Dbconcerts: React.FC = () => {
     try {
       for (const zone of zoneData) {
         const zoneResponse = await axios.post('http://localhost:5000/addZone', {
-          ...zone,
           concert_id: concertId,
+          name: zone.name,
+          seat_count: zone.seat_count,
         });
         const zoneId = zoneResponse.data.id;
         for (let i = 0; i < zone.seat_count; i++) {
@@ -137,8 +138,10 @@ const Dbconcerts: React.FC = () => {
 
   const updateZonesAndSeats = async (concertId: number) => {
     try {
-      await axios.delete(`http://localhost:5000/deleteZonesByConcert/${concertId}`);
-      await addZonesAndSeats(concertId);
+      const response = await axios.delete(`http://localhost:5000/deleteZonesByConcert/${concertId}`);
+      if (response.status === 200) {
+        await addZonesAndSeats(concertId);
+      }
     } catch (error) {
       console.error('Error updating zones and seats:', error);
       alert('Failed to update zones and seats.');

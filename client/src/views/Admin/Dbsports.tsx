@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Modal, TextField, MenuItem, Select, InputLabel, FormControl, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Modal, TextField, MenuItem, Select, InputLabel, FormControl, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid } from '@mui/material';
+import { Add, Edit, Delete } from '@mui/icons-material';
 
 interface SportData {
   id?: number;
@@ -12,8 +13,16 @@ interface SportData {
   type: string;
 }
 
+interface ZoneData {
+  id?: number;
+  sport_id?: number;
+  name: string;
+  seat_count: number;
+}
+
 const Dbsports: React.FC = () => {
   const [sports, setSports] = useState<SportData[]>([]);
+  const [zones, setZones] = useState<ZoneData[]>([]);
   const [formData, setFormData] = useState<SportData>({
     name: '',
     date: '',
@@ -22,6 +31,7 @@ const Dbsports: React.FC = () => {
     available_seats: 0,
     type: '',
   });
+  const [zoneData, setZoneData] = useState<ZoneData[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
@@ -51,12 +61,27 @@ const Dbsports: React.FC = () => {
     }));
   };
 
-  const handleAddOrUpdate = async () => {
-    if (!formData.name || !formData.date || !formData.location || formData.price === 0 || formData.available_seats === 0 || !formData.type) {
-      alert('All fields are required.');
-      return;
-    }
+  const handleZoneChange = (index: number, e: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>) => {
+    const { name, value } = e.target;
+    const updatedZones = [...zoneData];
+    updatedZones[index] = {
+      ...updatedZones[index],
+      [name as string]: name === 'seat_count' ? parseInt(value as string) : value,
+    };
+    setZoneData(updatedZones);
+  };
 
+  const addZone = () => {
+    setZoneData([...zoneData, { name: '', seat_count: 0 }]);
+  };
+
+  const removeZone = (index: number) => {
+    const updatedZones = [...zoneData];
+    updatedZones.splice(index, 1);
+    setZoneData(updatedZones);
+  };
+
+  const handleAddOrUpdate = async () => {
     try {
       const payload = {
         ...formData,
@@ -70,33 +95,75 @@ const Dbsports: React.FC = () => {
 
       if (isEditing) {
         setSports((prev) => prev.map((sport) => (sport.id === formData.id ? response.data : sport)));
+        await updateZonesAndSeats(formData.id!);
         alert('Sport updated successfully!');
       } else {
-        setSports((prev) => [...prev, { ...formData, id: response.data.id }]);
+        const newSport = { ...formData, id: response.data.id };
+        setSports((prev) => [...prev, newSport]);
+        await addZonesAndSeats(newSport.id!);
         alert('Sport added successfully!');
       }
 
       setFormData({ name: '', date: '', location: '', price: 0, available_seats: 0, type: '' });
+      setZoneData([]);
       setIsEditing(false);
       setOpen(false);
     } catch (error) {
-      if (error.response) {
-        console.error('Error adding/updating sport:', error.response.data);
-        alert(`Failed to add/update sport: ${error.response.data.message}`);
-      } else {
-        console.error('Error adding/updating sport:', error);
-        alert('Failed to add/update sport.');
-      }
+      console.error('Error adding/updating sport:', error);
+      alert('Failed to add/update sport.');
     }
   };
 
-  const handleEdit = (sport: SportData) => {
+  const addZonesAndSeats = async (sportId: number) => {
+    try {
+      for (const zone of zoneData) {
+        const zoneResponse = await axios.post('http://localhost:5000/addZone', {
+          sport_id: sportId,
+          name: zone.name,
+          seat_count: zone.seat_count,
+        });
+        const zoneId = zoneResponse.data.id;
+        for (let i = 0; i < zone.seat_count; i++) {
+          await axios.post('http://localhost:5000/addSeat', {
+            zone_id: zoneId,
+            seat_number: `Seat ${i + 1}`,
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error adding zones and seats:', error);
+      alert('Failed to add zones and seats.');
+    }
+  };
+
+  const updateZonesAndSeats = async (sportId: number) => {
+    try {
+      await axios.delete(`http://localhost:5000/deleteZonesBySport/${sportId}`);
+      await addZonesAndSeats(sportId);
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        console.error('Error updating zones and seats:', error.response.data);
+      } else {
+        console.error('Error updating zones and seats:', error);
+      }
+      alert('Failed to update zones and seats.');
+    }
+  };
+
+  const handleEdit = async (sport: SportData) => {
     setFormData({
       ...sport,
       date: sport.date.split('T')[0],
     });
     setIsEditing(true);
     setOpen(true);
+
+    try {
+      const response = await axios.get(`http://localhost:5000/getZones?sport_id=${sport.id}`);
+      setZoneData(response.data);
+    } catch (error) {
+      console.error('Error fetching zones:', error);
+    }
   };
 
   const handleDelete = async (id: number) => {
@@ -132,11 +199,17 @@ const Dbsports: React.FC = () => {
   }
 
   return (
-    <Box>
+    <Box sx={{ p: 4 }}>
       <Typography variant="h4" textAlign="center" mt={4} mb={4}>
         Sports Management
       </Typography>
-      <Button variant="contained" color="primary" onClick={() => handleConfirmOpen(handleOpen)} sx={{ mb: 4 }}>
+      <Button
+        variant="contained"
+        color="primary"
+        startIcon={<Add />}
+        onClick={() => handleConfirmOpen(handleOpen)}
+        sx={{ mb: 4 }}
+      >
         Add Sport
       </Button>
       <TableContainer component={Paper}>
@@ -164,10 +237,23 @@ const Dbsports: React.FC = () => {
                 <TableCell>{sport.available_seats}</TableCell>
                 <TableCell>{sport.type}</TableCell>
                 <TableCell>
-                  <Button variant="contained" color="primary" size="small" sx={{ mr: 1 }} onClick={() => handleEdit(sport)}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    size="small"
+                    startIcon={<Edit />}
+                    sx={{ mr: 1 }}
+                    onClick={() => handleEdit(sport)}
+                  >
                     Edit
                   </Button>
-                  <Button variant="contained" color="error" size="small" onClick={() => handleConfirmOpen(() => handleDelete(sport.id!))}>
+                  <Button
+                    variant="contained"
+                    color="error"
+                    size="small"
+                    startIcon={<Delete />}
+                    onClick={() => handleConfirmOpen(() => handleDelete(sport.id!))}
+                  >
                     Delete
                   </Button>
                 </TableCell>
@@ -177,70 +263,135 @@ const Dbsports: React.FC = () => {
         </Table>
       </TableContainer>
       <Modal open={open} onClose={handleClose}>
-        <Box sx={{ ...modalStyle, width: 400 }}>
+        <Box sx={{ ...modalStyle, width: '80%', maxWidth: '800px' }}>
           <Typography variant="h6" component="h2">
             {isEditing ? 'Edit Sport' : 'Add Sport'}
           </Typography>
-          <TextField
-            label="Name"
-            name="name"
-            value={formData.name}
-            onChange={handleFormChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Date"
-            name="date"
-            type="date"
-            value={formData.date}
-            onChange={handleFormChange}
-            fullWidth
-            margin="normal"
-            InputLabelProps={{ shrink: true }}
-          />
-          <TextField
-            label="Location"
-            name="location"
-            value={formData.location}
-            onChange={handleFormChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Price"
-            name="price"
-            type="number"
-            value={formData.price}
-            onChange={handleFormChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Available Seats"
-            name="available_seats"
-            type="number"
-            value={formData.available_seats}
-            onChange={handleFormChange}
-            fullWidth
-            margin="normal"
-          />
-          <FormControl fullWidth margin="normal">
-            <InputLabel>Type</InputLabel>
-            <Select
-              name="type"
-              value={formData.type}
-              onChange={handleFormChange}
-            >
-              <MenuItem value="indoor">Indoor</MenuItem>
-              <MenuItem value="outdoor">Outdoor</MenuItem>
-              <MenuItem value="other">Other</MenuItem>
-            </Select>
-          </FormControl>
-          <Button variant="contained" color="primary" onClick={() => handleConfirmOpen(handleAddOrUpdate)} sx={{ mt: 2 }}>
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <TextField
+                label="Name"
+                name="name"
+                value={formData.name}
+                onChange={handleFormChange}
+                fullWidth
+                margin="normal"
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                label="Date"
+                name="date"
+                type="date"
+                value={formData.date}
+                onChange={handleFormChange}
+                fullWidth
+                margin="normal"
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                label="Location"
+                name="location"
+                value={formData.location}
+                onChange={handleFormChange}
+                fullWidth
+                margin="normal"
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                label="Price"
+                name="price"
+                type="number"
+                value={formData.price}
+                onChange={handleFormChange}
+                fullWidth
+                margin="normal"
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                label="Available Seats"
+                name="available_seats"
+                type="number"
+                value={formData.available_seats}
+                onChange={handleFormChange}
+                fullWidth
+                margin="normal"
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <FormControl fullWidth margin="normal">
+                <InputLabel>Type</InputLabel>
+                <Select
+                  name="type"
+                  value={formData.type}
+                  onChange={handleFormChange}
+                >
+                  <MenuItem value="indoor">Indoor</MenuItem>
+                  <MenuItem value="outdoor">Outdoor</MenuItem>
+                  <MenuItem value="other">Other</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+          </Grid>
+          <Typography variant="h6" component="h3" sx={{ mt: 2 }}>
+            Zones
+          </Typography>
+          {zoneData.map((zone, index) => (
+            <Grid container spacing={2} key={index} sx={{ mt: 2 }}>
+              <Grid item xs={5}>
+                <TextField
+                  label="Zone Name"
+                  name="name"
+                  value={zone.name}
+                  onChange={(e) => handleZoneChange(index, e)}
+                  fullWidth
+                  margin="normal"
+                />
+              </Grid>
+              <Grid item xs={5}>
+                <TextField
+                  label="Seat Count"
+                  name="seat_count"
+                  type="number"
+                  value={zone.seat_count}
+                  onChange={(e) => handleZoneChange(index, e)}
+                  fullWidth
+                  margin="normal"
+                />
+              </Grid>
+              <Grid item xs={2}>
+                <Button
+                  variant="contained"
+                  color="error"
+                  onClick={() => removeZone(index)}
+                  sx={{ mt: 2 }}
+                >
+                  Remove
+                </Button>
+              </Grid>
+            </Grid>
+          ))}
+          <Button variant="contained" color="primary" onClick={addZone} sx={{ mt: 2 }}>
+            Add Zone
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => handleConfirmOpen(handleAddOrUpdate)}
+            sx={{ mt: 2 }}
+          >
             {isEditing ? 'Update' : 'Add'}
           </Button>
-          <Button variant="contained" color="secondary" onClick={handleClose} sx={{ mt: 2, ml: 2 }}>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={handleClose}
+            sx={{ mt: 2, ml: 2 }}
+          >
             Cancel
           </Button>
         </Box>

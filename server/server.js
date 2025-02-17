@@ -11,8 +11,9 @@ const db = mysql.createPool({
   host: 'localhost',
   user: 'root',
   password: '',
-  database: 'ex',
+  database: 'product_test',
 });
+
 
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
@@ -937,6 +938,7 @@ app.post('/addConcert', async (req, res) => {
 app.put('/updateConcert/:id', async (req, res) => {
   const { id } = req.params;
   const { name, date, location, price, available_seats, type } = req.body;
+
   if (!name || !date || !location || price == null || available_seats == null || !type) {
     return res.status(400).json({ message: 'All fields are required.' });
   }
@@ -978,8 +980,15 @@ app.delete('/deleteZonesByConcert/:concertId', async (req, res) => {
   const { concertId } = req.params;
 
   try {
+    // First, delete dependent rows in bookings_user
+    await db.query('DELETE FROM bookings_user WHERE zone_id IN (SELECT id FROM zones WHERE concert_id = ?)', [concertId]);
+
+    // Then, delete the zones
     const query = 'DELETE FROM zones WHERE concert_id = ?';
-    await db.query(query, [concertId]);
+    const [result] = await db.query(query, [concertId]);
+    if (result.affectedRows === 0) {
+      return res.status(200).json({ message: 'No zones found for this concert.' });
+    }
     res.status(200).json({ message: 'Zones deleted successfully' });
   } catch (error) {
     console.error('Database error:', error);
@@ -1011,7 +1020,7 @@ app.post('/addSport', async (req, res) => {
     const values = [name, date, location, price, available_seats, type];
 
     // Using promise-based query
-    await db.promise().query(sql, values);  // This ensures it returns a promise.
+    await db.query(sql, values);
     
     res.status(201).json({ message: 'Sport added successfully' });
   } catch (error) {
@@ -1030,16 +1039,11 @@ app.put('/updateSport/:id', async (req, res) => {
     return res.status(400).json({ error: 'All fields are required' });
   }
 
-  if (!name || !date || !location || price == null || available_seats == null || !type) {
-    return res.status(400).json({ message: 'All fields are required.' });
-  }
-
   const query = `
     UPDATE sports SET name = ?, date = ?, location = ?, price = ?, available_seats = ?, type = ?
     WHERE id = ?
   `;
   try {
-    const query = 'UPDATE sports SET name = ?, date = ?, location = ?, price = ?, available_seats = ?, type = ? WHERE id = ?';
     const [result] = await db.query(query, [name, date, location, price, available_seats, type, id]);
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: 'Sport not found' });
@@ -1065,6 +1069,27 @@ app.delete('/deleteSport/:id', async (req, res) => {
   } catch (err) {
     console.error('Error deleting sport:', err);
     return res.status(500).json({ message: 'Database error', error: err.message });
+  }
+});
+
+// Delete zones by sport ID
+app.delete('/deleteZonesBySport/:sportId', async (req, res) => {
+  const { sportId } = req.params;
+
+  try {
+    // First, delete dependent rows in sportbooking_user
+    await db.query('DELETE FROM sportbooking_user WHERE zoneSp_id IN (SELECT id FROM sport_zone WHERE sport_id = ?)', [sportId]);
+
+    // Then, delete the zones
+    const query = 'DELETE FROM sport_zone WHERE sport_id = ?';
+    const [result] = await db.query(query, [sportId]);
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Zones not found' });
+    }
+    res.status(200).json({ message: 'Zones deleted successfully' });
+  } catch (error) {
+    console.error('Database error:', error);
+    res.status(500).json({ message: 'Database error', error: error.message });
   }
 });
 
@@ -1200,13 +1225,19 @@ app.delete('/deleteOrder/:id', async (req, res) => {
 
 app.post('/addProduct', async (req, res) => {
   const { name, price, category, description, image } = req.body;
+  const { table } = req.query;
 
-  if (!name || !price || !category || !description || !image) {
+  if (!name || !price || !category || !description || !image || !table) {
     return res.status(400).json({ message: 'All fields are required' });
   }
 
+  const validTables = ['flashsalepro', 'flashsalesport', 'product', 'scarfsport', 'shoesport', 'shirtsport', 'shirtcon', 'shirtconpro'];
+  if (!validTables.includes(table)) {
+    return res.status(400).json({ message: 'Invalid table name' });
+  }
+
   try {
-    const query = 'INSERT INTO flashsalepro (name, price, category, description, image) VALUES (?, ?, ?, ?, ?)';
+    const query = `INSERT INTO ${table} (name, price, category, description, image) VALUES (?, ?, ?, ?, ?)`;
     await db.query(query, [name, price, category, description, image]);
     res.status(201).json({ message: 'Product added successfully' });
   } catch (error) {
@@ -1217,14 +1248,19 @@ app.post('/addProduct', async (req, res) => {
 
 app.put('/updateProduct/:id', async (req, res) => {
   const { id } = req.params;
-  const { name, price, category, description, image } = req.body;
+  const { name, price, category, description, image, table } = req.body;
 
-  if (!name || !price || !category || !description || !image) {
+  if (!name || !price || !category || !description || !image || !table) {
     return res.status(400).json({ message: 'All fields are required' });
   }
 
+  const validTables = ['flashsalepro', 'flashsalesport', 'product', 'scarfsport', 'shoesport', 'shirtsport', 'shirtcon', 'shirtconpro'];
+  if (!validTables.includes(table)) {
+    return res.status(400).json({ message: 'Invalid table name' });
+  }
+
   try {
-    const query = 'UPDATE flashsalepro SET name = ?, price = ?, category = ?, description = ?, image = ? WHERE id = ?';
+    const query = `UPDATE ${table} SET name = ?, price = ?, category = ?, description = ?, image = ? WHERE id = ?`;
     const [result] = await db.query(query, [name, price, category, description, image, id]);
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: 'Product not found' });
@@ -1238,9 +1274,19 @@ app.put('/updateProduct/:id', async (req, res) => {
 
 app.delete('/deleteProduct/:id', async (req, res) => {
   const { id } = req.params;
+  const { table } = req.query;
+
+  if (!table) {
+    return res.status(400).json({ message: 'Table name is required' });
+  }
+
+  const validTables = ['flashsalepro', 'flashsalesport', 'product', 'scarfsport', 'shoesport', 'shirtsport', 'shirtcon', 'shirtconpro'];
+  if (!validTables.includes(table)) {
+    return res.status(400).json({ message: 'Invalid table name' });
+  }
 
   try {
-    const query = 'DELETE FROM flashsalepro WHERE id = ?';
+    const query = `DELETE FROM ${table} WHERE id = ?`;
     const [result] = await db.query(query, [id]);
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: 'Product not found' });
@@ -1253,15 +1299,18 @@ app.delete('/deleteProduct/:id', async (req, res) => {
 });
 
 app.post('/addZone', async (req, res) => {
-  const { concert_id, name, seat_count } = req.body;
+  const { concert_id, sport_id, name, seat_count } = req.body;
 
-  if (!concert_id || !name || seat_count == null) {
+  if ((!concert_id && !sport_id) || !name || seat_count == null) {
     return res.status(400).json({ message: 'All fields are required' });
   }
 
   try {
-    const query = 'INSERT INTO zones (concert_id, name, seat_count) VALUES (?, ?, ?)';
-    const [result] = await db.query(query, [concert_id, name, seat_count]);
+    const query = concert_id
+      ? 'INSERT INTO zones (concert_id, name, seat_count) VALUES (?, ?, ?)'
+      : 'INSERT INTO sport_zone (sport_id, name, seat_count) VALUES (?, ?, ?)';
+    const params = concert_id ? [concert_id, name, seat_count] : [sport_id, name, seat_count];
+    const [result] = await db.query(query, params);
     res.status(201).json({ id: result.insertId, message: 'Zone added successfully' });
   } catch (error) {
     console.error('Database error:', error);
@@ -1290,6 +1339,245 @@ app.get('/getAllUsers', async (req, res) => {
   try {
     const [results] = await db.query('SELECT * FROM users');
     res.json(results);
+  } catch (error) {
+    console.error('Database error:', error);
+    res.status(500).json({ message: 'Database error', error: error.message });
+  }
+});
+
+// Update zones by concert ID
+app.put('/updateZonesByConcert/:concertId', async (req, res) => {
+  const { concertId } = req.params;
+  const { name, seat_count } = req.body;
+
+  if (!name || seat_count == null) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
+  try {
+    const query = 'UPDATE zones SET name = ?, seat_count = ? WHERE concert_id = ?';
+    const [result] = await db.query(query, [name, seat_count, concertId]);
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Zones not found' });
+    }
+    res.status(200).json({ message: 'Zones updated successfully' });
+  } catch (error) {
+    console.error('Database error:', error);
+    res.status(500).json({ message: 'Database error', error: error.message });
+  }
+});
+
+// Update seats by zone ID
+app.put('/updateSeatsByZone/:zoneId', async (req, res) => {
+  const { zoneId } = req.params;
+  const { seat_number, is_reserved } = req.body;
+
+  if (!seat_number || is_reserved == null) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
+  try {
+    const query = 'UPDATE seats SET seat_number = ?, is_reserved = ? WHERE zone_id = ?';
+    const [result] = await db.query(query, [seat_number, is_reserved, zoneId]);
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Seats not found' });
+    }
+    res.status(200).json({ message: 'Seats updated successfully' });
+  } catch (error) {
+    console.error('Database error:', error);
+    res.status(500).json({ message: 'Database error', error: error.message });
+  }
+});
+
+// API สำหรับดึงข้อมูลการจอง
+app.get('/getAllBookings', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM bookings_user');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching bookings:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// API สำหรับอัปเดตสถานะการจอง
+app.put('/updateBookingStatus/:id', async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  try {
+    const [result] = await db.query('UPDATE bookings_user SET status = ? WHERE booking_id = ?', [status, id]);
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Booking not found.' });
+    }
+    res.status(200).json({ message: 'Booking status updated successfully' });
+  } catch (error) {
+    console.error('Error updating booking status:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Fetch data from flashsalepro
+app.get('/getAllFlashsalePro', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM flashsalepro');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching flashsalepro:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Fetch data from flashsalesport
+app.get('/getAllFlashsaleSport', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM flashsalesport');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching flashsalesport:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Fetch data from product
+app.get('/getAllProduct', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM product');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching product:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Fetch data from scarfsport
+app.get('/getAllScarfSport', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM scarfsport');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching scarfsport:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Fetch data from shoesport
+app.get('/getAllShoeSport', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM shoesport');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching shoesport:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Fetch data from shirtsport
+app.get('/getAllShirtSport', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM shirtsport');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching shirtsport:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Fetch data from shirtcon
+app.get('/getAllShirtCon', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM shirtcon');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching shirtcon:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Fetch data from shirtconpro
+app.get('/getAllShirtConPro', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM shirtconpro');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching shirtconpro:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Add Product
+app.post('/addProduct', async (req, res) => {
+  const { name, price, category, description, image } = req.body;
+
+  if (!name || !price || !category || !description || !image) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
+  try {
+    const query = 'INSERT INTO product (name, price, category, description, image) VALUES (?, ?, ?, ?, ?)';
+    await db.query(query, [name, price, category, description, image]);
+    res.status(201).json({ message: 'Product added successfully' });
+  } catch (error) {
+    console.error('Database error:', error);
+    res.status(500).json({ message: 'Database error', error: error.message });
+  }
+});
+
+// Update Product
+app.put('/updateProduct/:id', async (req, res) => {
+  const { id } = req.params;
+  const { name, price, category, description, image } = req.body;
+
+  if (!name || !price || !category || !description || !image) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
+  try {
+    const query = 'UPDATE product SET name = ?, price = ?, category = ?, description = ?, image = ? WHERE id = ?';
+    const [result] = await db.query(query, [name, price, category, description, image, id]);
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+    res.status(200).json({ message: 'Product updated successfully' });
+  } catch (error) {
+    console.error('Database error:', error);
+    res.status(500).json({ message: 'Database error', error: error.message });
+  }
+});
+
+// Delete Product
+app.delete('/deleteProduct/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const query = 'DELETE FROM product WHERE id = ?';
+    const [result] = await db.query(query, [id]);
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+    res.status(200).json({ message: 'Product deleted successfully' });
+  } catch (error) {
+    console.error('Database error:', error);
+    res.status(500).json({ message: 'Database error', error: error.message });
+  }
+});
+
+// Update Product Status
+app.put('/updateProductStatus/:id', async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  if (!status) {
+    return res.status(400).json({ message: 'Status is required' });
+  }
+
+  try {
+    const query = 'UPDATE product SET status = ? WHERE id = ?';
+    const [result] = await db.query(query, [status, id]);
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+    res.status(200).json({ message: 'Product status updated successfully' });
   } catch (error) {
     console.error('Database error:', error);
     res.status(500).json({ message: 'Database error', error: error.message });
