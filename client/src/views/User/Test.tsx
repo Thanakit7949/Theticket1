@@ -1,4 +1,4 @@
-import React from "react";
+import "react";
 import { Box } from "@mui/material";
 
 const Test = () => {

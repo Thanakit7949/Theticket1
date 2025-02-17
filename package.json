@@ -2,6 +2,7 @@
   "dependencies": {
     "@mui/material": "^6.1.5",
     "axios": "^1.7.7",
+    "dom-to-image": "^2.6.0",
     "react-flip-page": "^1.6.4",
     "react-pageflip": "^2.0.3",
     "react-slick": "^0.30.2",

@@ -33,7 +33,15 @@ const LoginPage: React.FunctionComponent = () => {
       users.push(userData);
       localStorage.setItem('users', JSON.stringify(users));
 
+      localStorage.setItem("token", data.token);
+      console.log(users);
       console.log(data);
+      console.log( data.user);
+      // console.log( data.user.first_name);
+      // console.log( data.user.last_name);
+      // console.log( data.user.id);
+      Cookies.set("token", data.token);
+      Cookies.set("userid", data.id);
       Cookies.set("acountname", data.first_name);
       Cookies.set("lastname", data.last_name);
       Cookies.set("phone", data.phone);
@@ -45,9 +53,9 @@ const LoginPage: React.FunctionComponent = () => {
       } else {
         setMessage('Unknown role');
       }
-      localStorage.setItem('user', JSON.stringify(data.user)); // เก็บข้อมูลผู้ใช้
+      localStorage.setItem('user', JSON.stringify(data)); // เก็บข้อมูลผู้ใช้
 
-      navigate(data.user.role === "admin" ? "/home-admin" : "/home-test");
+      navigate(data.role === "admin" ? "/home-admin" : "/home-test");
     } catch (error: any) {
       setMessage(error.response?.data?.message || 'Login failed');
     }
