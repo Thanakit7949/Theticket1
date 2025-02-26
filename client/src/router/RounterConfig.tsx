@@ -29,9 +29,8 @@ import AcryliCon from "../views/User/prodetail/AcryliCon";
 import Ballkeychain from "../views/User/prodetail/Ballkeychain";
 import Footballshirt from "../views/User/prodetail/Footballshirt";
 import InformationDetail from "../views/User/InformationDetail";
-import Test from "../views/User/Test";
-import Interface from "../views/Admin/Interface";
-import Users from "../views/Admin/Users";
+import Profile from "../views/User/Profile";
+
 //import Dashboard from "../views/User/Dashboard"
 
 export const routesConfig: {
@@ -67,7 +66,7 @@ export const routesConfig: {
     //       header: "users",
     //       component: Users,
     //       icon: null,
-    //       children: [],   
+    //       children: [],
     //     },
     //     {
     //       path: "concert-detail",
@@ -113,7 +112,6 @@ export const routesConfig: {
       component: Concert,
       icon: null,
       children: [
-        
         {
           path: "bus",
           name: "bus",
@@ -160,13 +158,13 @@ export const routesConfig: {
           children: [],
         },
         {
-            path: "ticket-concet",
-            name: "ticket-concet",
-            header: "ticket-concet",
-            component: TicketConcert,
-            icon: null,
-            children: [],
-          },
+          path: "ticket-concet",
+          name: "ticket-concet",
+          header: "ticket-concet",
+          component: TicketConcert,
+          icon: null,
+          children: [],
+        },
         {
           path: "seat-concert",
           name: "seat-concert",
@@ -182,9 +180,7 @@ export const routesConfig: {
               component: PaymentConcert,
               icon: null,
               subpath: false,
-              children: [
-             
-              ],
+              children: [],
             },
           ],
         },
@@ -239,9 +235,7 @@ export const routesConfig: {
               component: PaymentSport,
               icon: null,
               subpath: false,
-              children: [
-             
-              ],
+              children: [],
             },
           ],
         },
@@ -260,9 +254,7 @@ export const routesConfig: {
               component: StageSport,
               icon: null,
               subpath: false,
-              children: [
-               
-              ],
+              children: [],
             },
           ],
         },
@@ -307,10 +299,9 @@ export const routesConfig: {
           icon: null,
           children: [],
         },
-
       ],
     },
-    
+
     // {
     //     path: "/home-test",
     //     name: "llll",
@@ -326,7 +317,6 @@ export const routesConfig: {
       component: Information,
       icon: null,
       children: [
-        
         {
           path: "informationdetail/:id", // เส้นทางที่มีพารามิเตอร์ id
           element: <InformationDetail />, // แสดงหน้า InformationDetail
@@ -335,8 +325,6 @@ export const routesConfig: {
           subpath: false,
           children: [],
         },
-
-
 
         // {
         //   path: "page1in",
@@ -348,12 +336,7 @@ export const routesConfig: {
         //   children: [],
         // },
       ],
-
-
-       
     },
-
-   
 
     {
       path: "/product",
@@ -370,42 +353,25 @@ export const routesConfig: {
           icon: null,
           children: [
             {
-                path: "payment",
-                name: "payment",
-                header: "payment",
-                component: PaymentPage,
-                icon: null,
-                children: [],
-              },
-    
-    
-        
-      ],
-    },
-        
-    
+              path: "payment",
+              name: "payment",
+              header: "payment",
+              component: PaymentPage,
+              icon: null,
+              children: [],
+            },
           ],
         },
-        // {
-        //   path: "/test",
-        //   name: "test",
-        //   header: "test",
-        //   component: Test,
-        //   icon: null,
-        //   children: [ ],
-        // },
-        
-       
-
-   
-  
-   
-
-  
-
-
-    
+      ],
+    },
+    {
+      path: "Profile",
+      name: "",
+      header: "",
+      component: Profile,
+      icon: null,
+      subpath: false,
+      children: [],
+    }
   ],
-
-  
 };

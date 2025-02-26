@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql2/promise'); // Use promise-based version of MySQL2
+const productController = require('./controllers/productController');
+const orderController = require('./controllers/orderController'); // Import the new order controller
 const app = express();
 const port = 5000;
 
@@ -14,6 +16,11 @@ const db = mysql.createPool({
   database: 'project',
 });
 
+// Middleware to pass the db connection to the request object
+app.use((req, res, next) => {
+  req.db = db;
+  next();
+});
 
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
@@ -37,7 +44,8 @@ app.post('/login', async (req, res) => {
   }
 });
 
-// Login ผ่านเบอร์โทรศัพท์และส่ง JWT กลับ
+
+
 app.post('/login-phone', async (req, res) => {
   const { phone } = req.body;
 
@@ -958,8 +966,7 @@ app.delete('/deleteZonesByConcert/:concertId', async (req, res) => {
   const { concertId } = req.params;
 
   try {
-    // First, delete dependent rows in bookings_user
-    await db.query('DELETE FROM bookings_user WHERE zone_id IN (SELECT id FROM zones WHERE concert_id = ?)', [concertId]);
+    await db.query('DELETE FROM bookings_user WHERE zone_id IN (SELECT id FROM zones WHERE concert_id = ?)', [concertId]);    // First, delete dependent rows in bookings_user
 
     // Then, delete the zones
     const query = 'DELETE FROM zones WHERE concert_id = ?';
@@ -1029,7 +1036,6 @@ app.put('/updateSport/:id', async (req, res) => {
 // Delete sport
 app.delete('/deleteSport/:id', async (req, res) => {
   const { id } = req.params;
-
   const query = 'DELETE FROM sports WHERE id = ?';
   try {
     const [result] = await db.query(query, [id]);
@@ -1201,11 +1207,11 @@ app.delete('/deleteOrder/:id', async (req, res) => {
 });
 
 app.post('/addProduct', async (req, res) => {
-  const { name, price, category, description, image } = req.body;
+  const { name, price, image } = req.body;
   const { table } = req.query;
 
-  if (!name || !price || !category || !description || !image || !table) {
-    return res.status(400).json({ message: 'All fields are required' });
+  if (!table) {
+    return res.status(400).json({ message: 'Table name is required' });
   }
 
   const validTables = ['flashsalepro', 'flashsalesport', 'product', 'scarfsport', 'shoesport', 'shirtsport', 'shirtcon', 'shirtconpro'];
@@ -1214,8 +1220,8 @@ app.post('/addProduct', async (req, res) => {
   }
 
   try {
-    const query = `INSERT INTO ${table} (name, price, category, description, image) VALUES (?, ?, ?, ?, ?)`;
-    await db.query(query, [name, price, category, description, image]);
+    const query = `INSERT INTO ${table} (name, price, image) VALUES (?, ?, ?)`;
+    await db.query(query, [name, price, image]);
     res.status(201).json({ message: 'Product added successfully' });
   } catch (error) {
     console.error('Database error:', error);
@@ -1225,10 +1231,10 @@ app.post('/addProduct', async (req, res) => {
 
 app.put('/updateProduct/:id', async (req, res) => {
   const { id } = req.params;
-  const { name, price, category, description, image, table } = req.body;
+  const { name, price, image, table } = req.body;
 
-  if (!name || !price || !category || !description || !image || !table) {
-    return res.status(400).json({ message: 'All fields are required' });
+  if (!table) {
+    return res.status(400).json({ message: 'Table name is required' });
   }
 
   const validTables = ['flashsalepro', 'flashsalesport', 'product', 'scarfsport', 'shoesport', 'shirtsport', 'shirtcon', 'shirtconpro'];
@@ -1237,8 +1243,8 @@ app.put('/updateProduct/:id', async (req, res) => {
   }
 
   try {
-    const query = `UPDATE ${table} SET name = ?, price = ?, category = ?, description = ?, image = ? WHERE id = ?`;
-    const [result] = await db.query(query, [name, price, category, description, image, id]);
+    const query = `UPDATE ${table} SET name = ?, price = ?, image = ? WHERE id = ?`;
+    const [result] = await db.query(query, [name, price, image, id]);
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: 'Product not found' });
     }
@@ -1264,7 +1270,7 @@ app.delete('/deleteProduct/:id', async (req, res) => {
 
   try {
     const query = `DELETE FROM ${table} WHERE id = ?`;
-    const [result] = await db.query(query, [id]);
+    const [result] = await db.query(query, [id]);app
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: 'Product not found' });
     }
@@ -1274,7 +1280,6 @@ app.delete('/deleteProduct/:id', async (req, res) => {
     res.status(500).json({ message: 'Database error', error: error.message });
   }
 });
-
 app.post('/addZone', async (req, res) => {
   const { concert_id, sport_id, name, seat_count } = req.body;
 
@@ -1481,15 +1486,21 @@ app.get('/getAllShirtConPro', async (req, res) => {
 
 // Add Product
 app.post('/addProduct', async (req, res) => {
-  const { name, price, category, description, image } = req.body;
+  const { name, price, image } = req.body;
+  const { table } = req.query;
 
-  if (!name || !price || !category || !description || !image) {
-    return res.status(400).json({ message: 'All fields are required' });
+  if (!table) {
+    return res.status(400).json({ message: 'Table name is required' });
+  }
+
+  const validTables = ['flashsalepro', 'flashsalesport', 'product', 'scarfsport', 'shoesport', 'shirtsport', 'shirtcon', 'shirtconpro'];
+  if (!validTables.includes(table)) {
+    return res.status(400).json({ message: 'Invalid table name' });
   }
 
   try {
-    const query = 'INSERT INTO product (name, price, category, description, image) VALUES (?, ?, ?, ?, ?)';
-    await db.query(query, [name, price, category, description, image]);
+    const query = `INSERT INTO ${table} (name, price, image) VALUES (?, ?, ?)`;
+    await db.query(query, [name, price, image]);
     res.status(201).json({ message: 'Product added successfully' });
   } catch (error) {
     console.error('Database error:', error);
@@ -1500,15 +1511,20 @@ app.post('/addProduct', async (req, res) => {
 // Update Product
 app.put('/updateProduct/:id', async (req, res) => {
   const { id } = req.params;
-  const { name, price, category, description, image } = req.body;
+  const { name, price, image, table } = req.body;
 
-  if (!name || !price || !category || !description || !image) {
-    return res.status(400).json({ message: 'All fields are required' });
+  if (!table) {
+    return res.status(400).json({ message: 'Table name is required' });
+  }
+
+  const validTables = ['flashsalepro', 'flashsalesport', 'product', 'scarfsport', 'shoesport', 'shirtsport', 'shirtcon', 'shirtconpro'];
+  if (!validTables.includes(table)) {
+    return res.status(400).json({ message: 'Invalid table name' });
   }
 
   try {
-    const query = 'UPDATE product SET name = ?, price = ?, category = ?, description = ?, image = ? WHERE id = ?';
-    const [result] = await db.query(query, [name, price, category, description, image, id]);
+    const query = `UPDATE ${table} SET name = ?, price = ?, image = ? WHERE id = ?`;
+    const [result] = await db.query(query, [name, price, image, id]);
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: 'Product not found' });
     }
@@ -1522,9 +1538,19 @@ app.put('/updateProduct/:id', async (req, res) => {
 // Delete Product
 app.delete('/deleteProduct/:id', async (req, res) => {
   const { id } = req.params;
+  const { table } = req.query;
+
+  if (!table) {
+    return res.status(400).json({ message: 'Table name is required' });
+  }
+
+  const validTables = ['flashsalepro', 'flashsalesport', 'product', 'scarfsport', 'shoesport', 'shirtsport', 'shirtcon', 'shirtconpro'];
+  if (!validTables.includes(table)) {
+    return res.status(400).json({ message: 'Invalid table name' });
+  }
 
   try {
-    const query = 'DELETE FROM product WHERE id = ?';
+    const query = `DELETE FROM ${table} WHERE id = ?`;
     const [result] = await db.query(query, [id]);
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: 'Product not found' });
@@ -1638,6 +1664,8 @@ app.put('/updateSeatsByZone/:zoneId', async (req, res) => {
   }
 });
 
+app.use('/products', productController);
+app.use('/orders', orderController); // Use the new order controller
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

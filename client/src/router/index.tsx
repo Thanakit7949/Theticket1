@@ -8,8 +8,7 @@ import HomeUser from "../views/User/HomeUser";
 import { routesConfig } from "./RounterConfig";
 import { MainRouter } from "../interface/Router.interface";
 import Home from "../views/Home"
-import RegisterPage from "../views/Register";
-import Profile from "../views/User/Profile";
+import RegisterPage from "../views/Register"
 import Dbconcerts from "../views/Admin/Dbconcerts";
 import Dbsports from "../views/Admin/Dbsports";
 import HomeAdmin from "../views/Admin/HomeAdmin";
@@ -20,7 +19,8 @@ import Orders from "../views/Admin/Orders";
 import HomeIsAdmin from "../views/HomeIsAdmin";
 import { routesConfigD } from "./RounterConfigD";
 import Products from "../views/Admin/products";
-import Account from "../views/User/Account";
+import Profile from "../views/User/Profile";
+
 
 
 const Router: React.FC = () => {
@@ -261,11 +261,10 @@ const Router: React.FC = () => {
     <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/Account" element={<Account />} />
         {/* <Route path="/dbconcerts" element={<Dbconcerts />} />
         <Route path="/dbsports" element={<Dbsports />} /> */}
         <Route path="/HomeAdmin" element={<HomeAdmin />} />
+        {/* <Route path="/Profile" element={<Profile />} /> */}
         {/* <Route path="/Interface" element={<Interface />} />
         <Route path="/Users" element={<Users />} />
         <Route path="/Products" element={<Products />} />

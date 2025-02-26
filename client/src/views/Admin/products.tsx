@@ -7,8 +7,6 @@ interface Product {
   id: number;
   name: string;
   price: number;
-  category: string;
-  description: string;
   image: string;
   status: string;
 }
@@ -28,8 +26,6 @@ const Products: React.FC = () => {
     id: 0,
     name: '',
     price: 0,
-    category: '',
-    description: '',
     image: '',
     status: ''
   });
@@ -87,7 +83,7 @@ const Products: React.FC = () => {
         ? `http://localhost:5000/updateProduct/${formData.id}`
         : `http://localhost:5000/addProduct?table=${selectedTable}`;
       const method = isEditing ? axios.put : axios.post;
-      const response = await method(url, { ...formData });
+      const response = await method(url, { ...formData, table: selectedTable });
 
       if (isEditing) {
         setProducts((prev) => prev.map((product) => (product.id === formData.id ? response.data : product)));
@@ -97,12 +93,17 @@ const Products: React.FC = () => {
         alert('Product added successfully!');
       }
 
-      setFormData({ id: 0, name: '', price: 0, category: '', description: '', image: '', status: '' });
+      setFormData({ id: 0, name: '', price: 0, image: '', status: '' });
       setIsEditing(false);
       setOpen(false);
     } catch (error) {
-      console.error('Error adding/updating product:', error);
-      alert('Failed to add/update product.');
+      if (axios.isAxiosError(error)) {
+        console.error('Axios error:', error.response?.data);
+        alert(`Failed to add/update product: ${error.response?.data.message || error.message}`);
+      } else {
+        console.error('Unexpected error:', error);
+        alert('Failed to add/update product due to an unexpected error.');
+      }
     }
   };
 
@@ -157,8 +158,6 @@ const Products: React.FC = () => {
             <TableCell>ID</TableCell>
             <TableCell>Name</TableCell>
             <TableCell>Price</TableCell>
-            <TableCell>Category</TableCell>
-            <TableCell>Description</TableCell>
             <TableCell>Image</TableCell>
             <TableCell>Status</TableCell>
             <TableCell>Actions</TableCell>
@@ -170,8 +169,6 @@ const Products: React.FC = () => {
               <TableCell>{product.id}</TableCell>
               <TableCell>{product.name}</TableCell>
               <TableCell>{product.price}</TableCell>
-              <TableCell>{product.category}</TableCell>
-              <TableCell>{product.description}</TableCell>
               <TableCell>{product.image}</TableCell>
               <TableCell>{product.status}</TableCell>
               <TableCell>
@@ -279,22 +276,6 @@ const Products: React.FC = () => {
             name="price"
             type="number"
             value={formData.price}
-            onChange={handleFormChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Category"
-            name="category"
-            value={formData.category}
-            onChange={handleFormChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Description"
-            name="description"
-            value={formData.description}
             onChange={handleFormChange}
             fullWidth
             margin="normal"

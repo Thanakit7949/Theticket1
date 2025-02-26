@@ -63,7 +63,10 @@ const Users: React.FC = () => {
         ? `http://localhost:5000/updateUser/${formData.id}`
         : 'http://localhost:5000/addUser';
       const method = isEditing ? axios.put : axios.post;
-      const response = await method(url, formData);
+      const data = isEditing && !formData.password
+        ? { ...formData, password: undefined }
+        : formData;
+      const response = await method(url, data);
 
       if (isEditing) {
         setUsers((prev) => prev.map((user) => (user.id === formData.id ? response.data : user)));

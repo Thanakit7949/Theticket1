@@ -54,8 +54,7 @@ export interface MenuSideBar {
 }
 
 const settings = [
-  { name: "Profile", path: "/profile" },
-  { name: "Account", path: "/account" },
+  { name: "Profile", path: "/Profile" },
   { name: "Dashboards", path: "/home-admin" },
   { name: "Logout", path: "/login" }, // กำหนด path ของ Logout ไปที่ /login
 ];

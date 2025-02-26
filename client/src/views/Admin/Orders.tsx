@@ -1,18 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Modal, Select, MenuItem, FormControl, InputLabel, CircularProgress } from '@mui/material';
+import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Modal, CircularProgress } from '@mui/material';
 import axios from 'axios';
 
 interface BookingData {
   booking_id: number;
-  user_id: number;
-  concert_id: number;
-  zone_id: number;
-  booking_time: string;
-  total_price: number;
   user_name: string;
   concert_name: string;
   zone_name: string;
-  status: string;
+  booking_time: string;
+  total_price: number;
 }
 
 const Orders: React.FC = () => {
@@ -20,11 +16,10 @@ const Orders: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState<BookingData | null>(null);
-  const [status, setStatus] = useState('');
 
   const fetchBookings = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/getAllBookings');
+      const response = await axios.get('http://localhost:5000/orders/getAllOrders');
       setBookings(response.data);
     } catch (error) {
       console.error('Error fetching bookings:', error);
@@ -39,24 +34,7 @@ const Orders: React.FC = () => {
 
   const handleView = (booking: BookingData) => {
     setSelectedBooking(booking);
-    setStatus(booking.status || ''); // Ensure status is controlled
     setOpen(true);
-  };
-
-  const handleStatusChange = async () => {
-    if (selectedBooking) {
-      try {
-        await axios.put(`http://localhost:5000/updateBookingStatus/${selectedBooking.booking_id}`, { status });
-        setBookings((prev) =>
-          prev.map((booking) =>
-            booking.booking_id === selectedBooking.booking_id ? { ...booking, status } : booking
-          )
-        );
-        setOpen(false);
-      } catch (error) {
-        console.error('Error updating booking status:', error);
-      }
-    }
   };
 
   const handleClose = () => setOpen(false);
@@ -84,7 +62,6 @@ const Orders: React.FC = () => {
               <TableCell sx={{ color: 'white' }}>Zone Name</TableCell>
               <TableCell sx={{ color: 'white' }}>Booking Time</TableCell>
               <TableCell sx={{ color: 'white' }}>Total Price</TableCell>
-              <TableCell sx={{ color: 'white' }}>Status</TableCell>
               <TableCell sx={{ color: 'white' }}>Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -97,7 +74,6 @@ const Orders: React.FC = () => {
                 <TableCell>{booking.zone_name}</TableCell>
                 <TableCell>{new Date(booking.booking_time).toLocaleString()}</TableCell>
                 <TableCell>{booking.total_price}</TableCell>
-                <TableCell>{booking.status}</TableCell>
                 <TableCell>
                   <Button variant="contained" color="primary" size="small" sx={{ mr: 1 }} onClick={() => handleView(booking)}>
                     View
@@ -121,19 +97,6 @@ const Orders: React.FC = () => {
               <Typography>Zone Name: {selectedBooking.zone_name}</Typography>
               <Typography>Booking Time: {new Date(selectedBooking.booking_time).toLocaleString()}</Typography>
               <Typography>Total Price: {selectedBooking.total_price}</Typography>
-              <FormControl fullWidth margin="normal">
-                <InputLabel>Status</InputLabel>
-                <Select value={status} onChange={(e) => setStatus(e.target.value)}>
-                  <MenuItem value="Pending">Pending</MenuItem>
-                  <MenuItem value="Paid">Paid</MenuItem>
-                  <MenuItem value="Cancelled">Cancelled</MenuItem>
-                  <MenuItem value="Seat Changed">Seat Changed</MenuItem>
-                  <MenuItem value="Concert Changed">Concert Changed</MenuItem>
-                </Select>
-              </FormControl>
-              <Button variant="contained" color="primary" onClick={handleStatusChange} sx={{ mt: 2 }}>
-                Update Status
-              </Button>
             </Box>
           )}
           <Button variant="contained" color="secondary" onClick={handleClose} sx={{ mt: 2 }}>
