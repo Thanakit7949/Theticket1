@@ -3,6 +3,7 @@ const cors = require('cors');
 const mysql = require('mysql2/promise'); // Use promise-based version of MySQL2
 const productController = require('./controllers/productController');
 const orderController = require('./controllers/orderController'); // Import the new order controller
+const activityController = require('./controllers/activityController'); // Import the activity controller
 const app = express();
 const port = 5000;
 
@@ -1089,13 +1090,13 @@ app.get('/getAllUsers', async (req, res) => {
 
 // Add User
 app.post('/addUser', async (req, res) => {
-  const { email, password, phone, first_name, last_name, birth_date, address, gender, role, profile_image } = req.body;
-  if (!email || !password || !phone || !first_name || !last_name || !birth_date || !address || !gender || !role || !profile_image) {
+  const { email, password, phone, first_name, last_name, birth_date, address, gender, role } = req.body;
+  if (!email || !password || !phone || !first_name || !last_name || !birth_date || !address || !gender || !role) {
     return res.status(400).json({ message: 'Missing required fields.' });
   }
 
   try {
-    const [result] = await db.query('INSERT INTO users (email, password, phone, first_name, last_name, birth_date, address, gender, role, profile_image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [email, password, phone, first_name, last_name, birth_date, address, gender, role, profile_image]);
+    const [result] = await db.query('INSERT INTO users (email, password, phone, first_name, last_name, birth_date, address, gender, role) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', [email, password, phone, first_name, last_name, birth_date, address, gender, role]);
     const [user] = await db.query('SELECT * FROM users WHERE id = ?', [result.insertId]);
     return res.status(201).json(user[0]);
   } catch (error) {
@@ -1107,13 +1108,13 @@ app.post('/addUser', async (req, res) => {
 // Update User
 app.put('/updateUser/:id', async (req, res) => {
   const { id } = req.params;
-  const { email, password, phone, first_name, last_name, birth_date, address, gender, role, profile_image } = req.body;
-  if (!email || !phone || !first_name || !last_name || !birth_date || !address || !gender || !role || !profile_image) {
+  const { email, password, phone, first_name, last_name, birth_date, address, gender, role } = req.body;
+  if (!email || !phone || !first_name || !last_name || !birth_date || !address || !gender || !role) {
     return res.status(400).json({ message: 'Missing required fields.' });
   }
 
   try {
-    const [result] = await db.query('UPDATE users SET email = ?, password = ?, phone = ?, first_name = ?, last_name = ?, birth_date = ?, address = ?, gender = ?, role = ?, profile_image = ? WHERE id = ?', [email, password, phone, first_name, last_name, birth_date, address, gender, role, profile_image, id]);
+    const [result] = await db.query('UPDATE users SET email = ?, password = ?, phone = ?, first_name = ?, last_name = ?, birth_date = ?, address = ?, gender = ?, role = ? WHERE id = ?', [email, password, phone, first_name, last_name, birth_date, address, gender, role, id]);
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: 'User not found.' });
     }
@@ -1371,7 +1372,23 @@ app.put('/updateSeatsByZone/:zoneId', async (req, res) => {
 // API สำหรับดึงข้อมูลการจอง
 app.get('/getAllBookings', async (req, res) => {
   try {
-    const [rows] = await db.query('SELECT * FROM bookings_user');
+    const [rows] = await db.query(`
+      SELECT 
+        bu.booking_id, 
+        u.first_name AS user_name, 
+        c.name AS concert_name, 
+        z.name AS zone_name, 
+        bu.booking_time, 
+        bu.total_price 
+      FROM 
+        bookings_user bu
+      JOIN 
+        users u ON bu.user_id = u.id
+      JOIN 
+        concerts c ON bu.concert_id = c.id
+      JOIN 
+        zones z ON bu.zone_id = z.id
+    `);
     res.json(rows);
   } catch (error) {
     console.error('Error fetching bookings:', error);
@@ -1666,6 +1683,7 @@ app.put('/updateSeatsByZone/:zoneId', async (req, res) => {
 
 app.use('/products', productController);
 app.use('/orders', orderController); // Use the new order controller
+app.use('/activities', activityController); // Use the activity controller
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

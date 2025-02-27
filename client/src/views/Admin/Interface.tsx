@@ -1,6 +1,8 @@
-import React from 'react';
-import { Box, Typography, Grid, Paper } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Box, Typography, Grid, Paper, Card, CardContent, IconButton } from '@mui/material';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
+import { ArrowBack, ArrowForward } from '@mui/icons-material';
+import axios from 'axios';
 
 const data = [
   { name: 'Jan', uv: 4000, pv: 2400, amt: 2400 },
@@ -21,7 +23,49 @@ const pieData = [
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
+interface ActivityData {
+  id: number;
+  user_name: string;
+  activity_type: string;
+  activity_time: string;
+  details: string;
+}
+
 const Interface: React.FC = () => {
+  const [activities, setActivities] = useState<ActivityData[]>([]);
+  const [page, setPage] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const itemsPerPage = 3;
+
+  const fetchRecentActivities = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get('http://localhost:5000/activities/getRecentActivities');
+      setActivities(response.data);
+    } catch (error) {
+      console.error('Error fetching recent activities:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchRecentActivities();
+  }, []);
+
+  const handleNextPage = () => {
+    setPage((prev) => prev + 1);
+  };
+
+  const handlePrevPage = () => {
+    if (page > 0) {
+      setPage((prev) => prev - 1);
+    }
+  };
+
+  const paginatedActivities = activities.slice(page * itemsPerPage, (page + 1) * itemsPerPage);
+  const totalPages = Math.ceil(activities.length / itemsPerPage);
+
   return (
     <Box>
       <Typography variant="h4" textAlign="center" mt={4} mb={4}>
@@ -96,10 +140,29 @@ const Interface: React.FC = () => {
               Recent Activity
             </Typography>
             <Box>
-              {/* Add recent activity content here */}
-              <Typography>Activity 1</Typography>
-              <Typography>Activity 2</Typography>
-              <Typography>Activity 3</Typography>
+              {paginatedActivities.map((activity) => (
+                <Card key={activity.id} sx={{ mb: 2 }}>
+                  <CardContent>
+                    <Typography variant="body1">
+                      <strong>{activity.user_name}</strong> {activity.activity_type} at {new Date(activity.activity_time).toLocaleString()}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      {activity.details}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              ))}
+              <Box display="flex" justifyContent="space-between" alignItems="center" mt={2}>
+                <IconButton onClick={handlePrevPage} disabled={page === 0}>
+                  <ArrowBack />
+                </IconButton>
+                <Typography variant="body2">
+                  Page {page + 1} of {totalPages}
+                </Typography>
+                <IconButton onClick={handleNextPage} disabled={page + 1 >= totalPages}>
+                  <ArrowForward />
+                </IconButton>
+              </Box>
             </Box>
           </Paper>
         </Grid>

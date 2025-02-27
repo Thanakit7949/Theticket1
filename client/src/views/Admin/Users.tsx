@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Modal, TextField, MenuItem, Select, InputLabel, FormControl, Grid } from '@mui/material';
+import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Modal, TextField } from '@mui/material';
 import axios from 'axios';
 
 interface UserData {
   id?: number;
   email: string;
-  password: string;
   phone: string;
   first_name: string;
   last_name: string;
@@ -13,14 +12,12 @@ interface UserData {
   address: string;
   gender: string;
   role: string;
-  profile_image: string;
 }
 
 const Users: React.FC = () => {
   const [users, setUsers] = useState<UserData[]>([]);
   const [formData, setFormData] = useState<UserData>({
     email: '',
-    password: '',
     phone: '',
     first_name: '',
     last_name: '',
@@ -28,7 +25,6 @@ const Users: React.FC = () => {
     address: '',
     gender: '',
     role: '',
-    profile_image: '',
   });
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -63,10 +59,7 @@ const Users: React.FC = () => {
         ? `http://localhost:5000/updateUser/${formData.id}`
         : 'http://localhost:5000/addUser';
       const method = isEditing ? axios.put : axios.post;
-      const data = isEditing && !formData.password
-        ? { ...formData, password: undefined }
-        : formData;
-      const response = await method(url, data);
+      const response = await method(url, formData);
 
       if (isEditing) {
         setUsers((prev) => prev.map((user) => (user.id === formData.id ? response.data : user)));
@@ -76,7 +69,6 @@ const Users: React.FC = () => {
 
       setFormData({
         email: '',
-        password: '',
         phone: '',
         first_name: '',
         last_name: '',
@@ -84,12 +76,12 @@ const Users: React.FC = () => {
         address: '',
         gender: '',
         role: '',
-        profile_image: '',
       });
       setIsEditing(false);
       setOpen(false);
     } catch (error) {
       console.error('Error adding/updating user:', error);
+      alert('Error adding/updating user: ' + error.response?.data?.message || error.message);
     }
   };
 
@@ -173,15 +165,6 @@ const Users: React.FC = () => {
             label="Email"
             name="email"
             value={formData.email}
-            onChange={handleFormChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Password"
-            name="password"
-            type="password"
-            value={formData.password}
             onChange={handleFormChange}
             fullWidth
             margin="normal"

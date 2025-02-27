@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Modal, CircularProgress } from '@mui/material';
+import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Modal, CircularProgress, Card, CardContent, Grid } from '@mui/material';
 import axios from 'axios';
 
 interface BookingData {
@@ -19,7 +19,7 @@ const Orders: React.FC = () => {
 
   const fetchBookings = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/orders/getAllOrders');
+      const response = await axios.get('http://localhost:5000/getAllBookings');
       setBookings(response.data);
     } catch (error) {
       console.error('Error fetching bookings:', error);
@@ -49,12 +49,12 @@ const Orders: React.FC = () => {
 
   return (
     <Box p={4}>
-      <Typography variant="h4" textAlign="center" mb={4}>
+      <Typography variant="h4" textAlign="center" mb={4} color="primary">
         Orders and Bookings
       </Typography>
-      <TableContainer component={Paper} sx={{ mb: 4 }}>
+      <TableContainer component={Paper} sx={{ mb: 4, borderRadius: 2, boxShadow: 3 }}>
         <Table>
-          <TableHead sx={{ bgcolor: 'primary.main' }}>
+          <TableHead sx={{ bgcolor: 'secondary.main' }}>
             <TableRow>
               <TableCell sx={{ color: 'white' }}>Booking ID</TableCell>
               <TableCell sx={{ color: 'white' }}>User Name</TableCell>
@@ -67,7 +67,7 @@ const Orders: React.FC = () => {
           </TableHead>
           <TableBody>
             {bookings.map((booking) => (
-              <TableRow key={booking.booking_id}>
+              <TableRow key={booking.booking_id} sx={{ '&:nth-of-type(odd)': { bgcolor: 'action.hover' } }}>
                 <TableCell>{booking.booking_id}</TableCell>
                 <TableCell>{booking.user_name}</TableCell>
                 <TableCell>{booking.concert_name}</TableCell>
@@ -86,18 +86,20 @@ const Orders: React.FC = () => {
       </TableContainer>
       <Modal open={open} onClose={handleClose}>
         <Box sx={{ ...modalStyle, width: 400 }}>
-          <Typography variant="h6" component="h2" mb={2}>
+          <Typography variant="h6" component="h2" mb={2} color="primary">
             Booking Details
           </Typography>
           {selectedBooking && (
-            <Box>
-              <Typography>Booking ID: {selectedBooking.booking_id}</Typography>
-              <Typography>User Name: {selectedBooking.user_name}</Typography>
-              <Typography>Concert Name: {selectedBooking.concert_name}</Typography>
-              <Typography>Zone Name: {selectedBooking.zone_name}</Typography>
-              <Typography>Booking Time: {new Date(selectedBooking.booking_time).toLocaleString()}</Typography>
-              <Typography>Total Price: {selectedBooking.total_price}</Typography>
-            </Box>
+            <Card>
+              <CardContent>
+                <Typography variant="body1"><strong>Booking ID:</strong> {selectedBooking.booking_id}</Typography>
+                <Typography variant="body1"><strong>User Name:</strong> {selectedBooking.user_name}</Typography>
+                <Typography variant="body1"><strong>Concert Name:</strong> {selectedBooking.concert_name}</Typography>
+                <Typography variant="body1"><strong>Zone Name:</strong> {selectedBooking.zone_name}</Typography>
+                <Typography variant="body1"><strong>Booking Time:</strong> {new Date(selectedBooking.booking_time).toLocaleString()}</Typography>
+                <Typography variant="body1"><strong>Total Price:</strong> {selectedBooking.total_price}</Typography>
+              </CardContent>
+            </Card>
           )}
           <Button variant="contained" color="secondary" onClick={handleClose} sx={{ mt: 2 }}>
             Close
