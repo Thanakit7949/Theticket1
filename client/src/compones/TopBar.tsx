@@ -143,7 +143,7 @@ const TopBar: React.FunctionComponent<ITopBarProps> = ({ open }) => {
               variant="h6"
               noWrap
               component="a"
-              href="#"
+              href="/home-test"
               sx={{
                 mr: 2,
                 display: { xs: "none", md: "flex" },

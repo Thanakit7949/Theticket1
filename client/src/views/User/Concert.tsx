@@ -98,7 +98,7 @@ const Concert: React.FC = () => {
           id: item.id,
           img: `http://localhost/concert/all/${item.image}`,
           title: item.name,
-          date: `🗓️: $${dayjs(item.date).format("DD/MM/YY")}`,
+          date: `🗓️: ${dayjs(item.date).format("DD/MM/YY")}`,
           time: `⏰: ${item.time}`,
           location: `📌: ${item.location}`,
           price: item.price,

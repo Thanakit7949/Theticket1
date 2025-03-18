@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -27,12 +27,21 @@ import Image3 from "/src/assets/concert/express.png";
 import Image4 from "/src/assets/concert/prompt.png";
 import Image5 from "/src/assets/concert/qrcode.jpg";
 import CloseIcon from "@mui/icons-material/Close";
+import Cookies from "js-cookie";
 
 const PaymentSport: React.FC = () => {
   const [slip, setSlip] = useState<File | null>(null);
   const location = useLocation();
-  const { price, label, selectedSeats } = location.state || {}; // ค่าที่ส่งมาจากหน้า Concert
+  const { price, label, selectedSeats, sport_Zone } = location.state || {}; // ค่าที่ส่งมาจากหน้า Concert
 
+  useEffect(() => {
+    if (!location.state) {
+      console.log("ไม่มีข้อมูล state ที่ถูกส่งมา");
+    } else {
+      console.log("location.state:", location.state);
+      console.log("selectedSeats:", selectedSeats);
+    }
+  }, [location.state, selectedSeats]);
   // แปลงราคาเป็นตัวเลข (เอาเฉพาะตัวเลขออกจากข้อความ)
   const numericPrice = price ? parseFloat(price.replace(/[^\d.-]/g, "")) : 0;
 
@@ -51,7 +60,6 @@ const PaymentSport: React.FC = () => {
   }) => {
     setChecked(event.target.checked);
   };
-
 
   const [openDialog, setOpenDialog] = useState(false);
   const handleOpenDialog = () => setOpenDialog(true);
@@ -154,6 +162,7 @@ const PaymentSport: React.FC = () => {
               fullWidth
               variant="outlined"
               label="ชื่อ"
+              value={Cookies.get("acountname")}
               defaultValue="สวย"
               InputProps={{
                 style: { borderRadius: "20px", color: "black" }, // ขอบมนและสีข้อความสีขาว
@@ -175,6 +184,7 @@ const PaymentSport: React.FC = () => {
               fullWidth
               variant="outlined"
               label="นามสกุล"
+              value={Cookies.get("lastname")}
               defaultValue="งาน"
               InputProps={{
                 style: { borderRadius: "20px", color: "black" },
@@ -196,6 +206,7 @@ const PaymentSport: React.FC = () => {
               fullWidth
               variant="outlined"
               label="เบอร์โทรศัพท์"
+              value={Cookies.get("phone")}
               defaultValue="0926239547"
               InputProps={{
                 style: { borderRadius: "20px", color: "black" },
@@ -217,6 +228,7 @@ const PaymentSport: React.FC = () => {
               fullWidth
               variant="outlined"
               label="อีเมล"
+              value={Cookies.get("email")}
               defaultValue="onanongmaenthim@gmail.com"
               InputProps={{
                 style: { borderRadius: "20px", color: "black" },
@@ -302,14 +314,9 @@ const PaymentSport: React.FC = () => {
             color: "black",
           }}
         >
-          ที่นั่งที่เลือก:{" "}
-          {selectedSeats.length > 0
-            ? selectedSeats
-                .map(
-                  (seat: { row: number; col: number }) =>
-                    `${label}${seat.row}-${seat.col}`
-                )
-                .join(" / ") // Joining the seats with a separator (e.g., " / ")
+          ที่นั่งที่เลือก: 
+            {selectedSeats.length > 0
+            ? selectedSeats.join(", ")
             : "ยังไม่ได้เลือกที่นั่ง"}
         </Typography>
 
@@ -325,7 +332,7 @@ const PaymentSport: React.FC = () => {
               width: "100%",
             }}
           >
-            <span>ราคารวม</span>
+            <span>ราคาบัตรกีฬา</span>
             <span>
               {selectedSeats.length > 0
                 ? `฿${(numericPrice * selectedSeats.length).toFixed(2)}` // คูณจำนวนที่นั่งกับราคา
@@ -748,8 +755,8 @@ const PaymentSport: React.FC = () => {
                       },
                     }}
                     onClick={() =>
-                      navigate("/concert/ticket-concet", {
-                        state: { price, label, selectedSeats },
+                      navigate("/sport/ticket-sport", {
+                        state: { price, label, selectedSeats, sport_Zone },
                       })
                     }
                   >
@@ -864,129 +871,126 @@ const PaymentSport: React.FC = () => {
 
               {/* Payment Confirmation Dialog */}
               <Dialog
-  open={openPromptPayDialog}
-  onClose={handleClosePromptPayDialog}
-  maxWidth="sm"
-  fullWidth
->
-  <DialogTitle
-    sx={{
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      backgroundColor: "red",
-    }}
-  >
-    <Typography variant="h6" sx={{ color: "white" }}>
-      รอการชำระเงินจากคุณ
-    </Typography>
-    <IconButton onClick={handleClosePromptPayDialog}>
-      <CloseIcon />
-    </IconButton>
-  </DialogTitle>
+                open={openPromptPayDialog}
+                onClose={handleClosePromptPayDialog}
+                maxWidth="sm"
+                fullWidth
+              >
+                <DialogTitle
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    backgroundColor: "red",
+                  }}
+                >
+                  <Typography variant="h6" sx={{ color: "white" }}>
+                    รอการชำระเงินจากคุณ
+                  </Typography>
+                  <IconButton onClick={handleClosePromptPayDialog}>
+                    <CloseIcon />
+                  </IconButton>
+                </DialogTitle>
 
-  <DialogContent sx={{ backgroundColor: "white" }}>
-    <Box sx={{ padding: 2, color: "#151515" }}>
-      <Typography
-        variant="h4"
-        align="center"
-        sx={{ fontWeight: "bold" }}
-      >
-        PromptPay QR Code
-      </Typography>
+                <DialogContent sx={{ backgroundColor: "white" }}>
+                  <Box sx={{ padding: 2, color: "#151515" }}>
+                    <Typography
+                      variant="h4"
+                      align="center"
+                      sx={{ fontWeight: "bold" }}
+                    >
+                      PromptPay QR Code
+                    </Typography>
 
-      <img
-        src={Image5}
-        alt="Event Thumbnail"
-        style={{
-          width: "400px",
-          borderRadius: "16px",
-          marginTop: "20px",
-          display: "block",
-          margin: "0 auto",
-        }}
-      />
-      <Typography
-        variant="h6"
-        align="center"
-        sx={{ fontWeight: "bold" }}
-      >
-        SCAN QR CODE
-      </Typography>
-      <Typography
-        variant="h5"
-        align="center"
-        sx={{ color: "red", fontWeight: "bold" }}
-      >
-        ฿{totalPrice.toFixed(2)}
-      </Typography>
-      <Divider sx={{ backgroundColor: "gray" }} />
+                    <img
+                      src={Image5}
+                      alt="Event Thumbnail"
+                      style={{
+                        width: "400px",
+                        borderRadius: "16px",
+                        marginTop: "20px",
+                        display: "block",
+                        margin: "0 auto",
+                      }}
+                    />
+                    <Typography
+                      variant="h6"
+                      align="center"
+                      sx={{ fontWeight: "bold" }}
+                    >
+                      SCAN QR CODE
+                    </Typography>
+                    <Typography
+                      variant="h5"
+                      align="center"
+                      sx={{ color: "red", fontWeight: "bold" }}
+                    >
+                      ฿{totalPrice.toFixed(2)}
+                    </Typography>
+                    <Divider sx={{ backgroundColor: "gray" }} />
 
-      <Box sx={{ mt: 2 }}>
-        <Typography variant="h5" sx={{ mb: 1, color: "black" }}>
-          อัปโหลดสลิปการโอนเงิน:
-        </Typography>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleFileChange}
-          style={{
-            marginBottom: "10px",
-            fontSize: "17px",
-            color: "red",
-          }}
-        />
-        {slip && (
-          <Box sx={{ mt: 2 }}>
-            <Typography variant="body1">
-              สลิปที่แนบมา:
-            </Typography>
-            <img
-              src={URL.createObjectURL(slip)}
-              alt="สลิปการโอนเงิน"
-              style={{
-                maxWidth: "100%",
-                height: "auto",
-                border: "1px solid #ccc",
-                borderRadius: 8,
-              }}
-            />
-          </Box>
-        )}
-      </Box>
-
-      <Button
-        variant="contained"
-        sx={{
-          marginTop: 2,
-          borderRadius: 20,
-          backgroundColor: "red",
-          width: "100%",
-          height: 50,
-          fontSize: "20px",
-          "&:hover": {
-            backgroundColor: "#c40d19",
-            border: "1px solid white",
-          },
-        }}
-        onClick={() => {
-          if (!slip) {
-            // ถ้ายังไม่ได้แนบสลิปจะแจ้งเตือน
-            alert("กรุณาแนบรูปสลิปการโอนเงินก่อน!");
-            return;
-          }
-          // ถ้ามีการแนบสลิปแล้ว ค่อยไปยังหน้าใบเสร็จ
-          navigate("/concert/ticket-concet", {
-            state: { price, label, selectedSeats },
-          });
-        }}
-      >
-        กดเพื่อแสดงหน้าใบเสร็จ
-      </Button>
-    </Box>
-  </DialogContent>
-</Dialog>
-
+                    <Box sx={{ mt: 2 }}>
+                      <Typography variant="h5" sx={{ mb: 1, color: "black" }}>
+                        อัปโหลดสลิปการโอนเงิน:
+                      </Typography>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        style={{
+                          marginBottom: "10px",
+                          fontSize: "17px",
+                          color: "red",
+                        }}
+                      />
+                      {slip && (
+                        <Box sx={{ mt: 2 }}>
+                          <Typography variant="body1">สลิปที่แนบมา:</Typography>
+                          <img
+                            src={URL.createObjectURL(slip)}
+                            alt="สลิปการโอนเงิน"
+                            style={{
+                              maxWidth: "100%",
+                              height: "auto",
+                              border: "1px solid #ccc",
+                              borderRadius: 8,
+                            }}
+                          />
+                        </Box>
+                      )}
+                    </Box>
+                    {/* กดเพื่อแสดงหน้าใบเสร็จ */}
+                    <Button
+                      variant="contained"
+                      sx={{
+                        marginTop: 2,
+                        borderRadius: 20,
+                        backgroundColor: "red",
+                        width: "100%",
+                        height: 50,
+                        fontSize: "20px",
+                        "&:hover": {
+                          backgroundColor: "#c40d19",
+                          border: "1px solid white",
+                        },
+                      }}
+                      onClick={() => {
+                        if (!slip) {
+                          // ถ้ายังไม่ได้แนบสลิปจะแจ้งเตือน
+                          alert("กรุณาแนบรูปสลิปการโอนเงินก่อน!");
+                          return;
+                        }
+                        // ถ้ามีการแนบสลิปแล้ว ค่อยไปยังหน้าใบเสร็จ
+                        navigate("/sport/ticket-sport", {
+                          state: { price, label, selectedSeats, sport_Zone },
+                        });
+                      }}
+                    >
+                      กดเพื่อแสดงหน้าใบเสร็จ
+                    </Button>
+                  </Box>
+                </DialogContent>
+              </Dialog>
             </Box>
           </Collapse>
         </Box>

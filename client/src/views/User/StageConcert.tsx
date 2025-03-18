@@ -1,12 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
-import { Box, Button, Stack, Tooltip, Typography } from "@mui/material";
+import { Box, Button,  Tooltip, Typography } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const StageConcert: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState(5 * 60);
-  const [selectedPrice, setSelectedPrice] = useState<string | null>(null);
-  const [tickets, setTickets] = useState<any[]>([]);
   const [zones, setZones] = useState<any[]>([]); // เก็บข้อมูลโซน
   const navigate = useNavigate();
   const location = useLocation();
@@ -40,29 +38,12 @@ const StageConcert: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    const fetchTicket = async () => {
-      try {
-        const response = await fetch("http://localhost:5000/getConcertstage");
-        const data = await response.json();
-        setTickets(data);
-      } catch (error) {
-        console.error("Error fetching events:", error);
-      }
-    };
-
-    fetchTicket();
-  }, []);
-
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
     const seconds = time % 60;
     return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
   };
 
-  const filteredTickets = selectedPrice
-    ? tickets.filter((ticket) => String(ticket.amount) === selectedPrice)
-    : tickets;
 
     const handleBuyTicket = (zone: { id: number, concert_id: number, name: string, seat_count: number }, price: string,label:string) => {
       // ส่งข้อมูลของ zone ที่เลือกไปใน state
@@ -81,7 +62,8 @@ const StageConcert: React.FC = () => {
         minHeight: "100vh",
         padding: "20px",
         width: "1150px",
-        height: "1100px",
+        height: "500px",
+        borderRadius:"15px",
         maxHeight: "none",
         maxWidth: "none",
       }}
@@ -95,56 +77,7 @@ const StageConcert: React.FC = () => {
           mr: 2,
         }}
       >
-        <Stack direction="row" spacing={2} mb={3}>
-          <Button
-            variant="contained"
-            onClick={() => setSelectedPrice("2500")}
-            sx={{
-              backgroundColor: "#2D2DFF",
-              color: "white",
-              borderRadius: "30px",
-              width: "100px",
-            }}
-          >
-            ฿2,500
-          </Button>
-          <Button
-            variant="contained"
-            onClick={() => setSelectedPrice("3500")}
-            sx={{
-              backgroundColor: "#4DC0FF",
-              color: "white",
-              borderRadius: "30px",
-              width: "100px",
-            }}
-          >
-            ฿3,500
-          </Button>
-          <Button
-            variant="contained"
-            onClick={() => setSelectedPrice("4500")}
-            sx={{
-              backgroundColor: "#FFD96A",
-              color: "white",
-              borderRadius: "30px",
-              width: "100px",
-            }}
-          >
-            ฿4,500
-          </Button>
-          <Button
-            variant="contained"
-            onClick={() => setSelectedPrice("5500")}
-            sx={{
-              backgroundColor: "#FF66A4",
-              color: "white",
-              borderRadius: "30px",
-              width: "100px",
-            }}
-          >
-            ฿5,500
-          </Button>
-        </Stack>
+      
 
         <Box
   sx={{
@@ -170,7 +103,7 @@ const StageConcert: React.FC = () => {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          backgroundColor: "#f48fb1",
+          backgroundColor: "#f06292",
           color: "white",
           borderRadius: "30px",
           padding: "12px",
@@ -189,7 +122,7 @@ const StageConcert: React.FC = () => {
             padding: "8px 16px",
             borderRadius: "30px",
             fontWeight: "bold",
-            "&:hover": { backgroundColor: "#b39ddb", color: "white" },
+            "&:hover": { backgroundColor: "#f8bbd0", color: "white" },
           }}
           onClick={() => handleBuyTicket(zone, zonePrice.toString(),zone.name)}
         >
@@ -226,8 +159,8 @@ const StageConcert: React.FC = () => {
           variant="h4"
           fontWeight="bold"
           sx={{
-            backgroundColor: "#f48fb1",
-            color: "black",
+            backgroundColor: "#d81b60",
+            color: "white",
             padding: "20px",
             width: "90%",
             maxWidth: "none",
@@ -235,7 +168,6 @@ const StageConcert: React.FC = () => {
             textAlign: "center",
             lineHeight: "2.5",
             mb: 3,
-            border: "3px solid black",
           }}
         >
           STAGE
@@ -252,10 +184,6 @@ const StageConcert: React.FC = () => {
 
           
           {zones.map((zone, index) => {
-                    // คำนวณราคาของโซนที่แสดง
-              // const zonePrice = concertID.price - 1000 * (index + 1);
-            // const zonePrice = concertID.price - 1000 * index;
-            // const zonePrice = concertID.price + index * 1000.00
             const zonePrice = parseFloat(concertID.price) + index * 1000; // เพิ่มค่าตาม index
 
 
@@ -277,12 +205,13 @@ const StageConcert: React.FC = () => {
                   <Box
                      onClick={() => handleBuyTicket(zone, zonePrice.toString(),zone.name)}
                     sx={{
-                      backgroundColor: "#8e24aa",
+                      backgroundColor: "#f06292",
                       color: "white",
                       padding: "25px 50px",
                       borderRadius: "10px",
                       minWidth: "100px",
                       textAlign: "center",
+                      marginLeft:"10px",
                       fontSize: "18px",
                       cursor: "pointer",
                       transition: "transform 0.2s ease, box-shadow 0.2s ease",

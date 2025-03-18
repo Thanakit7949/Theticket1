@@ -1,84 +1,106 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Modal } from '@mui/material';
+import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Modal, Select, MenuItem, FormControl, InputLabel, CircularProgress } from '@mui/material';
 import axios from 'axios';
 
-interface OrderData {
-  id: number;
-  customer: string;
-  product: string;
+interface BookingData {
+  booking_id: number;
+  user_id: number;
+  concert_id: number;
+  zone_id: number;
+  booking_time: string;
+  total_price: number;
+  user_name: string;
+  concert_name: string;
+  zone_name: string;
   status: string;
 }
 
 const Orders: React.FC = () => {
-  const [orders, setOrders] = useState<OrderData[]>([]);
+  const [bookings, setBookings] = useState<BookingData[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState<OrderData | null>(null);
+  const [selectedBooking, setSelectedBooking] = useState<BookingData | null>(null);
+  const [status, setStatus] = useState('');
 
-  const fetchOrders = async () => {
+  const fetchBookings = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/getAllOrders');
-      setOrders(response.data);
+      const response = await axios.get('http://localhost:5000/getAllBookings');
+      setBookings(response.data);
     } catch (error) {
-      console.error('Error fetching orders:', error);
+      console.error('Error fetching bookings:', error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchOrders();
+    fetchBookings();
   }, []);
 
-  const handleView = (order: OrderData) => {
-    setSelectedOrder(order);
+  const handleView = (booking: BookingData) => {
+    setSelectedBooking(booking);
+    setStatus(booking.status || ''); // Ensure status is controlled
     setOpen(true);
   };
 
-  const handleCancel = async (id: number) => {
-    try {
-      await axios.delete(`http://localhost:5000/deleteOrder/${id}`);
-      setOrders((prev) => prev.filter((order) => order.id !== id));
-    } catch (error) {
-      console.error('Error canceling order:', error);
+  const handleStatusChange = async () => {
+    if (selectedBooking) {
+      try {
+        await axios.put(`http://localhost:5000/updateBookingStatus/${selectedBooking.booking_id}`, { status });
+        setBookings((prev) =>
+          prev.map((booking) =>
+            booking.booking_id === selectedBooking.booking_id ? { ...booking, status } : booking
+          )
+        );
+        setOpen(false);
+      } catch (error) {
+        console.error('Error updating booking status:', error);
+      }
     }
   };
 
   const handleClose = () => setOpen(false);
 
   if (loading) {
-    return <Typography>Loading orders...</Typography>;
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+        <CircularProgress />
+      </Box>
+    );
   }
 
   return (
-    <Box>
-      <Typography variant="h4" textAlign="center" mt={4} mb={4}>
+    <Box p={4}>
+      <Typography variant="h4" textAlign="center" mb={4}>
         Orders and Bookings
       </Typography>
       <TableContainer component={Paper} sx={{ mb: 4 }}>
         <Table>
           <TableHead sx={{ bgcolor: 'primary.main' }}>
             <TableRow>
-              <TableCell sx={{ color: 'white' }}>ID</TableCell>
-              <TableCell sx={{ color: 'white' }}>Customer</TableCell>
-              <TableCell sx={{ color: 'white' }}>Product</TableCell>
+              <TableCell sx={{ color: 'white' }}>Booking ID</TableCell>
+              <TableCell sx={{ color: 'white' }}>User Name</TableCell>
+              <TableCell sx={{ color: 'white' }}>Concert Name</TableCell>
+              <TableCell sx={{ color: 'white' }}>Zone Name</TableCell>
+              <TableCell sx={{ color: 'white' }}>Booking Time</TableCell>
+              <TableCell sx={{ color: 'white' }}>Total Price</TableCell>
               <TableCell sx={{ color: 'white' }}>Status</TableCell>
               <TableCell sx={{ color: 'white' }}>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {orders.map((order) => (
-              <TableRow key={order.id}>
-                <TableCell>{order.id}</TableCell>
-                <TableCell>{order.customer}</TableCell>
-                <TableCell>{order.product}</TableCell>
-                <TableCell>{order.status}</TableCell>
+            {bookings.map((booking) => (
+              <TableRow key={booking.booking_id}>
+                <TableCell>{booking.booking_id}</TableCell>
+                <TableCell>{booking.user_name}</TableCell>
+                <TableCell>{booking.concert_name}</TableCell>
+                <TableCell>{booking.zone_name}</TableCell>
+                <TableCell>{new Date(booking.booking_time).toLocaleString()}</TableCell>
+                <TableCell>{booking.total_price}</TableCell>
+                <TableCell>{booking.status}</TableCell>
                 <TableCell>
-                  <Button variant="contained" color="primary" size="small" sx={{ mr: 1 }} onClick={() => handleView(order)}>
+                  <Button variant="contained" color="primary" size="small" sx={{ mr: 1 }} onClick={() => handleView(booking)}>
                     View
-                  </Button>
-                  <Button variant="contained" color="error" size="small" onClick={() => handleCancel(order.id)}>
-                    Cancel
                   </Button>
                 </TableCell>
               </TableRow>
@@ -88,18 +110,33 @@ const Orders: React.FC = () => {
       </TableContainer>
       <Modal open={open} onClose={handleClose}>
         <Box sx={{ ...modalStyle, width: 400 }}>
-          <Typography variant="h6" component="h2">
-            Order Details
+          <Typography variant="h6" component="h2" mb={2}>
+            Booking Details
           </Typography>
-          {selectedOrder && (
+          {selectedBooking && (
             <Box>
-              <Typography>ID: {selectedOrder.id}</Typography>
-              <Typography>Customer: {selectedOrder.customer}</Typography>
-              <Typography>Product: {selectedOrder.product}</Typography>
-              <Typography>Status: {selectedOrder.status}</Typography>
+              <Typography>Booking ID: {selectedBooking.booking_id}</Typography>
+              <Typography>User Name: {selectedBooking.user_name}</Typography>
+              <Typography>Concert Name: {selectedBooking.concert_name}</Typography>
+              <Typography>Zone Name: {selectedBooking.zone_name}</Typography>
+              <Typography>Booking Time: {new Date(selectedBooking.booking_time).toLocaleString()}</Typography>
+              <Typography>Total Price: {selectedBooking.total_price}</Typography>
+              <FormControl fullWidth margin="normal">
+                <InputLabel>Status</InputLabel>
+                <Select value={status} onChange={(e) => setStatus(e.target.value)}>
+                  <MenuItem value="Pending">Pending</MenuItem>
+                  <MenuItem value="Paid">Paid</MenuItem>
+                  <MenuItem value="Cancelled">Cancelled</MenuItem>
+                  <MenuItem value="Seat Changed">Seat Changed</MenuItem>
+                  <MenuItem value="Concert Changed">Concert Changed</MenuItem>
+                </Select>
+              </FormControl>
+              <Button variant="contained" color="primary" onClick={handleStatusChange} sx={{ mt: 2 }}>
+                Update Status
+              </Button>
             </Box>
           )}
-          <Button variant="contained" color="primary" onClick={handleClose} sx={{ mt: 2 }}>
+          <Button variant="contained" color="secondary" onClick={handleClose} sx={{ mt: 2 }}>
             Close
           </Button>
         </Box>
@@ -116,6 +153,7 @@ const modalStyle = {
   bgcolor: 'background.paper',
   boxShadow: 24,
   p: 4,
+  borderRadius: 2,
 };
 
 export default Orders;
