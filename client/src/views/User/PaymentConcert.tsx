@@ -163,7 +163,7 @@ const PaymentConcert: React.FC = () => {
               variant="outlined"
               label="ชื่อ"
               value={Cookies.get('acountname')}
-              defaultValue="สวย"
+              defaultValue=""
               InputProps={{
                 style: { borderRadius: "20px", color: "black" }, // ขอบมนและสีข้อความสีขาว
               }}

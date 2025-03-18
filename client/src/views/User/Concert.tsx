@@ -37,7 +37,7 @@ const Concert: React.FC = () => {
       (prevIndex) => (prevIndex - 1 + images.length) % images.length
     ); // เปลี่ยนไปยังรูปก่อนหน้า
   };
-  const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const [currentIndex, setCurrentIndex] = useState<number>(0); // ประกาศตัวแปรสถานะ และฟังก์ชัน เพื่ออัพเดตค่า
   const [selected, setSelected] = useState("ทั้งหมด");
   const [dataConcert, setDataConcert] = useState<any[]>([]); // Mock data for sports events
   const [dataConcertthaimass, setDataConcertThaimass] = useState<any[]>([]);

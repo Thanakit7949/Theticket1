@@ -32,7 +32,6 @@ const SeatConcert: React.FC = () => {
       .then((response) => response.json())
       .then((data) => {
         console.log("ข้อมูลที่นั่งจากฐานข้อมูล:", data);
-        // สมมุติว่า data ที่ได้มาจะเป็นอาร์เรย์ของที่นั่ง เช่น ["A1", "A2", "A3", ..., "A20"]
         setSeats(data);
       })
       .catch((error) => {

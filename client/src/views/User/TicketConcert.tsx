@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState, useRef } from "react";
 import { Box, Typography, Divider, Button } from "@mui/material";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import image from "/src/assets/concert/thang.png";
 import image1 from "/src/assets/concert/thang1.png";
 import Cookies from "js-cookie";
@@ -14,6 +14,7 @@ const TicketConcert: React.FC = () => {
   const [datadetail, setDataDetail] = useState<string[]>([]);
   const { price, label, selectedSeats, concert_Zone } = location.state || {}; // ดึงข้อมูลจาก state
   const [loading, setLoading] = useState(false); // State สำหรับการซ่อนปุ่ม
+  const navigate = useNavigate();
 
   const handleDownloadImage = async () => {
     if (ticketRef.current) {

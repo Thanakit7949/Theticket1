@@ -90,10 +90,6 @@ const StageConcert: React.FC = () => {
   }}
 >
   {zones.map((zone, index) => {
-    // คำนวณราคาของโซน
-    // const zonePrice = concertID.price - 1000 * (index + 1);
-    // const zonePrice = concertID.price - 1000 * index;
-    // const zonePrice = concertID.price + index * 1000.00
     const zonePrice = parseFloat(concertID.price) + index * 1000; // เพิ่มค่าตาม index
 
     return (
